@@ -1,0 +1,42 @@
+/*
+**  Find integer square roots based on binary search
+*/
+
+/* ****** ****** */
+
+//
+// In the book "Programming in ATS", there is an example in the chapter
+// named 'Functions' that implements the integer square root function
+// based on binary search. Please translate the implementation written
+// in ATS into STFPL.
+//
+
+/* ****** ****** */
+
+let
+  val rec bsearch_fun
+    : (int -> int, int, int, int) -> int =
+//
+    lam (f: int -> int, x0: int, lb: int, ub: int): int =>
+      if lb <= ub then let
+        val mid = lb + (ub - lb) / 2
+      in
+        if x0 < f (mid) then
+          bsearch_fun (f, x0, lb, mid-1)
+        else
+          bsearch_fun (f, x0, mid+1, ub)
+        // end of [if]
+      end else ub // end of [if]
+    /* end of [bsearch_fun] */
+//  
+  val ISQRT_MAX = 65535
+  val isqrt = lam(x: int): int =>
+    bsearch_fun (lam(i: int): int => i * i, x, 0, ISQRT_MAX)
+  // end of [isqrt]
+in
+  isqrt (1023)
+end /* end of [let] */
+
+/* ****** ****** */
+
+/* end of [bsearch_fun.stfpl] */

@@ -1,0 +1,190 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBCOMMUNITY: atext =
+  strcst"<strong>Community</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBCOMMUNITY", _ATSLANGWEBCOMMUNITY)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_community.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_community.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks2("COMMUNITY")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Community</h1>
+
+#menu('\
+#litxt(#ulink("COMMUNITY\#ATS_wikipage", "Wiki for ATS users"))
+#litxt(#ulink("COMMUNITY\#ATS_QandA_forum", "Q&amp;A forum for ATS users"))
+#litxt(#ulink("COMMUNITY\#ATS_devel_forum", "Discussion forum for ATS developers"))
+#litxt(#ulink("COMMUNITY\#ATS_mailing_list", "Mailing-list for ATS users"))
+#litxt(#ulink("COMMUNITY\#ATS_irc_channel", "IRC channel for ATS users: \#\#ats"))
+#litxt(#ulink("COMMUNITY\#ATS_reddit_news", "ATS news at reddit"))
+#litxt(#ulink("COMMUNITY\#JATS_user_group", "JATS-UG: Japan ATS User Group"))
+')
+
+#HR(2)
+
+<h2>#uid("ATS_wikipage", "Wiki for ATS users")</h2>
+#menu("\
+#lisub('\
+This #ulink("https://sourceforge.net/p/ats2-lang/wiki/Home/", "wiki")
+is a major source for ATS users to acquire information on and related to ATS.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_QandA_forum", "Q&amp;A forum for ATS users")</h2>
+#menu("\
+#lisub('\
+The google group
+#ulink("http://groups.google.com/group/ats-lang-users", "ats-lang-users")
+acts as a forum for discussing any and all questions about or related to ATS.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_devel_forum", "Discussion forum for ATS developers")</h2>
+#menu("\
+#lisub('\
+The google group
+#ulink("http://groups.google.com/group/ats-lang-devel", "ats-lang-devel")
+acts as a forum for discussing any and all issues about or related to the
+developement of ATS.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_mailing_list", "Mailing-list for ATS users")</h2>
+
+#menu("\
+#lisub('\
+This #ulink("https://lists.sourceforge.net/lists/listinfo/ats-lang-users",
+"mailing-list") is for ATS users to discuss general questions related to ATS.
+')
+#lisub('\
+The archive of messages sent to the ATS users mailing-list can be found
+#ulink("http://news.gmane.org/gmane.comp.lang.ats.user", "here").
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_irc_channel", "IRC channel for ATS users: \#\#ats")</h2>
+
+#menu("\
+#lisub('\
+This IRC channel
+#ulink("http://webchat.freenode.net", "\#\#ats") is for chatting about ATS.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_reddit_news", "ATS news at reddit")</h2>
+
+#menu("\
+
+#lisub('\
+
+Some news on ATS at #ulink("http://www.reddit.com", "reddit") can
+be found #ulink("http://www.reddit.com/r/ATS", "here").\
+
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>
+#uid(
+"JATS_user_group",
+"<a href=\"http://jats-ug.metasepi.org/\">JATS-UG</a>: Japan ATS User Group"
+)#comment("uid")
+</h2>
+
+#menu("\
+#lisub('\
+
+Various resources in Japanese on learning and using ATS can be found
+#ulink("http://jats-ug.metasepi.org/", "here").\
+
+')
+")#comment("menu")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks3("COMMUNITY")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

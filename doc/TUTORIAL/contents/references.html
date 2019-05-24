@@ -1,0 +1,93 @@
+<!-- beg of [references.html] -->
+
+<H2><A id="references" name="references">References</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+A reference is essentially a persistent array of size 1.  Given a viewtype
+<i>VT</i>, the type for references to values of viewtype <i>VT</i> is
+<i>ref(VT)</i>. The type constructor <i>ref</i> is abstract in ATS, though
+it can be defined as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">typedef</FONT> <FONT COLOR="#0000FF">ref <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT> viewt@ype<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">[</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">(</FONT>vbox <FONT COLOR="#000000">(</FONT>a@l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> ptr l<FONT COLOR="#000000">)</FONT></FONT>
+</FONT></PRE>
+
+The interfaces for various functions on references can be found in the file
+<A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/reference.sats">prelude/SATS/reference.sats</A>.
+<P>
+
+<B>Reference Creation</B>&nbsp;&nbsp;
+There is a function template <i>ref_make_elt</i> of the following type:
+
+<PRE>
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT> ref_make_elt <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a <FONT COLOR="#000000">-&lt;&gt; </FONT>ref a</FONT>
+</PRE>
+
+Given a value <i>v</i> of some viewtype <i>VT</i>,
+<i>ref_make_elt&lt;VT&gt; (v)</i> creates a reference of type
+<i>ref(VT)</i>. For instance, the following code creates some references:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">val</FONT> r_int <FONT COLOR="#000000">=</FONT> ref_make_elt&lt;<FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">val</FONT> r_double <FONT COLOR="#000000">=</FONT> ref_make_elt&lt;<FONT COLOR="#0000FF">double</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>0.0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">val</FONT> r_fun <FONT COLOR="#000000">=</FONT> ref_make_elt&lt;<FONT COLOR="#0000FF">int<FONT COLOR="#000000">-&gt;</FONT>int</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> x+1<FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+
+There is also a function <i>ref_make_view_ptr</i> of the following type for
+turning pointers into references:
+
+<PRE>
+<FONT COLOR="#000000">fun</FONT> ref_make_view_ptr <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>vbox<FONT COLOR="#000000">(</FONT>a @ l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> ptr l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> ref a</FONT>
+</PRE>
+
+Note that <i>ref_make_view_ptr</i> is a polymorphic function; it is not a
+function template.
+<P>
+
+<B>Reference Read and Write</B>&nbsp;&nbsp;
+
+Given a reference <i>r</i>, the syntax for reading from <i>r</i> is
+<i>!r</i> and the syntax for writing (a value <i>v</i>) to <i>r</i> is
+<i>!r := v</i>. Note that in both SML and Objective Caml, the
+syntax for writing (a value <i>v</i>) to a reference <i>r</i>
+is <i>r := v</i> (instead of <i>!r := v</i>).
+<P>
+
+There are also two function templates
+<i>ref_get_elt</i> and <i>ref_set_elt</i> of the following types:
+
+<PRE>
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@type</FONT><FONT COLOR="#000000">}</FONT> ref_get_elt <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ref a <FONT COLOR="#000000">-&lt;</FONT><FONT COLOR="#000000">!</FONT>ref<FONT COLOR="#000000">&gt;</FONT> a</FONT>
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@type</FONT><FONT COLOR="#000000">}</FONT> ref_set_elt <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>ref a<FONT COLOR="#000000">,</FONT> a<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT><FONT COLOR="#000000">!</FONT>ref<FONT COLOR="#000000">&gt;</FONT> void</FONT>
+</PRE>
+
+which can used to read from and write to a given reference, respectively.
+As an example, we give a simple implementation of counters as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// [int64] is the type for 64-bit integers in ATS
+</FONT><FONT COLOR="#000000">typedef</FONT> <FONT COLOR="#0000FF">counter <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">'{</FONT> <FONT COLOR="#787878">// the type for counter objects
+</FONT>  get<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> int64 <FONT COLOR="#787878">// get the value of the counter
+</FONT><FONT COLOR="#000000">,</FONT> set<FONT COLOR="#000000">=</FONT> int64 <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> void <FONT COLOR="#787878">// set the value of the counter
+</FONT><FONT COLOR="#000000">,</FONT> inc<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> void <FONT COLOR="#787878">// increase the value of the counter
+</FONT><FONT COLOR="#000000">,</FONT> dec<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> void <FONT COLOR="#787878">// decrease the value of the counter
+</FONT><FONT COLOR="#000000">}</FONT></FONT>
+
+<FONT COLOR="#000000">fn</FONT> counter_make <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">counter</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#787878">// [int64_of_int] coerce an integer into a 64-bit integer
+</FONT>  <FONT COLOR="#000000">val</FONT> r <FONT COLOR="#000000">=</FONT> ref_make_elt&lt;<FONT COLOR="#0000FF">int64</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>int64_of_int 0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">'{</FONT> <FONT COLOR="#787878">// record creation
+</FONT>  get<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">lam</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">!</FONT>r <FONT COLOR="#787878">// read from [r]
+</FONT><FONT COLOR="#000000">,</FONT> set<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">lam</FONT> <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">!</FONT>r := x <FONT COLOR="#787878">// write to [r]
+</FONT><FONT COLOR="#000000">,</FONT> inc<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">lam</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">!</FONT>r := succ <FONT COLOR="#000000">!</FONT>r
+<FONT COLOR="#000000">,</FONT> dec<FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">lam</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">!</FONT>r := pred <FONT COLOR="#000000">!</FONT>r
+<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [counter_make]
+</FONT>
+</FONT></PRE>
+
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="references.dats">here</a>.
+
+<!-- end of [references.html] -->

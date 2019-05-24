@@ -1,0 +1,18 @@
+(*
+**
+** HX-2010-04-21:
+** This is my effort to prepare ATS documentation with DocBook
+**
+*)
+
+(* ****** ****** *)
+
+// ATS_GRAMMAR: documenting the grammar of ATS
+
+(* ****** ****** *)
+
+// ATS_USERS_GUILD: ATS/Anairiats User's Guide
+
+(* ****** ****** *)
+
+(* end of [README] *)

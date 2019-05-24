@@ -1,0 +1,49 @@
+/* The example is taken from Appel's book:
+   Modern Compiler Implementation in ML */
+
+/* A program to solve the 8-queens problem */
+
+let
+  var N := 8
+  var N1 := N - 1
+
+  type intArray = array of int
+
+  var row := intArray [ N ] of 0
+  var col := intArray [ N ] of 0
+  var diag1 := intArray [N+N1] of 0
+  var diag2 := intArray [N+N1] of 0
+
+  function printboard () =
+    (for i := 0 to N1 do
+      (for j := 0 to N1 do
+         print(if col[i]=j then " Q" else " .");
+       print("\n"));
+     print("\n"))
+
+  function try (c:int) = (
+/*
+    print ("try: c = "); print_int (c); print ("\n"); flush ();
+    print ("try: N = "); print_int (N); print ("\n"); flush ();
+*/
+    /* for i:= 0 to c do print("."); print("\n"); flush(); */
+    if c=N then printboard () else (
+      for r := 0 to N1 do (
+/*
+        print ("r = "); print_int (r); print ("\n"); flush ();
+        print ("N1 = "); print_int (N1); print ("\n"); flush ();
+*/
+        if row[r]=0 & diag1[r+c]=0 & diag2[r+N1-c]=0 then (
+          row[r]:=1; diag1[r+c]:=1; diag2[r+N1-c]:=1; col[c]:=r;
+          try(c+1); row[r]:=0; diag1[r+c]:=0; diag2[r+N1-c]:=0
+        )
+      ) /* end of [for] */
+    )
+  ) /* end of [function] */
+in
+  try (0)
+end /* end of [let] */
+	
+/* ****** ****** */
+
+/* end of [queens1.tig] */

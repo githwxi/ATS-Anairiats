@@ -1,0 +1,11 @@
+#
+# Some examples in ATS involving syndef-loaded identifiers
+#
+
+######
+
+fact: do! { ... } `while` (...)
+println: print! (...) and println! (...)
+
+###### end of [README] ######
+

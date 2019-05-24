@@ -1,0 +1,178 @@
+<!-- beg of [programming-with-theorem-proving.html] -->
+
+<H2><A id="PwTP" name="PwTP">Programming with Theorem Proving</H2></A>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The paradigm of programming with theorem proving is rich and broad, and it
+is probably the most innovative feature in ATS.  We give an introduction to
+this paradigm by presenting a few examples, explaining some motivations
+behind programming with theorem proving as well as demonstrating a means to
+achieve it in ATS.
+<P>
+
+The following code implements a function that computes factorials:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// non-tail-recursive
+</FONT><FONT COLOR="#000000">fun</FONT> fact <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">if</FONT> n <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> n nmul fact <FONT COLOR="#000000">(</FONT>n-1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> 1
+</FONT></PRE>
+
+The type assigned to <i>fact</i> is
+
+<pre>
+{n:nat} int (n) -> Nat
+</pre>
+
+That is, the function <i>fact</i> takes a nature number as its argument
+and, if it terminates, returns a natural number as its result.
+<P>
+
+Now suppose we want to be more accurate. We want to verify that the code
+indeed implements the factorial functions.  One possibility is to specify
+the factorial function in the statics of ATS, and then try to assign the
+following type to <i>fact</i>:
+
+<pre>
+{n:nat} int (n) -> int (fact(n))
+</pre>
+
+Note that the name <i>fact</i> is overloaded here to also refer to the
+factorial function in the statics of ATS. There is, however, a serious
+problem with this approach: If functions as complex as the factorial
+function could be specified in the statics of ATS, then it would no longer
+be possible to support fully automatic constraint-solving.
+We take a different approach instead.
+<P>
+
+With standard mathematical notation, the factorial function can be
+specified as follows:
+
+<pre>
+fact (0) = 1 ;
+fact (n) = n * fact (n-1) ; if n > 0
+</pre>
+
+In ATS, we can declare a dataprop to encode this specification:
+
+<PRE><FONT COLORE="#E80000"><FONT COLOR="#787878">// [FACT (n, x)] is inhabited if and only if [fact (n) = x]
+</FONT><FONT COLOR="#000000">dataprop</FONT> <FONT COLOR="#009000"><FONT COLOR="#0000FF">FACT <FONT COLOR="#000000">(</FONT>int<FONT COLOR="#000000">,</FONT> int<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">|</FONT> FACTbas <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>0<FONT COLOR="#000000">,</FONT> 1<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">n<FONT COLOR="#000000">:</FONT>int</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#0000FF">n <FONT COLOR="#000000">&gt;</FONT> 0</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">r<FONT COLOR="#000000">,</FONT>r1<FONT COLOR="#000000">:</FONT>int</FONT><FONT COLOR="#000000">}</FONT>
+    FACTind <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>FACT <FONT COLOR="#000000">(</FONT>n-1<FONT COLOR="#000000">,</FONT> r1<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> MUL <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> r1<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT></FONT>
+</FONT></PRE>
+
+The prop constructor <i>MUL</i> is already defined: Given integers
+<i>p</i>, <i>q</i>, and <i>pq</i>, <i>MUL(p, q, pq)</i> is inhabited if and
+only if the product of <i>p</i> and <i>q</i> is <i>pq</i>.
+
+The constructors <i>FACTbas</i> (base case) and <i>FACTind</i> (inductive
+case) correspond to the first and the second clauses in the above
+specification, respectively. 
+
+Given integers <i>n</i> and <i>r</i>, the
+prop <i>FACT(n, r)</i> is inhabited if and only if the factorial of <i>n</i>
+equals <i>r</i>. Clearly, if a <em>terminating</em> function
+can be assgined the following type:
+
+<pre>
+{n:nat} int n -> [r:int] (FACT (n, r) | int r)
+</pre>
+
+then this function must compute factorials. The code below implements such
+a function <i>fact1</i>:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// [fact1] implements the factorial function in a non-tail-recursive manner
+</FONT><FONT COLOR="#000000">fun</FONT> fact1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> n <FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">[</FONT>r<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">(</FONT>FACT <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> int r<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">if</FONT> n <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT>
+    <FONT COLOR="#000000">let</FONT>
+       <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fac_n1_r1</FONT> <FONT COLOR="#000000">|</FONT> r1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> fact1 <FONT COLOR="#000000">(</FONT>n-1<FONT COLOR="#000000">)</FONT>
+       <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mul_n_r1_r</FONT> <FONT COLOR="#000000">|</FONT> r<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> n imul2 r1
+    <FONT COLOR="#000000">in</FONT>
+       <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">FACTind <FONT COLOR="#000000">(</FONT>pf_fac_n1_r1<FONT COLOR="#000000">,</FONT> pf_mul_n_r1_r<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">|</FONT> r<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">FACTbas <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">|</FONT> 1<FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+
+When applied to a natural number <i>n</i>, <i>fact1</i> is guaranteed to
+return a pair <i>(pf, r)</i>, where <i>pf</i> is a proof stating that the
+factorial of <i>n</i> is <i>r</i>.  A crucial property of ATS is the
+irrelevance of proofs to program evaluation: The dynamic semantics of a
+program cannot be altered by erasing the proofs in it.  So proofs are all
+erased after compilation and thus are not constructed at run-time.
+<P>
+
+This example clearly gives some impression of code duplication as the
+specification (<i>FACT</i>) and the implementation (<i>fact1</i>) are of
+great similarity to each other. We now present another example, where the
+specification and the implementation are far different from each other.
+<P>
+
+The following code gives another implementation of the factorial function,
+where only tail-recursion is involved:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// tail-recursive
+</FONT><FONT COLOR="#000000">fn</FONT> fact <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">,</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT> <FONT COLOR="#000000">=</FONT>
+      <FONT COLOR="#000000">if</FONT> n <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> loop <FONT COLOR="#000000">(</FONT>n-1<FONT COLOR="#000000">,</FONT> n nmul res<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> res
+  <FONT COLOR="#000000">in</FONT>
+    loop <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> 1<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+Base on this tail-recursive implementation, we implement as follows a
+function <i>fact2</i> that is verified to compute factorials.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// Some lemmas on multiplication are stated (without proofs)
+</FONT><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULlem00</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>x<FONT COLOR="#000000">,</FONT>y<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>prf<FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">[</FONT>xy<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">]</FONT> MUL <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">,</FONT> xy<FONT COLOR="#000000">)</FONT></FONT>
+
+<FONT COLOR="#787878">// 1 * x = x
+</FONT><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULlem10</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>x<FONT COLOR="#000000">,</FONT>y<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">}</FONT> MUL <FONT COLOR="#000000">(</FONT>1<FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>prf<FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">[</FONT>x==y<FONT COLOR="#000000">]</FONT> void</FONT>
+<FONT COLOR="#787878">// x * 1 = x
+</FONT><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULlem11</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>x<FONT COLOR="#000000">,</FONT>y<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">}</FONT> MUL <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> 1<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>prf<FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">[</FONT>x==y<FONT COLOR="#000000">]</FONT> void</FONT>
+
+<FONT COLOR="#787878">// multiplication is associative: (xy)z = x(yz)
+</FONT><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULlem20</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>x<FONT COLOR="#000000">,</FONT>y<FONT COLOR="#000000">,</FONT>z<FONT COLOR="#000000">,</FONT>xy<FONT COLOR="#000000">,</FONT>yz<FONT COLOR="#000000">,</FONT>xyz<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">}</FONT>
+  <FONT COLOR="#000000">(</FONT>MUL <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">,</FONT> xy<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> MUL <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> z<FONT COLOR="#000000">,</FONT> yz<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> MUL <FONT COLOR="#000000">(</FONT>xy<FONT COLOR="#000000">,</FONT> z<FONT COLOR="#000000">,</FONT> xyz<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>prf<FONT COLOR="#000000">&gt;</FONT> MUL <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> yz<FONT COLOR="#000000">,</FONT> xyz<FONT COLOR="#000000">)</FONT></FONT>
+
+<FONT COLOR="#787878">// [fact2] implements the factorial function in a tail-recursive style
+</FONT><FONT COLOR="#000000">fn</FONT> fact2 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">[</FONT>r0<FONT COLOR="#000000">:</FONT> int<FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">(</FONT>FACT <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> r0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> int r0<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#787878">// [loop] is tail-recusive
+</FONT>    <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">;</FONT> x<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> n <FONT COLOR="#000000">&gt;.</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int x</FONT><FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">[</FONT>r<FONT COLOR="#000000">,</FONT>r0<FONT COLOR="#000000">:</FONT>int<FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">(</FONT>FACT <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> MUL <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">,</FONT> r0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> int r0<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+      <FONT COLOR="#000000">if</FONT> n <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mul_x_n_xn</FONT> <FONT COLOR="#000000">|</FONT> xn<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> x imul2 n
+        <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fac_n1_r1</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_mul_xn_r1_r0</FONT> <FONT COLOR="#000000">|</FONT> res<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT>n-1<FONT COLOR="#000000">,</FONT> xn<FONT COLOR="#000000">)</FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf_mul_n_r1_nr1 <FONT COLOR="#000000">=</FONT> MULlem00 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf_mul_x_nr1_r0 <FONT COLOR="#000000">=</FONT> MULlem20 <FONT COLOR="#000000">(</FONT>pf_mul_x_n_xn<FONT COLOR="#000000">,</FONT> pf_mul_n_r1_nr1<FONT COLOR="#000000">,</FONT> pf_mul_xn_r1_r0<FONT COLOR="#000000">)</FONT></FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf_fac_n_nr1 <FONT COLOR="#000000">=</FONT> FACTind <FONT COLOR="#000000">(</FONT>pf_fac_n1_r1<FONT COLOR="#000000">,</FONT> pf_mul_n_r1_nr1<FONT COLOR="#000000">)</FONT></FONT>
+      <FONT COLOR="#000000">in</FONT>
+        <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fac_n_nr1</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_mul_x_nr1_r0</FONT> <FONT COLOR="#000000">|</FONT> res<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf_mul_x_1_y <FONT COLOR="#000000">=</FONT> MULlem00 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#787878">// x * 1 = y
+</FONT>        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> MULlem11 <FONT COLOR="#000000">(</FONT>pf_mul_x_1_y<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#787878">// x = y
+</FONT>      <FONT COLOR="#000000">in</FONT>
+        <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">FACTbas <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_mul_x_1_y</FONT> <FONT COLOR="#000000">|</FONT> x<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT>
+
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fac</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_mul</FONT> <FONT COLOR="#000000">|</FONT> res<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">,</FONT> 1<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> MULlem10 <FONT COLOR="#000000">(</FONT>pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fac</FONT> <FONT COLOR="#000000">|</FONT> res<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+In practice, programming with theorem proving is commonly employed to
+capture program invariants that would otherwise not be possible in ATS.
+For instance, aided by programming with theorem proving, we can program a
+complex data structure like doubly-linked list or doubly-linked tree while
+having no fear of misusing pointers. This is considered a great strength of
+ATS.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="programming-with-theorem-proving.dats">here</a>.
+
+<!-- end of [programming-with-theorem-proving.html] -->

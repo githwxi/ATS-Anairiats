@@ -1,0 +1,100 @@
+<!-- beg of [val-and-var.html] -->
+
+<H2><A id="val-and-var" name="val-and-var">Val(ue) and Var(iable)
+Declarations</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The keywords for introducing value identifiers
+and variable identifiers are <u>val</u> and
+<u>var</u>, respectiveily.  The essential difference between a value
+identifier and a variable identifier is that the value referred to by the
+former cannot be changed during the course of evaluation while the value
+referred to by the latter can. This difference is clearly reflected in the
+following two styles of implementation of the factorial function:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000"><FONT COLOR="#787878">// functional style
+</FONT>fn</FONT> fact_val <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> 1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">where</FONT> <FONT COLOR="#000000">{</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">,</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">if</FONT> x <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> loop <FONT COLOR="#000000">(</FONT>x-1<FONT COLOR="#000000">,</FONT> x * res<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> res
+  <FONT COLOR="#787878">// end of [loop]
+</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// end of [fact_val]
+</FONT>
+<FONT COLOR="#787878">// imperative style
+</FONT><FONT COLOR="#000000">fn</FONT> fact_var <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">var</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> x<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">var</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> 1
+  <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">while</FONT> <FONT COLOR="#000000">(</FONT>x <FONT COLOR="#000000">&gt;</FONT> 0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">(</FONT>res := x * res<FONT COLOR="#000000">;</FONT> x := x - 1<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  res  
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [fact_var]
+</FONT></FONT></PRE>
+
+In a functional language such as ML, where variable identifiers are not
+available, an imperative style of implementation of the factorial function
+may have to be written as follows:
+
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#787878">// imperative style based on persistent references, which looks
+</FONT><FONT COLOR="#787878">// awkward and runs inefficiently (in terms of both time and memory)
+</FONT><FONT COLOR="#000000">fn</FONT> fact_ref <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">val</FONT> x <FONT COLOR="#000000">=</FONT> ref&lt;<FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">val</FONT> res <FONT COLOR="#000000">=</FONT> ref&lt;<FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>1<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">while</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>x <FONT COLOR="#000000">&gt;</FONT> 0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>res := <FONT COLOR="#000000">!</FONT>x * <FONT COLOR="#000000">!</FONT>res<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">!</FONT>x := <FONT COLOR="#000000">!</FONT>x - 1<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">!</FONT>res
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [fact_ref]
+</FONT></FONT></PRE>
+
+An implementation as such is often written by a beginner in functional
+programming who has previously programmed in imperative languages (e.g., C,
+C++, Java). The function <i>fact_ref</i> is clearly inefficient as each
+call to it needs to allocate two references on heap (corresponding to
+<i>x</i> and <i>res</i>), which can only be reclaimed by GC later.
+
+
+<H4>No Local Variable Escapes</H4>
+
+In a language like C that supports local variables, many problems are
+caused by a local variable escaping its legal scope. This, however, is not
+an issue in ATS as the type system of ATS guarantees that local
+variables cannot be accessed out of its legal scope (while allowing
+the addresses of local variables to be passed as function parameters).
+<P>
+
+We give another implementation of the factorial function as follows that
+involves passing the addresses of local variables as function parameters:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>x<FONT COLOR="#000000">,</FONT>res<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>int @ x</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>int @ res</FONT></FONT> <FONT COLOR="#000000">|</FONT> p_x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr x</FONT><FONT COLOR="#000000">,</FONT> p_res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr res</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">if</FONT> <FONT COLOR="#000000">!</FONT>p_x <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">begin</FONT>
+    <FONT COLOR="#000000">!</FONT>p_res := <FONT COLOR="#000000">!</FONT>p_x * <FONT COLOR="#000000">!</FONT>p_res<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">!</FONT>p_x := <FONT COLOR="#000000">!</FONT>p_x - 1<FONT COLOR="#000000">;</FONT> loop <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_x</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_res</FONT> <FONT COLOR="#000000">|</FONT> p_x<FONT COLOR="#000000">,</FONT> p_res<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [loop]
+</FONT><FONT COLOR="#787878">// end of [loop]
+</FONT>
+<FONT COLOR="#000000">fn</FONT> fact_var2 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">var</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> x<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">var</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> 1
+<FONT COLOR="#000000">in</FONT>
+  loop <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">view@ x</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">view@ res</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">&amp;</FONT>x<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">&amp;</FONT>res<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> res
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [fact_var2]
+</FONT></FONT></PRE>
+
+Each variable identifier is assoicated with two pieces of properties: its
+address <i>L</i>, which is referred to by the same identifier, and a proof
+of <i>VT@L</i>, where <i>VT</i> is the viewtype of the content stored at
+<i>L</i>. For instance, in the implementation of <i>fact_var2</i>, we use
+<i>view@ x</i> for the proof associated with the variable <i>x</i> and
+<i>&x</i> for the address of <i>x</i>.
+<P>
+
+For each variable that is declared of viewtype <i>VT</i>, it is required
+that a proof of <i>VT?@L</i> is available at the end of the legal scope of
+the variable, where <i>L</i> is the address of the variable. This
+requirement guarantees that a local variable, while its address can be
+taken out of its scope, can never be accessed out of its scope due to the
+unavailability of a proof needed for accessing the address.
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="val-and-var.dats">here</a>.
+
+<!-- end of [val-and-var.html] -->

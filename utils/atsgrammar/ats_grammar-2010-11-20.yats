@@ -1,0 +1,3561 @@
+/************************************************************************/
+/*                                                                      */
+/*                         Applied Type System                          */
+/*                                                                      */
+/*                              Hongwei Xi                              */
+/*                                                                      */
+/************************************************************************/
+
+/*
+** ATS/Anairiats - Unleashing the Potential of Types!
+**
+** Copyright (C) 2002-2010 Hongwei Xi.
+**
+** All rights reserved
+**
+** ATS is free software;  you can  redistribute it and/or modify it under
+** the terms of  the GNU GENERAL PUBLIC LICENSE (GPL) as published by the
+** Free Software Foundation; either version 3, or (at  your  option)  any
+** later version.
+** 
+** ATS is distributed in the hope that it will be useful, but WITHOUT ANY
+** WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
+** FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
+** for more details.
+** 
+** You  should  have  received  a  copy of the GNU General Public License
+** along  with  ATS;  see the  file COPYING.  If not, please write to the
+** Free Software Foundation,  51 Franklin Street, Fifth Floor, Boston, MA
+** 02110-1301, USA.
+*/
+
+/* ****** ****** */
+//
+// Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+// Start time: July 2007
+//
+/* ****** ****** */
+//
+// HX-2010-11-20:
+// This file is retired as of today. To generate [ats_grammar.yats], please
+// use the following command:
+//
+// $ATSHOME/utils/atsgrammar --formats=yats
+//
+/* ****** ****** */
+
+/*
+** Grammar for ATS/Anairiats
+*/
+
+/* ****** ****** */
+
+%{
+
+#include <stdio.h> // for [fprintf]
+#include "ats_memory.h" // HX: loading [ats_types.h] as well
+#define malloc ats_malloc_ngc
+#define realloc ats_realloc_ngc
+
+/* ****** ****** */
+
+typedef ats_ptr_type c0har_t ;
+typedef ats_ptr_type e0xtcode_t ;
+typedef ats_ptr_type f0loat_t ;
+typedef ats_ptr_type f0loatsp_t ;
+typedef ats_ptr_type i0nt_t ;
+typedef ats_ptr_type i0ntsp_t ;
+typedef ats_ptr_type s0tring_t ;
+typedef ats_ptr_type t0kn_t ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type abskind_t ;
+extern abskind_t abskind_prop (void) ;
+extern abskind_t abskind_type (void) ;
+extern abskind_t abskind_t0ype (void) ;
+extern abskind_t abskind_view (void) ;
+extern abskind_t abskind_viewtype (void) ;
+extern abskind_t abskind_viewt0ype (void) ;
+
+typedef ats_ptr_type dcstkind_t ;
+extern dcstkind_t dcstkind_fun (void) ;
+extern dcstkind_t dcstkind_val (void) ;
+extern dcstkind_t dcstkind_castfn (void) ;
+extern dcstkind_t dcstkind_praxi (void) ;
+extern dcstkind_t dcstkind_prfun (void) ;
+extern dcstkind_t dcstkind_prval (void) ;
+
+typedef ats_ptr_type datakind_t ;
+extern datakind_t datakind_prop (void) ;
+extern datakind_t datakind_type (void) ;
+extern datakind_t datakind_view (void) ;
+extern datakind_t datakind_viewtype (void) ;
+
+typedef ats_ptr_type stadefkind_t ;
+extern stadefkind_t stadefkind_generic (void) ;
+extern stadefkind_t stadefkind_prop (t0kn_t) ;
+extern stadefkind_t stadefkind_type (t0kn_t) ;
+extern stadefkind_t stadefkind_view (t0kn_t) ;
+extern stadefkind_t stadefkind_viewtype (t0kn_t) ;
+
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+//
+// typedef ats_ptr_type clskind_t ;
+// extern clskind_t clskind_mod (t0kn_t) ;
+// extern clskind_t clskind_obj (t0kn_t) ;
+//
+// typedef ats_ptr_type objkind_t ;
+// extern objkind_t objkind_obj_t (t0kn_t) ;
+// extern objkind_t objkind_obj_vt (t0kn_t) ;
+// extern objkind_t objkind_objmod (t0kn_t) ;
+*/
+
+typedef ats_ptr_type valkind_t ;
+extern valkind_t valkind_val (void) ;
+extern valkind_t valkind_valminus (void) ;
+extern valkind_t valkind_valplus (void) ;
+extern valkind_t valkind_prval (void) ;
+
+typedef ats_ptr_type funkind_t ;
+extern funkind_t funkind_fn (void) ;
+extern funkind_t funkind_fnstar (void) ;
+extern funkind_t funkind_fun (void) ;
+extern funkind_t funkind_castfn (void) ;
+extern funkind_t funkind_prfn (void) ;
+extern funkind_t funkind_prfun (void) ;
+
+typedef ats_ptr_type lamkind_t ;
+extern lamkind_t lamkind_lam (t0kn_t) ;
+extern lamkind_t lamkind_atlam (t0kn_t) ;
+extern lamkind_t lamkind_llam (t0kn_t) ;
+extern lamkind_t lamkind_atllam (t0kn_t) ;
+typedef lamkind_t fixkind_t ;
+extern fixkind_t fixkind_fix (t0kn_t) ;
+extern fixkind_t fixkind_atfix (t0kn_t) ;
+
+typedef ats_ptr_type srpifkindtok_t ;
+extern srpifkindtok_t srpifkindtok_if (t0kn_t) ;
+extern srpifkindtok_t srpifkindtok_ifdef (t0kn_t) ;
+extern srpifkindtok_t srpifkindtok_ifndef (t0kn_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type i0de_t ;
+typedef ats_ptr_type i0delst_t ;
+typedef ats_ptr_type i0delstlst_t ;
+typedef ats_ptr_type i0dext_t ;
+
+extern i0de_t i0de_make_ampersand (t0kn_t) ;
+extern i0de_t i0de_make_backslash (t0kn_t) ;
+extern i0de_t i0de_make_bang (t0kn_t) ;
+extern i0de_t i0de_make_eq (t0kn_t) ;
+extern i0de_t i0de_make_gt (t0kn_t) ;
+extern i0de_t i0de_make_gtlt (t0kn_t) ;
+extern i0de_t i0de_make_lt (t0kn_t) ;
+extern i0de_t i0de_make_minusgt (t0kn_t) ;
+extern i0de_t i0de_make_minuslt (t0kn_t) ;
+extern i0de_t i0de_make_minusltgt (t0kn_t) ;
+extern i0de_t i0de_make_module (t0kn_t) ;
+extern i0de_t i0de_make_r0ead (t0kn_t) ;
+extern i0de_t i0de_make_tilde (t0kn_t) ;
+extern i0de_t i0de_make_t0ype (t0kn_t) ;
+extern i0de_t i0de_make_viewt0ype (t0kn_t) ;
+
+extern i0de_t i0de_make_DO (t0kn_t) ;
+extern i0de_t i0de_make_IN (t0kn_t) ;
+extern i0de_t i0de_make_WHILE (t0kn_t) ;
+
+extern i0delst_t i0delst_nil (void) ;
+extern i0delst_t i0delst_sing (i0de_t) ;
+extern i0delst_t i0delst_cons (i0de_t, i0delst_t) ;
+
+extern i0delstlst_t i0delstlst_nil (void) ;
+extern i0delstlst_t i0delstlst_cons (i0delst_t, i0delstlst_t) ;
+
+typedef ats_ptr_type l0ab_t ;
+extern l0ab_t l0ab_ide (i0de_t) ;
+extern l0ab_t l0ab_int (i0nt_t) ;
+
+extern i0de_t stai0de_make (i0de_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type p0rec_t ;
+extern p0rec_t p0rec_emp (void) ;
+extern p0rec_t p0rec_ide (i0de_t) ;
+extern p0rec_t p0rec_int (i0nt_t) ;
+extern p0rec_t p0rec_opr (i0de_t, i0de_t/*opr*/, i0nt_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type e0xp_t ;
+typedef ats_ptr_type e0xplst_t ;
+typedef ats_ptr_type e0xpopt_t ;
+
+extern e0xp_t e0xp_app (e0xp_t, e0xp_t) ;
+extern e0xp_t e0xp_char (c0har_t) ;
+extern e0xp_t e0xp_eval (t0kn_t, e0xp_t, t0kn_t) ;
+extern e0xp_t e0xp_float (f0loat_t) ;
+extern e0xp_t e0xp_ide (i0de_t) ;
+extern e0xp_t e0xp_int (i0nt_t) ;
+extern e0xp_t e0xp_list (t0kn_t, e0xplst_t, t0kn_t) ;
+extern e0xp_t e0xp_string (s0tring_t) ;
+
+extern e0xplst_t e0xplst_nil (void) ;
+extern e0xplst_t e0xplst_cons (e0xp_t, e0xplst_t) ;
+
+extern e0xpopt_t e0xpopt_none (void) ;
+extern e0xpopt_t e0xpopt_some (e0xp_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type e0fftag_t ;
+extern e0fftag_t e0fftag_cst (int, i0de_t) ;
+extern e0fftag_t e0fftag_var (i0de_t) ;
+extern e0fftag_t e0fftag_var_fun (t0kn_t) ;
+extern e0fftag_t e0fftag_int (i0nt_t) ;
+
+typedef ats_ptr_type e0fftaglst_t ;
+extern e0fftaglst_t e0fftaglst_nil (void) ;
+extern e0fftaglst_t e0fftaglst_cons (e0fftag_t, e0fftaglst_t) ;
+
+typedef ats_ptr_type e0fftaglstopt_t ;
+extern e0fftaglstopt_t e0fftaglstopt_none (void) ;
+extern e0fftaglstopt_t e0fftaglstopt_some (e0fftaglst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0rtq_t ;
+
+extern s0rtq_t s0rtq_str (s0tring_t) ;
+extern s0rtq_t s0rtq_sym (i0de_t) ;
+
+typedef ats_ptr_type s0rt_t ;
+typedef ats_ptr_type s0rtlst_t ;
+typedef ats_ptr_type s0rtopt_t ;
+
+extern s0rt_t s0rt_prop (t0kn_t) ;
+extern s0rt_t s0rt_type (t0kn_t) ;
+extern s0rt_t s0rt_t0ype (t0kn_t) ;
+extern s0rt_t s0rt_view (t0kn_t) ;
+extern s0rt_t s0rt_viewtype (t0kn_t) ;
+extern s0rt_t s0rt_viewt0ype (t0kn_t) ;
+
+extern s0rt_t s0rt_app (s0rt_t, s0rt_t) ;
+extern s0rt_t s0rt_ide (i0de_t) ;
+extern s0rt_t s0rt_qid (s0rtq_t, i0de_t) ;
+extern s0rt_t s0rt_list (t0kn_t, s0rtlst_t, t0kn_t) ;
+extern s0rt_t s0rt_tup (t0kn_t, s0rtlst_t, t0kn_t) ;
+
+extern s0rtlst_t s0rtlst_nil (void) ;
+extern s0rtlst_t s0rtlst_cons (s0rt_t, s0rtlst_t) ;
+
+extern s0rtopt_t s0rtopt_none (void) ;
+extern s0rtopt_t s0rtopt_some (s0rt_t) ;
+
+typedef ats_ptr_type s0rtpol_t ;
+extern s0rtpol_t s0rtpol_make (s0rt_t, int) ;
+
+/* ****** ****** */
+
+/*
+** datasort declaration
+*/
+
+typedef ats_ptr_type d0atsrtcon_t ;
+typedef ats_ptr_type d0atsrtconlst_t ;
+extern d0atsrtcon_t d0atsrtcon_make_none (i0de_t) ;
+extern d0atsrtcon_t d0atsrtcon_make_some (i0de_t, s0rt_t) ;
+extern d0atsrtconlst_t d0atsrtconlst_nil (void) ;
+extern d0atsrtconlst_t d0atsrtconlst_cons (d0atsrtcon_t, d0atsrtconlst_t) ;
+
+typedef ats_ptr_type d0atsrtdec_t ;
+typedef ats_ptr_type d0atsrtdeclst_t ;
+extern d0atsrtdec_t d0atsrtdec_make (i0de_t, d0atsrtconlst_t) ;
+extern d0atsrtdeclst_t d0atsrtdeclst_nil (void) ;
+extern d0atsrtdeclst_t d0atsrtdeclst_cons (d0atsrtdec_t, d0atsrtdeclst_t) ;
+
+/* ****** ****** */
+
+/*
+** static qualifiers
+*/
+typedef ats_ptr_type s0taq_t ;
+extern s0taq_t s0taq_symdot (i0de_t) ;
+extern s0taq_t s0taq_symcolon (i0de_t) ;
+extern s0taq_t s0taq_fildot (s0tring_t) ;
+
+/*
+** dynamic qualifiers
+*/
+typedef ats_ptr_type d0ynq_t ;
+extern d0ynq_t d0ynq_symcolon(i0de_t) ;
+extern d0ynq_t d0ynq_symdot(i0de_t) ;
+extern d0ynq_t d0ynq_symdot_symcolon(i0de_t, i0de_t) ;
+extern d0ynq_t d0ynq_fildot(s0tring_t) ;
+extern d0ynq_t d0ynq_fildot_symcolon(s0tring_t, i0de_t) ;
+
+/* ****** ****** */
+
+/*
+** (qualified) static identifiers
+*/
+typedef ats_ptr_type sqi0de_t ;
+extern sqi0de_t sqi0de_make_none (i0de_t) ;
+extern sqi0de_t sqi0de_make_some (s0taq_t, i0de_t) ;
+
+/*
+** (qualified) dynamic identifiers
+*/
+typedef ats_ptr_type dqi0de_t ;
+extern dqi0de_t dqi0de_make_none (i0de_t) ;
+extern dqi0de_t dqi0de_make_some (d0ynq_t, i0de_t) ;
+
+/*
+** (qualified) array identifiers
+*/
+typedef ats_ptr_type arrqi0de_t ;
+extern arrqi0de_t arrqi0de_make_none (i0de_t) ;
+extern arrqi0de_t arrqi0de_make_some (d0ynq_t, i0de_t) ;
+
+/*
+** (qualified) template identifiers
+*/
+typedef ats_ptr_type tmpqi0de_t ;
+extern tmpqi0de_t tmpqi0de_make_none (i0de_t) ;
+extern tmpqi0de_t tmpqi0de_make_some (d0ynq_t, i0de_t) ;
+
+/* ****** ****** */
+
+/*
+** static arguments
+*/
+typedef ats_ptr_type s0arg_t ;
+typedef ats_ptr_type s0arglst_t ;
+typedef ats_ptr_type s0arglstlst_t ;
+
+extern s0arg_t s0arg_make (i0de_t, s0rtopt_t) ;
+extern s0arg_t s0arg_make_none (i0de_t) ;
+extern s0arglst_t s0arglst_nil (void) ;
+extern s0arglst_t s0arglst_cons (s0arg_t, s0arglst_t) ;
+extern s0arglstlst_t s0arglstlst_nil (void) ;
+extern s0arglstlst_t s0arglstlst_cons (s0arglst_t, s0arglstlst_t) ;
+extern s0arglstlst_t s0arglstlst_cons_ide (i0de_t, s0arglstlst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0exp_t ;
+typedef ats_ptr_type s0explst_t ;
+typedef ats_ptr_type s0expopt_t ;
+typedef ats_ptr_type s0explstlst_t ;
+typedef ats_ptr_type s0explstopt_t ;
+typedef ats_ptr_type labs0explst_t ;
+typedef ats_ptr_type s0arrind_t ;
+typedef ats_ptr_type t1mps0explstlst_t ; // with location information
+
+typedef ats_ptr_type s0rtext_t ;
+typedef ats_ptr_type s0qua_t ;
+typedef ats_ptr_type s0qualst_t ;
+typedef ats_ptr_type s0qualstlst_t ;
+typedef ats_ptr_type s0qualstopt_t ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type impqi0de_t ;
+extern impqi0de_t impqi0de_make_none (dqi0de_t) ;
+extern impqi0de_t impqi0de_make_some
+  (tmpqi0de_t, s0explst_t, t1mps0explstlst_t, t0kn_t) ;
+  
+/* ****** ****** */
+
+typedef ats_ptr_type sp0at_t ;
+extern sp0at_t sp0at_con (sqi0de_t, s0arglst_t, t0kn_t) ;
+
+/* ****** ****** */
+
+extern s0exp_t s0exp_ann (s0exp_t, s0rt_t) ;
+extern s0exp_t s0exp_app (s0exp_t, s0exp_t) ;
+extern s0exp_t s0exp_char (c0har_t) ;
+extern s0exp_t s0exp_exi (t0kn_t, int/*funres*/, s0qualst_t, t0kn_t) ;
+extern s0exp_t s0exp_extern (t0kn_t, s0tring_t) ;
+extern s0exp_t s0exp_ide (i0de_t) ;
+extern s0exp_t s0exp_imp (t0kn_t, e0fftaglst_t, t0kn_t) ;
+extern s0exp_t s0exp_imp_emp (t0kn_t) ;
+extern s0exp_t s0exp_int (i0nt_t) ;
+extern s0exp_t s0exp_intsp_err (i0nt_t) ; /* error handling */
+extern s0exp_t s0exp_lams (t0kn_t, s0arglstlst_t, s0rtopt_t, s0exp_t) ;
+extern s0exp_t s0exp_list (t0kn_t, s0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_list2 (t0kn_t, s0explst_t, s0explst_t, t0kn_t) ;
+/*
+// HX-2010-12-04: removal
+extern s0exp_t s0exp_named (i0de_t, s0exp_t) ;
+*/
+extern s0exp_t s0exp_opide (t0kn_t, i0de_t) ;
+extern s0exp_t s0exp_qid (s0taq_t, i0de_t) ;
+extern s0exp_t s0exp_struct (t0kn_t, labs0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_tyarr (t0kn_t, s0exp_t, s0arrind_t) ;
+extern s0exp_t s0exp_tyrec (int, t0kn_t, labs0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_tyrec_ext (t0kn_t, s0tring_t, labs0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_tytup (int, t0kn_t, s0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_tytup2 (int, t0kn_t, s0explst_t, s0explst_t, t0kn_t) ;
+extern s0exp_t s0exp_uni (t0kn_t, s0qualst_t, t0kn_t) ;
+extern s0exp_t s0exp_union (t0kn_t, s0exp_t, labs0explst_t, t0kn_t) ;
+
+extern s0explst_t s0explst_nil (void) ;
+extern s0explst_t s0explst_cons (s0exp_t, s0explst_t) ;
+
+extern s0expopt_t s0expopt_none (void) ;
+extern s0expopt_t s0expopt_some (s0exp_t) ;
+
+extern s0explstlst_t s0explstlst_nil (void) ;
+extern s0explstlst_t s0explstlst_cons (s0explst_t, s0explstlst_t) ;
+
+extern s0explstopt_t s0explstopt_none (void) ;
+extern s0explstopt_t s0explstopt_some (s0explst_t) ;
+
+extern labs0explst_t labs0explst_nil (void) ;
+extern labs0explst_t labs0explst_cons (l0ab_t, s0exp_t, labs0explst_t) ;
+
+extern s0arrind_t s0arrind_make_sing (s0explst_t, t0kn_t) ;
+extern s0arrind_t s0arrind_make_cons (s0explst_t, s0arrind_t) ;
+
+extern t1mps0explstlst_t gtlt_t1mps0expseqseq_nil (void) ;
+extern t1mps0explstlst_t
+gtlt_t1mps0expseqseq_cons_tok (t0kn_t, s0explst_t, t1mps0explstlst_t) ;
+// end of [extern]
+
+/* ****** ****** */
+
+extern s0rtext_t s0rtext_srt (s0rt_t) ;
+extern s0rtext_t s0rtext_sub
+  (t0kn_t, i0de_t, s0rtext_t, s0exp_t, s0explst_t, t0kn_t) ;
+
+extern s0qua_t s0qua_prop(s0exp_t) ;
+extern s0qua_t s0qua_vars(i0de_t, i0delst_t, s0rtext_t) ;
+
+extern s0qualst_t s0qualst_nil (void) ;
+extern s0qualst_t s0qualst_cons (s0qua_t, s0qualst_t) ;
+
+extern s0qualstlst_t s0qualstlst_nil (void) ;
+extern s0qualstlst_t s0qualstlst_cons (s0qualst_t, s0qualstlst_t) ;
+
+extern s0qualstopt_t s0qualstopt_none (void) ;
+extern s0qualstopt_t s0qualstopt_some (s0qualst_t) ;
+
+/* ****** ****** */
+
+/*
+** data-kind arguments
+*/
+typedef ats_ptr_type d0atarg_t ;
+extern d0atarg_t d0atarg_srt (s0rtpol_t) ;
+extern d0atarg_t d0atarg_id_srt (i0de_t, s0rtpol_t) ;
+
+typedef ats_ptr_type d0atarglst_t ;
+extern d0atarglst_t d0atarglst_nil (void) ;
+extern d0atarglst_t d0atarglst_cons (d0atarg_t, d0atarglst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0rtdef_t ;
+typedef ats_ptr_type s0rtdeflst_t ;
+extern s0rtdef_t s0rtdef_make (i0de_t, s0rtext_t) ;
+extern s0rtdeflst_t s0rtdeflst_nil (void) ;
+extern s0rtdeflst_t s0rtdeflst_cons (s0rtdef_t, s0rtdeflst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0tacon_t ;
+typedef ats_ptr_type s0taconlst_t ;
+extern s0tacon_t s0tacon_make_none_none (i0de_t) ;
+extern s0tacon_t s0tacon_make_some_none (i0de_t, d0atarglst_t, t0kn_t) ;
+extern s0tacon_t s0tacon_make_none_some (i0de_t, s0exp_t) ;
+extern s0tacon_t s0tacon_make_some_some (i0de_t, d0atarglst_t, s0exp_t) ;
+extern s0taconlst_t s0taconlst_nil (void) ;
+extern s0taconlst_t s0taconlst_cons (s0tacon_t, s0taconlst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0tacst_t ;
+typedef ats_ptr_type s0tacstlst_t ;
+extern s0tacst_t s0tacst_make_none (i0de_t, s0rt_t) ;
+extern s0tacst_t s0tacst_make_some (i0de_t, d0atarglst_t, s0rt_t) ;
+extern s0tacstlst_t s0tacstlst_nil (void) ;
+extern s0tacstlst_t s0tacstlst_cons (s0tacst_t, s0tacstlst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0tavar_t ;
+typedef ats_ptr_type s0tavarlst_t ;
+extern s0tavar_t s0tavar_make (i0de_t, s0rt_t) ;
+extern s0tavarlst_t s0tavarlst_nil (void) ;
+extern s0tavarlst_t s0tavarlst_cons (s0tavar_t, s0tavarlst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type s0expdef_t ;
+typedef ats_ptr_type s0expdeflst_t ;
+extern s0expdef_t s0expdef_make (i0de_t, s0arglstlst_t, s0rtopt_t, s0exp_t) ;
+extern s0expdeflst_t s0expdeflst_nil (void) ;
+extern s0expdeflst_t s0expdeflst_cons (s0expdef_t, s0expdeflst_t) ;
+
+typedef ats_ptr_type s0aspdec_t ;
+extern s0aspdec_t s0aspdec_make (i0de_t, s0arglstlst_t, s0rtopt_t, s0exp_t) ;
+
+typedef ats_ptr_type d0atcon_t ;
+typedef ats_ptr_type d0atconlst_t ;
+extern d0atcon_t d0atcon_make (s0qualstlst_t, i0de_t, s0explstopt_t, s0expopt_t) ;
+extern d0atconlst_t d0atconlst_nil (void) ;
+extern d0atconlst_t d0atconlst_cons (d0atcon_t, d0atconlst_t) ;
+
+typedef ats_ptr_type d0atdec_t ;
+typedef ats_ptr_type d0atdeclst_t ;
+extern d0atdec_t d0atdec_make_none (i0de_t, d0atconlst_t) ;
+extern d0atdec_t d0atdec_make_some (i0de_t, d0atarglst_t, t0kn_t, d0atconlst_t) ;
+extern d0atdeclst_t d0atdeclst_nil (void) ;
+extern d0atdeclst_t d0atdeclst_cons (d0atdec_t, d0atdeclst_t) ;
+
+typedef ats_ptr_type e0xndec_t ;
+typedef ats_ptr_type e0xndeclst_t ;
+extern e0xndec_t e0xndec_make (s0qualstlst_t, i0de_t, s0expopt_t) ;
+extern e0xndeclst_t e0xndeclst_nil (void) ;
+extern e0xndeclst_t e0xndeclst_cons (e0xndec_t, e0xndeclst_t) ;
+
+/* ****** ****** */
+
+//
+// HX-2010-05-12:
+// The plan to have direct support for OOP in ATS is _permanently_ scratched!!!
+// Relieve? Disappointment?
+//
+// typedef ats_ptr_type m0thdec_t ;
+// extern m0thdec_t m0thdec_make_mtd // see below
+// extern m0thdec_t m0thdec_make_val // see below
+// extern m0thdec_t m0thdec_make_var // see below
+// extern m0thdec_t m0thdec_make_imp // see below
+
+// typedef ats_ptr_type m0thdeclst_t ;
+// extern m0thdeclst_t m0thdeclst_nil(void) ;
+// extern m0thdeclst_t m0thdeclst_cons(m0thdec_t, m0thdeclst_t) ;
+
+// typedef ats_ptr_type c0lassdec_t ;
+// extern c0lassdec_t c0lassdec_make
+//   (i0de_t, s0arglstlst_t, s0explst_t, m0thdeclst_t, t0kn_t) ;
+// end of [c0lassdec_t]
+//
+
+/* ****** ****** */
+
+typedef ats_ptr_type p0arg_t ;
+typedef ats_ptr_type p0arglst_t ;
+extern p0arg_t p0arg_make_none (i0de_t) ;
+extern p0arg_t p0arg_make_some (i0de_t, s0exp_t) ;
+extern p0arglst_t p0arglst_nil (void) ;
+extern p0arglst_t p0arglst_cons (p0arg_t, p0arglst_t) ;
+
+typedef ats_ptr_type d0arg_t ;
+typedef ats_ptr_type d0arglst_t ;
+extern d0arg_t d0arg_var (i0de_t) ;
+extern d0arg_t d0arg_dyn (t0kn_t, p0arglst_t, t0kn_t) ;
+extern d0arg_t d0arg_dyn2 (t0kn_t, p0arglst_t, p0arglst_t, t0kn_t) ;
+extern d0arg_t d0arg_sta (t0kn_t, s0qualst_t, t0kn_t) ;
+extern d0arglst_t d0arglst_nil (void) ;
+extern d0arglst_t d0arglst_cons (d0arg_t, d0arglst_t) ;
+
+typedef ats_ptr_type m0acarg_t ;
+typedef ats_ptr_type m0acarglst_t ;
+extern m0acarg_t m0acarg_one (i0de_t) ;
+extern m0acarg_t m0acarg_lst (t0kn_t, i0delst_t, t0kn_t) ;
+extern m0acarglst_t m0acarglst_nil () ;
+extern m0acarglst_t m0acarglst_cons (m0acarg_t, m0acarglst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type extnamopt_t ;
+extern extnamopt_t extnamopt_none (void) ;
+extern extnamopt_t extnamopt_some (s0tring_t) ;
+
+typedef ats_ptr_type d0cstdec_t ;
+typedef ats_ptr_type d0cstdeclst_t ;
+extern d0cstdec_t
+d0cstdec_make (i0de_t, d0arglst_t, e0fftaglstopt_t, s0exp_t, extnamopt_t) ;
+// end of [extern]
+extern d0cstdeclst_t d0cstdeclst_nil (void) ;
+extern d0cstdeclst_t d0cstdeclst_cons (d0cstdec_t, d0cstdeclst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type p0at_t ;
+typedef ats_ptr_type p0atlst_t ;
+typedef ats_ptr_type labp0atlst_t ;
+typedef ats_ptr_type s0vararg_t ;
+
+extern p0at_t p0at_ann (p0at_t, s0exp_t) ;
+extern p0at_t p0at_apps (p0at_t, p0atlst_t) ;
+extern p0at_t p0at_as (i0de_t, p0at_t) ;
+extern p0at_t p0at_char (c0har_t) ;
+extern p0at_t p0at_exist (t0kn_t, s0arglst_t, t0kn_t) ;
+extern p0at_t p0at_float (f0loat_t); 
+extern p0at_t p0at_free (t0kn_t, p0at_t); 
+extern p0at_t p0at_ide (i0de_t) ;
+extern p0at_t p0at_int (i0nt_t) ;
+extern p0at_t p0at_list (t0kn_t, p0atlst_t, t0kn_t) ;
+extern p0at_t p0at_list2 (t0kn_t, p0atlst_t, p0atlst_t, t0kn_t) ;
+extern p0at_t p0at_lst (t0kn_t, p0atlst_t, t0kn_t) ;
+extern p0at_t p0at_qid (d0ynq_t, i0de_t) ;
+extern p0at_t p0at_opide (t0kn_t, i0de_t) ;
+extern p0at_t p0at_rec (int, t0kn_t, labp0atlst_t, t0kn_t) ;
+extern p0at_t p0at_ref (t0kn_t, i0de_t); 
+extern p0at_t p0at_refas (t0kn_t, i0de_t, p0at_t); 
+extern p0at_t p0at_svararg (t0kn_t, s0vararg_t, t0kn_t) ;
+extern p0at_t p0at_string (s0tring_t) ;
+extern p0at_t p0at_tup (int, t0kn_t, p0atlst_t, t0kn_t) ;
+extern p0at_t p0at_tup2 (int, t0kn_t, p0atlst_t, p0atlst_t, t0kn_t) ;
+
+extern p0atlst_t p0atlst_nil (void) ;
+extern p0atlst_t p0atlst_cons (p0at_t, p0atlst_t) ;
+
+extern labp0atlst_t labp0atlst_nil (void) ;
+extern labp0atlst_t labp0atlst_dot (void) ;
+extern labp0atlst_t labp0atlst_cons (l0ab_t, p0at_t, labp0atlst_t) ;
+
+extern s0vararg_t s0vararg_one (void) ;
+extern s0vararg_t s0vararg_all (void) ;
+extern s0vararg_t s0vararg_seq (s0arglst_t) ;
+
+typedef ats_ptr_type s0exparg_t ;
+extern s0exparg_t s0exparg_one (void) ;
+extern s0exparg_t s0exparg_all (void) ;
+extern s0exparg_t s0exparg_seq (s0explst_t) ;
+
+typedef ats_ptr_type f0arg_t ;
+typedef ats_ptr_type f0arglst_t ;
+extern f0arg_t f0arg_sta1 (t0kn_t, s0qualst_t, t0kn_t) ;
+extern f0arg_t f0arg_sta2 (t0kn_t, s0arglst_t, t0kn_t) ;
+extern f0arg_t f0arg_dyn (p0at_t) ;
+extern f0arg_t f0arg_met_none (t0kn_t) ;
+extern f0arg_t f0arg_met_some (t0kn_t, s0explst_t, t0kn_t) ;
+extern f0arglst_t f0arglst_nil (void) ;
+extern f0arglst_t f0arglst_cons (f0arg_t, f0arglst_t) ;
+
+typedef ats_ptr_type s0elop_t ;
+extern s0elop_t s0elop_make (int, t0kn_t) ;
+
+typedef ats_ptr_type witht0ype_t ;
+extern witht0ype_t witht0ype_none (void) ;
+extern witht0ype_t witht0ype_prop (s0exp_t) ;
+extern witht0ype_t witht0ype_type (s0exp_t) ;
+extern witht0ype_t witht0ype_view (s0exp_t) ;
+extern witht0ype_t witht0ype_viewtype (s0exp_t) ;
+
+/*
+** dynamic expressions and declarations
+*/
+
+typedef ats_ptr_type d0exp_t ;
+typedef ats_ptr_type d0explst_t ;
+typedef ats_ptr_type d0expopt_t ;
+typedef ats_ptr_type labd0explst_t ;
+typedef ats_ptr_type d0arrind_t ;
+
+typedef ats_ptr_type ifhead_t ;
+typedef ats_ptr_type casehead_t ;
+typedef ats_ptr_type loophead_t ;
+typedef ats_ptr_type tryhead_t ;
+
+typedef ats_ptr_type m0atch_t ;
+typedef ats_ptr_type m0atchlst_t ;
+typedef ats_ptr_type guap0at_t ;
+typedef ats_ptr_type c0lau_t ;
+typedef ats_ptr_type c0laulst_t ;
+typedef ats_ptr_type sc0lau_t ;
+typedef ats_ptr_type sc0laulst_t ;
+typedef ats_ptr_type i0nvarg_t ;
+typedef ats_ptr_type i0nvarglst_t ;
+typedef ats_ptr_type i0nvresstate_t ;
+typedef ats_ptr_type loopi0nv_t ;
+typedef ats_ptr_type initestpost_t ;
+
+typedef ats_ptr_type v0aldec_t ;
+typedef ats_ptr_type v0aldeclst_t ;
+typedef ats_ptr_type f0undec_t ;
+typedef ats_ptr_type f0undeclst_t ;
+
+typedef ats_ptr_type v0arwth_t ;
+typedef ats_ptr_type v0ardec_t ;
+typedef ats_ptr_type v0ardeclst_t ;
+
+typedef ats_ptr_type i0mpdec_t ;
+
+typedef ats_ptr_type d0ec_t ;
+typedef ats_ptr_type d0eclst_t ;
+typedef ats_ptr_type d0ecllst_t ;
+typedef ats_ptr_type guad0ec_t ;
+
+/* ****** ****** */
+
+/*
+** dynamic expressions
+*/
+extern d0exp_t d0exp_ann (d0exp_t, s0exp_t) ;
+//
+extern d0exp_t d0exp_apps (d0exp_t, d0explst_t) ;
+//
+extern d0exp_t d0exp_arrinit_none
+  (t0kn_t, s0exp_t, d0explst_t /*elt*/, t0kn_t) ;
+extern d0exp_t d0exp_arrinit_some
+  (t0kn_t, s0exp_t, d0exp_t /*asz*/, d0explst_t /*elt*/, t0kn_t) ;
+//
+extern d0exp_t d0exp_arrsize
+  (t0kn_t, s0exp_t, t0kn_t/*lparen*/, d0explst_t, t0kn_t/*rparen*/) ;
+//
+extern d0exp_t d0exp_arrsub (arrqi0de_t, d0arrind_t) ;
+//
+extern d0exp_t d0exp_char (t0kn_t) ;
+//
+extern d0exp_t d0exp_caseof (casehead_t, d0exp_t, t0kn_t, c0laulst_t) ;
+//
+extern d0exp_t d0exp_crypt (int, t0kn_t) ;
+//
+extern d0exp_t d0exp_decseq (t0kn_t, d0eclst_t, t0kn_t) ;
+//
+extern d0exp_t d0exp_delay (int/*lin*/, t0kn_t) ;
+//
+extern d0exp_t d0exp_dynload (t0kn_t) ;
+//
+// HX: [d0exp_effmask_*] are implemented in [ats_effect.dats]
+//
+extern d0exp_t d0exp_effmask_all (t0kn_t) ;
+extern d0exp_t d0exp_effmask_exn (t0kn_t) ;
+extern d0exp_t d0exp_effmask_ntm (t0kn_t) ;
+extern d0exp_t d0exp_effmask_ref (t0kn_t) ;
+//
+extern d0exp_t d0exp_empty (void) ;
+//
+extern d0exp_t d0exp_exist (t0kn_t, s0exparg_t, t0kn_t, d0exp_t, t0kn_t) ;
+//
+extern d0exp_t d0exp_extval (t0kn_t, s0exp_t, s0tring_t, t0kn_t) ;
+//
+extern d0exp_t d0exp_fix
+  (fixkind_t, i0de_t, f0arglst_t, s0expopt_t, e0fftaglstopt_t, d0exp_t) ;
+//
+extern d0exp_t d0exp_float (f0loat_t) ;
+extern d0exp_t d0exp_floatsp (f0loatsp_t) ;
+//
+extern d0exp_t d0exp_foldat (t0kn_t, d0explst_t) ;
+//
+extern d0exp_t d0exp_for_itp (loophead_t, initestpost_t, d0exp_t) ;
+//
+extern d0exp_t d0exp_freeat (t0kn_t, d0explst_t) ;
+//
+extern d0exp_t d0exp_ide (i0de_t) ;
+extern d0exp_t d0exp_idext (i0de_t) ;
+//
+extern d0exp_t d0exp_if_none (ifhead_t, d0exp_t, d0exp_t) ;
+extern d0exp_t d0exp_if_some (ifhead_t, d0exp_t, d0exp_t, d0exp_t) ;
+//
+extern d0exp_t d0exp_int (i0nt_t) ;
+extern d0exp_t d0exp_intsp (i0ntsp_t) ;
+//
+extern
+d0exp_t d0exp_lam
+  (lamkind_t, f0arglst_t, s0expopt_t, e0fftaglstopt_t, d0exp_t) ;
+//
+extern
+d0exp_t d0exp_let_seq (t0kn_t, d0eclst_t, t0kn_t, d0explst_t, t0kn_t) ;
+//
+extern
+d0exp_t d0exp_list (t0kn_t, d0explst_t, t0kn_t) ;
+extern
+d0exp_t d0exp_list2 (t0kn_t, d0explst_t, d0explst_t, t0kn_t) ;
+//
+extern
+d0exp_t d0exp_lst (
+  int, t0kn_t, s0expopt_t, t0kn_t/*lparen*/, d0explst_t, t0kn_t/*rparen*/
+) ; // end of [d0exp_lst]
+extern d0exp_t d0exp_lst_quote (t0kn_t, d0explst_t, t0kn_t) ;
+//
+extern d0exp_t d0exp_loopexn (int, t0kn_t) ;
+//
+extern d0exp_t d0exp_macsyn_cross (t0kn_t, d0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_macsyn_decode (t0kn_t, d0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_macsyn_encode_seq (t0kn_t, d0explst_t, t0kn_t) ;
+//
+// HX-2010-05-12:
+// extern d0exp_t d0exp_obj (objkind_t, s0exp_t, m0thdeclst_t, t0kn_t) ;
+//
+extern d0exp_t d0exp_opide (t0kn_t, i0de_t) ;
+extern d0exp_t d0exp_ptrof (t0kn_t) ;
+extern d0exp_t d0exp_qid (d0ynq_t, i0de_t) ;
+extern d0exp_t d0exp_raise (t0kn_t, d0exp_t) ;
+extern d0exp_t d0exp_rec (int, t0kn_t, labd0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_scaseof (casehead_t, s0exp_t, t0kn_t, sc0laulst_t) ;
+extern d0exp_t d0exp_sel_lab (t0kn_t, l0ab_t) ;
+extern d0exp_t d0exp_sel_ind (t0kn_t, d0arrind_t) ;
+extern d0exp_t d0exp_seq (t0kn_t, d0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_sexparg (t0kn_t, s0exparg_t, t0kn_t) ;
+extern d0exp_t d0exp_sif (ifhead_t, s0exp_t, d0exp_t, d0exp_t) ;
+extern d0exp_t d0exp_string (s0tring_t) ;
+extern d0exp_t d0exp_tmpid (tmpqi0de_t, s0explst_t, t1mps0explstlst_t, t0kn_t) ;
+extern d0exp_t d0exp_trywith_seq (tryhead_t, d0explst_t, t0kn_t, c0laulst_t) ;
+extern d0exp_t d0exp_tup (int, t0kn_t, d0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_tup2 (int, t0kn_t, d0explst_t, d0explst_t, t0kn_t) ;
+extern d0exp_t d0exp_viewat (t0kn_t) ;
+extern d0exp_t d0exp_where (d0exp_t, d0eclst_t, t0kn_t) ;
+extern d0exp_t d0exp_while (loophead_t, d0exp_t, d0exp_t) ;
+
+extern d0exp_t d0exp_FILENAME (t0kn_t) ; // a special string constant
+extern d0exp_t d0exp_LOCATION (t0kn_t) ; // a special string constant
+
+extern d0explst_t d0explst_nil (void) ;
+extern d0explst_t d0explst_cons (d0exp_t, d0explst_t) ;
+extern d0explst_t d0explst_sing (d0exp_t) ;
+
+extern d0expopt_t d0expopt_none (void) ;
+extern d0expopt_t d0expopt_some (d0exp_t) ;
+
+extern labd0explst_t labd0explst_nil (void) ;
+extern labd0explst_t labd0explst_cons (l0ab_t, d0exp_t, labd0explst_t) ;
+
+extern d0arrind_t d0arrind_make_sing (d0explst_t, t0kn_t) ;
+extern d0arrind_t d0arrind_make_cons (d0explst_t, d0arrind_t) ;
+
+extern ifhead_t ifhead_make (t0kn_t, i0nvresstate_t) ;
+extern casehead_t casehead_make (int, t0kn_t, i0nvresstate_t) ;
+extern loophead_t loophead_make_none (t0kn_t) ;
+extern loophead_t loophead_make_some (t0kn_t, loopi0nv_t, t0kn_t) ;
+extern tryhead_t tryhead_make (t0kn_t) ;
+
+/*
+** pattern matching
+*/
+extern m0atch_t m0atch_make_none (d0exp_t) ;
+extern m0atch_t m0atch_make_some (d0exp_t, p0at_t) ;
+extern m0atchlst_t m0atchlst_nil (void) ;
+extern m0atchlst_t m0atchlst_cons (m0atch_t, m0atchlst_t) ;
+
+extern guap0at_t guap0at_make_none (p0at_t) ;
+extern guap0at_t guap0at_make_some (p0at_t, d0exp_t) ;
+
+extern c0lau_t c0lau_make (guap0at_t, int, int, d0exp_t) ;
+extern c0laulst_t c0laulst_nil (void) ;
+extern c0laulst_t c0laulst_cons (c0lau_t, c0laulst_t) ;
+
+extern sc0lau_t sc0lau_make (sp0at_t, d0exp_t) ;
+extern sc0laulst_t sc0laulst_nil (void) ;
+extern sc0laulst_t sc0laulst_cons (sc0lau_t, sc0laulst_t) ;
+
+extern i0nvarg_t i0nvarg_make_none (i0de_t) ;
+extern i0nvarg_t i0nvarg_make_some (i0de_t, s0exp_t) ;
+
+extern i0nvarglst_t i0nvarglst_nil (void) ;
+extern i0nvarglst_t i0nvarglst_cons (i0nvarg_t, i0nvarglst_t) ;
+
+extern i0nvresstate_t i0nvresstate_none (void) ;
+extern i0nvresstate_t i0nvresstate_some (s0qualstopt_t, i0nvarglst_t) ;
+
+extern loopi0nv_t loopi0nv_make
+  (s0qualstopt_t, s0explstopt_t, i0nvarglst_t, i0nvresstate_t) ;
+
+/* ****** ****** */
+
+extern initestpost_t initestpost_make
+  (t0kn_t, d0explst_t, t0kn_t, d0explst_t, t0kn_t, d0explst_t, t0kn_t) ;
+// end of [extern]
+
+/* ****** ****** */
+
+/*
+** individual declarations
+*/
+extern v0aldec_t v0aldec_make (p0at_t, d0exp_t, witht0ype_t) ;
+extern v0aldeclst_t v0aldeclst_nil (void) ;
+extern v0aldeclst_t v0aldeclst_cons (v0aldec_t, v0aldeclst_t) ;
+
+extern f0undec_t f0undec_make_none
+  (i0de_t, f0arglst_t, d0exp_t, witht0ype_t) ;
+extern f0undec_t f0undec_make_some
+  (i0de_t, f0arglst_t, e0fftaglstopt_t, s0exp_t, d0exp_t, witht0ype_t) ;
+extern f0undeclst_t f0undeclst_nil (void) ;
+extern f0undeclst_t f0undeclst_cons (f0undec_t, f0undeclst_t) ;
+
+extern v0arwth_t v0arwth_none () ;
+extern v0arwth_t v0arwth_some (i0de_t) ;
+
+extern v0ardec_t v0ardec_make_some_none
+  (int /*stadyn*/, i0de_t, v0arwth_t, s0exp_t) ;
+extern v0ardec_t v0ardec_make_none_some
+  (int /*stadyn*/, i0de_t, v0arwth_t, d0exp_t) ;
+extern v0ardec_t v0ardec_make_some_some
+  (int /*stadyn*/, i0de_t, s0exp_t, v0arwth_t, d0exp_t) ;
+extern v0ardeclst_t v0ardeclst_nil (void) ;
+extern v0ardeclst_t v0ardeclst_cons (v0ardec_t, v0ardeclst_t) ;
+
+/* ****** ****** */
+
+typedef ats_ptr_type m0acdef_t ;
+typedef ats_ptr_type m0acdeflst_t ;
+extern m0acdef_t m0acdef_make (i0de_t, m0acarglst_t, d0exp_t) ;
+extern m0acdeflst_t m0acdeflst_nil (void) ;
+extern m0acdeflst_t m0acdeflst_cons (m0acdef_t, m0acdeflst_t) ;
+
+/* ****** ****** */
+
+extern
+i0mpdec_t i0mpdec_make (impqi0de_t, f0arglst_t, s0expopt_t, d0exp_t) ;
+// end of [i0mpdec_make]
+
+/* ****** ****** */
+//
+// HX-2010-05-12:
+//
+// [m0thdec_t] is defined above
+//
+// extern
+// m0thdec_t m0thdec_make_mtd (
+//  t0kn_t, i0de_t, f0arglst_t, e0fftaglstopt_t, s0exp_t, d0expopt_t
+//) ; // end of [m0thdec_make_mtd]
+//extern
+//m0thdec_t m0thdec_make_val (t0kn_t, i0de_t, s0exp_t, d0expopt_t) ;
+// end of [m0thdec_make_val]
+//extern
+//m0thdec_t m0thdec_make_var (t0kn_t, i0de_t, s0exp_t, d0expopt_t) ;
+// end of [m0thdec_make_var]
+//extern
+//m0thdec_t m0thdec_make_imp
+//  (t0kn_t, i0de_t, f0arglst_t, s0expopt_t, d0exp_t) ;
+// end of [m0thdec_make_imp]
+//
+/* ****** ****** */
+
+extern d0ec_t d0ec_infix (t0kn_t, p0rec_t, int, i0delst_t) ;
+extern d0ec_t d0ec_prefix (t0kn_t, p0rec_t, i0delst_t) ;
+extern d0ec_t d0ec_postfix (t0kn_t, p0rec_t, i0delst_t) ;
+extern d0ec_t d0ec_nonfix (t0kn_t, i0delst_t) ;
+extern d0ec_t d0ec_symintr (t0kn_t, i0delst_t) ;
+extern d0ec_t d0ec_include (int/*0:sta/1:dyn*/, s0tring_t) ;
+extern d0ec_t d0ec_e0xpundef (i0de_t) ;
+extern d0ec_t d0ec_e0xpdef (i0de_t, e0xpopt_t) ;
+extern d0ec_t d0ec_e0xpact_assert (e0xp_t) ;
+extern d0ec_t d0ec_e0xpact_error (e0xp_t) ;
+extern d0ec_t d0ec_e0xpact_print (e0xp_t) ;
+extern d0ec_t d0ec_srtdefs (s0rtdef_t, s0rtdeflst_t) ;
+extern d0ec_t d0ec_datsrts (int/*para*/, d0atsrtdec_t, d0atsrtdeclst_t) ;
+extern d0ec_t d0ec_stacons (abskind_t, s0tacon_t, s0taconlst_t) ;
+extern d0ec_t d0ec_stacsts (s0tacst_t, s0tacstlst_t) ;
+extern d0ec_t d0ec_stavars (s0tavar_t, s0tavarlst_t) ;
+extern d0ec_t d0ec_sexpdefs (stadefkind_t, s0expdef_t, s0expdeflst_t) ;
+extern d0ec_t d0ec_propdefs (t0kn_t, s0expdef_t, s0expdeflst_t) ;
+extern d0ec_t d0ec_typedefs (t0kn_t, s0expdef_t, s0expdeflst_t) ;
+extern d0ec_t d0ec_viewdefs (t0kn_t, s0expdef_t, s0expdeflst_t) ;
+extern d0ec_t d0ec_viewtypedefs (t0kn_t, s0expdef_t, s0expdeflst_t) ;
+extern d0ec_t d0ec_saspdec (s0aspdec_t) ;
+extern d0ec_t d0ec_dcstdecs
+  (dcstkind_t, s0qualstlst_t, d0cstdec_t, d0cstdeclst_t) ;
+extern d0ec_t d0ec_datdecs
+  (datakind_t, d0atdec_t, d0atdeclst_t, s0explstopt_t) ;
+extern d0ec_t d0ec_exndecs (t0kn_t, e0xndec_t, e0xndeclst_t) ;
+//
+// HX-2010-05-12: the OOP plan is permanently abandoned
+//
+// extern d0ec_t d0ec_classdec
+//  (clskind_t, s0qualstlst_t, c0lassdec_t, s0explstopt_t) ;
+//
+extern d0ec_t d0ec_classdec_none (t0kn_t, i0de_t) ;
+extern d0ec_t d0ec_classdec_some (t0kn_t, i0de_t, s0exp_t) ;
+//
+extern d0ec_t d0ec_overload (t0kn_t, i0de_t, dqi0de_t) ;
+extern d0ec_t d0ec_overload_lrbrackets (t0kn_t, t0kn_t, t0kn_t, dqi0de_t) ;
+//
+extern d0ec_t d0ec_dynload (s0tring_t) ;
+extern d0ec_t d0ec_staload_none (s0tring_t) ;
+extern d0ec_t d0ec_staload_some (i0de_t, s0tring_t) ;
+
+/*
+** dynamic declarations
+*/
+extern d0ec_t d0ec_extype (s0tring_t, s0exp_t) ;
+extern d0ec_t d0ec_extval (s0tring_t, d0exp_t) ;
+extern d0ec_t d0ec_extcode_dyn (e0xtcode_t) ;
+extern d0ec_t d0ec_extcode_sta (e0xtcode_t) ;
+extern d0ec_t d0ec_valdecs (valkind_t, v0aldec_t, v0aldeclst_t) ;
+extern d0ec_t d0ec_valdecs_par (v0aldec_t, v0aldeclst_t) ;
+extern d0ec_t d0ec_valdecs_rec (v0aldec_t, v0aldeclst_t) ;
+extern d0ec_t d0ec_fundecs (funkind_t, s0qualstlst_t, f0undec_t, f0undeclst_t) ;
+extern d0ec_t d0ec_vardecs (v0ardec_t, v0ardeclst_t) ;
+extern d0ec_t d0ec_macdefs (int, m0acdef_t, m0acdeflst_t) ;
+extern d0ec_t d0ec_impdec (t0kn_t, s0arglstlst_t, i0mpdec_t) ;
+extern d0ec_t d0ec_local (t0kn_t, d0eclst_t, d0eclst_t, t0kn_t) ;
+extern d0ec_t d0ec_guadec (srpifkindtok_t, guad0ec_t) ;
+
+extern guad0ec_t guad0ec_one (e0xp_t, d0eclst_t, t0kn_t) ;
+extern guad0ec_t guad0ec_two (e0xp_t, d0eclst_t, d0eclst_t, t0kn_t) ;
+extern guad0ec_t guad0ec_cons (e0xp_t, d0eclst_t, srpifkindtok_t, guad0ec_t) ;
+
+extern d0eclst_t d0eclst_nil (void) ;
+extern d0eclst_t d0eclst_cons (d0ec_t, d0eclst_t) ;
+extern d0ecllst_t d0ecllst_nil (void) ;
+extern d0ecllst_t d0ecllst_cons (d0ecllst_t, d0ec_t) ;
+extern d0eclst_t d0ecllst_reverse (d0ecllst_t) ;
+
+/* ****** ****** */
+
+typedef union {
+
+c0har_t c0har ;
+e0xtcode_t e0xtcode ;
+f0loat_t f0loat ;
+f0loatsp_t f0loatsp ;
+i0nt_t i0nt ;
+i0ntsp_t i0ntsp ;
+s0tring_t s0tring ;
+t0kn_t t0kn ;
+
+//
+
+abskind_t abskind ;
+dcstkind_t dcstkind ;
+datakind_t datakind ;
+stadefkind_t stadefkind ;
+
+//
+
+//
+// HX-2010-05-12: the OOP plan is permanently abandoned
+// clskind_t clskind ;
+// objkind_t objkind ;
+//
+
+//
+
+valkind_t valkind ;
+funkind_t funkind ;
+
+//
+
+lamkind_t lamkind ;
+fixkind_t fixkind ;
+
+//
+
+srpifkindtok_t srpifkindtok ;
+
+//
+
+i0de_t i0de ;
+i0delst_t i0delst ;
+i0delstlst_t i0delstlst ;
+
+//
+
+i0dext_t i0dext ;
+
+//
+
+l0ab_t l0ab ;
+
+//
+
+i0de_t stai0de ;
+
+//
+
+p0rec_t p0rec ;
+
+/* ****** ****** */
+
+e0xp_t e0xp ;
+e0xplst_t e0xplst ;
+e0xpopt_t e0xpopt ;
+
+/* ****** ****** */
+
+e0fftag_t e0fftag ;
+e0fftaglst_t e0fftaglst ;
+e0fftaglstopt_t e0fftaglstopt ;
+
+/* ****** ****** */
+
+s0rtq_t s0rtq ;
+s0rt_t s0rt ;
+s0rtlst_t s0rtlst ;
+s0rtopt_t s0rtopt ;
+s0rtpol_t s0rtpol ;
+
+d0atsrtcon_t d0atsrtcon ;
+d0atsrtconlst_t d0atsrtconlst ;
+d0atsrtdec_t d0atsrtdec ;
+d0atsrtdeclst_t d0atsrtdeclst ;
+
+/* ****** ****** */
+
+s0taq_t s0taq ;
+d0ynq_t d0ynq ;
+
+/* ****** ****** */
+
+sqi0de_t sqi0de ;
+dqi0de_t dqi0de ;
+arrqi0de_t arrqi0de ;
+tmpqi0de_t tmpqi0de ;
+
+/* ****** ****** */
+
+s0arg_t s0arg ;
+s0arglst_t s0arglst ;
+s0arglstlst_t s0arglstlst ;
+
+/* ****** ****** */
+
+sp0at_t sp0at ;
+
+/* ****** ****** */
+
+s0exp_t s0exp ;
+s0explst_t s0explst ;
+s0expopt_t s0expopt ;
+s0explstlst_t s0explstlst ;
+s0explstopt_t s0explstopt ;
+labs0explst_t labs0explst ;
+s0expopt_t s0expelt ;
+s0arrind_t s0arrind ;
+
+s0qua_t s0qua ;
+s0qualst_t s0qualst ;
+s0qualstlst_t s0qualstlst ;
+s0qualstopt_t s0qualstopt ;
+s0rtext_t s0rtext ;
+
+t1mps0explstlst_t t1mps0explstlst ;
+
+/* ****** ****** */
+
+impqi0de_t impqi0de ;
+
+/* ****** ****** */
+
+s0rtdef_t s0rtdef ;
+s0rtdeflst_t s0rtdeflst ;
+
+/* ****** ****** */
+
+d0atarg_t d0atarg ;
+d0atarglst_t d0atarglst ;
+
+/* ****** ****** */
+
+s0tacon_t s0tacon ;
+s0taconlst_t s0taconlst ;
+s0tacst_t s0tacst ;
+s0tacstlst_t s0tacstlst ;
+s0tavar_t s0tavar ;
+s0tavarlst_t s0tavarlst ;
+
+/* ****** ****** */
+
+s0expdef_t s0expdef ;
+s0expdeflst_t s0expdeflst ;
+s0aspdec_t s0aspdec ;
+
+/* ****** ****** */
+
+d0atcon_t d0atcon ;
+d0atconlst_t d0atconlst ;
+d0atdec_t d0atdec ;
+d0atdeclst_t d0atdeclst ;
+
+e0xndec_t e0xndec ;
+e0xndeclst_t e0xndeclst ;
+
+//
+// HX-2010-05-12: the OOP plan is permanently abandoned
+//
+// s0explst_t s0upclss ;
+// d0expopt_t m0thdef ;
+// m0thdec_t m0thdec ;
+// m0thdeclst_t m0thdeclst ;
+// c0lassdec_t c0lassdec ;
+//
+
+/* ****** ****** */
+
+p0arg_t p0arg ;
+p0arglst_t p0arglst ;
+
+d0arg_t d0arg ;
+d0arglst_t d0arglst ;
+
+m0acarg_t m0acarg ;
+m0acarglst_t m0acarglst ;
+
+/* ****** ****** */
+
+extnamopt_t extnamopt ;
+d0cstdec_t d0cstdec ;
+d0cstdeclst_t d0cstdeclst ;
+
+/* ****** ****** */
+
+s0vararg_t s0vararg ;
+s0exparg_t s0exparg ;
+
+s0elop_t s0elop ;
+witht0ype_t witht0ype ;
+
+/* ****** ****** */
+
+p0at_t p0at ;
+p0atlst_t p0atlst ;
+labp0atlst_t labp0atlst ;
+
+f0arg_t f0arg ;
+f0arglst_t f0arglst ;
+
+/* ****** ****** */
+
+d0exp_t d0exp ;
+d0explst_t d0explst ;
+labd0explst_t labd0explst ;
+d0arrind_t d0arrind ;
+
+ifhead_t ifhead ;
+ifhead_t sifhead ;
+casehead_t casehead ;
+casehead_t scasehead ;
+loophead_t loophead ;
+tryhead_t tryhead ;
+
+m0atch_t m0atch ;
+m0atchlst_t m0atchlst ;
+guap0at_t guap0at ;
+c0lau_t c0lau ;
+c0laulst_t c0laulst ;
+sc0lau_t sc0lau ;
+sc0laulst_t sc0laulst ;
+i0nvarg_t i0nvarg ;
+i0nvarglst_t i0nvarglst ;
+i0nvresstate_t i0nvresstate ;
+loopi0nv_t loopi0nv ;
+initestpost_t initestpost ;
+
+/* ****** ****** */
+
+v0aldec_t v0aldec ;
+v0aldeclst_t v0aldeclst ;
+f0undec_t f0undec ;
+f0undeclst_t f0undeclst ;
+v0arwth_t v0arwth ;
+v0ardec_t v0ardec ;
+v0ardeclst_t v0ardeclst ;
+m0acdef_t m0acdef ;
+m0acdeflst_t m0acdeflst ;
+i0mpdec_t i0mpdec ;
+
+/* ****** ****** */
+
+d0ec_t d0ec ;
+d0eclst_t d0eclst ;
+d0ecllst_t d0ecllst ;
+guad0ec_t guad0ec ;
+
+} YYSTYPE_union ;
+
+#define YYSTYPE YYSTYPE_union
+
+%}
+
+/* ****** ****** */
+
+%token ISSTATIC
+%token ISDYNAMIC
+%token TOKEN_eof
+
+/* ****** ****** */
+
+%token <c0har> LITERAL_char
+%token <e0xtcode> LITERAL_extcode
+%token <f0loat> LITERAL_float
+%token <f0loatsp> LITERAL_floatsp
+%token <i0nt> LITERAL_int
+%token <i0ntsp> LITERAL_intsp
+%token <s0tring> LITERAL_string
+
+%token <i0de> IDENTIFIER_alp
+%token <i0de> IDENTIFIER_sym
+
+%token <i0de> IDENTIFIER_arr
+%token <i0de> IDENTIFIER_tmp
+%token <i0de> IDENTIFIER_ext
+
+%token <i0de> IDENTIFIER_dlr
+%token <i0de> IDENTIFIER_srp
+
+/* ****** ****** */
+
+%token <t0kn> ABSPROP
+%token <t0kn> ABSTYPE ABST0YPE
+%token <t0kn> ABSVIEW
+%token <t0kn> ABSVIEWTYPE ABSVIEWT0YPE
+%token <t0kn> AND
+%token <t0kn> AS
+%token <t0kn> ASSUME
+%token <t0kn> ATLAM ATLLAM ATFIX
+%token <t0kn> BEGIN
+%token <t0kn> BREAK
+%token <t0kn> CASE CASEMINUS CASEPLUS
+%token <t0kn> CASTFN
+%token <t0kn> CLASSDEC
+%token <t0kn> CONTINUE
+%token <t0kn> DATASORT
+%token <t0kn> DATAPARASORT
+%token <t0kn> DATAPROP
+%token <t0kn> DATATYPE
+%token <t0kn> DATAVIEW
+%token <t0kn> DATAVIEWTYPE
+%token <t0kn> DO
+%token <t0kn> DYN
+%token <t0kn> DYNLOAD
+%token <t0kn> ELSE
+%token <t0kn> END
+%token <t0kn> EXCEPTION
+%token <t0kn> EXTERN
+%token <t0kn> FIX
+%token <t0kn> FN FNSTAR
+%token <t0kn> FOR FORSTAR
+%token <t0kn> FUN
+%token <t0kn> IF
+%token <t0kn> IMPLEMENT
+%token <t0kn> IN
+%token <t0kn> INFIX INFIXL INFIXR
+%token <t0kn> LAM
+%token <t0kn> LET
+%token <t0kn> LLAM
+%token <t0kn> LOCAL
+%token <t0kn> MACDEF MACRODEF
+/*
+%token <t0kn> METHOD
+%token <t0kn> METHODSTAR
+%token <t0kn> MODCLS
+*/
+%token <t0kn> NONFIX
+/*
+%token <t0kn> OBJECT
+%token <t0kn> OBJCLS
+*/
+%token <t0kn> OF
+%token <t0kn> OP
+%token <t0kn> OVERLOAD
+%token <t0kn> PAR
+%token <t0kn> POSTFIX
+%token <t0kn> PRAXI
+%token <t0kn> PREFIX
+%token <t0kn> PRFN
+%token <t0kn> PRFUN
+%token <t0kn> PROPDEF
+%token <t0kn> PROPMINUS PROPPLUS
+%token <t0kn> PRVAL
+%token <t0kn> REC
+%token <t0kn> R0EAD
+%token <t0kn> SCASE
+%token <t0kn> SIF
+%token <t0kn> SORTDEF
+%token <t0kn> STA
+%token <t0kn> STADEF
+%token <t0kn> STAIF
+%token <t0kn> STALOAD
+%token <t0kn> STAVAR
+/*
+%token <t0kn> STRUCT
+%token <tokn> SUPER
+*/
+%token <t0kn> SYMELIM SYMINTR
+%token <t0kn> THEN
+%token <t0kn> TRY
+%token <t0kn> TYPEDEF
+%token <t0kn> TYPEMINUS TYPEPLUS
+%token <t0kn> T0YPE
+%token <t0kn> T0YPEMINUS T0YPEPLUS
+/*
+%token <t0kn> UNION
+*/
+%token <t0kn> VAL
+%token <t0kn> VALMINUS VALPLUS
+%token <t0kn> VAR
+%token <t0kn> VIEWDEF
+%token <t0kn> VIEWMINUS VIEWPLUS
+%token <t0kn> VIEWTYPEDEF
+%token <t0kn> VIEWTYPEMINUS VIEWTYPEPLUS
+%token <t0kn> VIEWT0YPE
+%token <t0kn> VIEWT0YPEMINUS VIEWT0YPEPLUS
+%token <t0kn> WHEN
+%token <t0kn> WHERE
+%token <t0kn> WHILE WHILESTAR
+%token <t0kn> WITH
+%token <t0kn> WITHPROP WITHTYPE WITHVIEW WITHVIEWTYPE
+
+/* ****** ****** */
+
+%token <t0kn> AMPERSAND
+%token <t0kn> BACKQUOTE
+%token <t0kn> BACKSLASH
+%token <t0kn> BANG
+%token <t0kn> BAR
+%token <t0kn> COMMA
+%token <t0kn> COLON
+%token <t0kn> SEMICOLON
+%token <t0kn> DOT
+%token <t0kn> EQ
+%token <t0kn> LT GT
+%token <t0kn> DOLLAR
+%token <t0kn> HASH
+%token <t0kn> TILDE
+%token <t0kn> DOTDOT DOTDOTDOT
+%token <t0kn> EQLT EQGT
+%token <t0kn> EQLTGT
+%token <t0kn> EQGTGT
+%token <t0kn> EQSLASHEQGT
+%token <t0kn> EQSLASHEQGTGT
+%token <t0kn> GTLT
+%token <t0kn> DOTLT
+%token <t0kn> GTDOT
+%token <t0kn> DOTLTGTDOT
+%token <t0kn> MINUSLT MINUSGT MINUSLTGT
+%token <t0kn> COLONLT
+%token <t0kn> COLONLTGT
+%token <t0kn> BACKQUOTELPAREN
+%token <t0kn> COMMALPAREN
+%token <t0kn> PERCENTLPAREN
+/*
+//
+// HX: these symbols are reserved for supporting MP
+//
+%token <t0kn> BACKQUOTELBRACKET
+%token <t0kn> COMMALBRACKET
+%token <t0kn> PERCENTLBRACKET
+%token <t0kn> BACKQUOTELBRACE
+%token <t0kn> COMMALBRACE
+%token <t0kn> PERCENTLBRACE
+*/
+
+/* ****** ****** */
+
+%token <t0kn> DLRARRSZ
+%token <t0kn> DLRLST_T DLRLST_VT
+%token <t0kn> DLRREC_T DLRREC_VT
+%token <t0kn> DLRTUP_T DLRTUP_VT
+
+%token <t0kn> DLRDECRYPT
+%token <t0kn> DLRDELAY
+%token <t0kn> DLRLDELAY
+%token <t0kn> DLRDYNLOAD
+%token <t0kn> DLREFFMASK_ALL
+%token <t0kn> DLREFFMASK_EXN
+%token <t0kn> DLREFFMASK_NTM
+%token <t0kn> DLREFFMASK_REF
+%token <t0kn> DLRENCRYPT
+%token <t0kn> DLREXEC
+%token <t0kn> DLREXTERN
+%token <t0kn> DLREXTVAL
+%token <t0kn> DLREXTYPE
+%token <t0kn> DLREXTYPE_STRUCT /* external struct */
+/*
+%token <t0kn> DLRFOLD
+*/
+/*
+%token <t0kn> DLROBJ_T
+%token <t0kn> DLROBJ_VT
+%token <t0kn> DLROBJMOD
+*/
+%token <t0kn> DLRRAISE
+%token <t0kn> DLRUNFOLD
+%token <t0kn> DLRTYPEOF
+
+/* ****** ****** */
+
+%token <t0kn> SRPFILENAME
+%token <t0kn> SRPLOCATION
+%token <t0kn> SRPCHARCOUNT
+%token <t0kn> SRPLINECOUNT
+
+%token <t0kn> SRPASSERT
+%token <t0kn> SRPDEFINE
+%token <t0kn> SRPELSE
+%token <t0kn> SRPELIF
+%token <t0kn> SRPELIFDEF
+%token <t0kn> SRPELIFNDEF
+%token <t0kn> SRPENDIF
+%token <t0kn> SRPERROR
+%token <t0kn> SRPIF
+%token <t0kn> SRPIFDEF
+%token <t0kn> SRPIFNDEF
+%token <t0kn> SRPINCLUDE
+%token <t0kn> SRPPRINT
+%token <t0kn> SRPTHEN
+%token <t0kn> SRPUNDEF
+
+/* ****** ****** */
+
+%token <t0kn> FOLDAT
+%token <t0kn> FREEAT
+%token <t0kn> VIEWAT
+
+/* ****** ****** */
+
+%token <t0kn> LPAREN RPAREN
+%token <t0kn> LBRACKET RBRACKET
+%token <t0kn> LBRACE RBRACE
+%token <t0kn> ATLPAREN
+%token <t0kn> ATLBRACKET
+%token <t0kn> ATLBRACE
+%token <t0kn> QUOTELPAREN
+%token <t0kn> QUOTELBRACKET
+%token <t0kn> QUOTELBRACE
+%token <t0kn> HASHLPAREN
+%token <t0kn> HASHLBRACKET
+%token <t0kn> HASHLBRACE
+
+/* ****** ****** */
+
+/*
+** precedence
+*/
+
+%nonassoc PATAS
+%nonassoc PATFREE
+
+%nonassoc SEXPLAM
+%nonassoc DEXPLAM
+%nonassoc DEXPFIX
+
+%nonassoc CLAUS
+%nonassoc DEXPCASE
+%nonassoc DEXPIF
+
+%nonassoc DEXPRAISE
+%nonassoc DEXPTRY
+
+%nonassoc DEXPFOR
+%nonassoc DEXPWHILE
+
+%nonassoc ELSE
+%nonassoc WHERE
+
+%right COLON /* <d0exp> : <s0exp> : <s0rt> */
+
+%nonassoc BARCLAUSSEQNONE
+%nonassoc BAR
+
+%nonassoc GT
+%nonassoc TMPSEXP
+%nonassoc TMPSARG
+
+%nonassoc SARRIND
+%nonassoc LBRACKET
+
+%nonassoc SEXPDARGSEQEMPTY
+%nonassoc LBRACE
+
+/* ****** ****** */
+
+%type <abskind> abskind
+%type <dcstkind> dcstkind
+%type <datakind> datakind
+%type <stadefkind> stadefkind
+
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+%type <clskind> clskind
+%type <objkind> objkind
+*/
+
+%type <valkind> valkind
+%type <funkind> funkind
+
+%type <lamkind> lamkind
+%type <fixkind> fixkind
+
+%type <srpifkindtok> srpifkind
+%type <srpifkindtok> srpelifkind
+
+%type <i0de> i0de
+%type <i0de> i0de_dlr
+%type <i0delst> i0deseq
+
+%type <i0dext> i0dext
+
+%type <l0ab> l0ab
+
+%type <i0de> stai0de
+
+%type <p0rec> p0rec
+
+%type <e0xp> e0xp
+%type <e0xp> atme0xp
+%type <e0xplst> e0xpseq
+%type <e0xplst> commae0xpseq
+%type <e0xpopt> e0xpopt
+
+%type <i0de> e0ffid
+%type <e0fftag> e0fftag
+%type <e0fftaglst> e0fftagseq
+%type <e0fftaglst> commae0fftagseq
+%type <e0fftaglstopt> colonwith
+
+%type <s0rt> s0rt
+%type <s0rtq> s0rtq
+%type <i0de> s0rtid
+%type <s0rt> atms0rt
+%type <s0rtlst> s0rtseq
+%type <s0rtlst> commas0rtseq
+%type <s0rtpol> s0rtpol
+
+%type <d0atsrtcon> d0atsrtcon
+%type <d0atsrtconlst> d0atsrtconseq
+%type <d0atsrtconlst> bard0atsrtconseq
+%type <d0atsrtdec> d0atsrtdec
+%type <d0atsrtdeclst> andd0atsrtdecseq
+
+%type <s0taq> s0taq
+%type <d0ynq> d0ynq
+
+%type <i0de> si0de
+%type <sqi0de> sqi0de
+%type <i0delst> commasi0deseq
+%type <i0de> di0de
+%type <dqi0de> dqi0de
+%type <i0de> pi0de
+%type <i0de> fi0de
+%type <i0de> arri0de
+%type <arrqi0de> arrqi0de
+%type <i0de> tmpi0de
+%type <tmpqi0de> tmpqi0de
+
+%type <s0rtopt> colons0rtopt
+
+%type <s0arg> s0arg
+%type <s0arglst> s0argseq
+%type <s0arglst> commas0argseq
+%type <s0arglstlst> s0argseqseq
+
+%type <s0arglst> decs0argseq
+%type <s0arglst> commadecs0argseq
+%type <s0arglstlst> decs0argseqseq
+
+%type <sp0at> sp0at
+
+%type <s0exp> s0exp
+%type <s0exp> atms0exp
+%type <s0exp> apps0exp
+
+%type <s0expopt> s0expelt
+%type <s0arrind> s0arrind
+
+%type <s0qua> s0qua
+%type <s0qualst> s0quaseq
+%type <s0qualst> barsemis0quaseq
+%type <s0rtext> s0rtext
+
+%type <s0explst> s0expseq
+%type <s0explst> barsemis0expseq
+%type <s0explst> commas0expseq
+%type <s0explst> s0expseq1
+
+%type <labs0explst> labs0expseq
+%type <labs0explst> commalabs0expseq
+
+%type <s0exp> t0mps0exp
+%type <s0exp> t1mps0exp
+%type <s0explst> t1mps0expseq
+%type <s0explst> commat1mps0expseq
+%type <t1mps0explstlst> gtlt_t1mps0expseqseq
+
+%type <impqi0de> impqi0de
+
+%type <s0rtdef> s0rtdef
+%type <s0rtdeflst> ands0rtdefseq
+
+%type <d0atarg> d0atarg
+%type <d0atarglst> d0atargseq
+%type <d0atarglst> commad0atargseq
+
+%type <s0tacon> s0tacon
+%type <s0taconlst> ands0taconseq
+%type <s0tacst> s0tacst
+%type <s0tacstlst> ands0tacstseq
+%type <s0tavar> s0tavar
+%type <s0tavarlst> ands0tavarseq
+
+%type <s0expdef> s0expdef
+%type <s0expdeflst> ands0expdefseq
+%type <s0aspdec> s0aspdec
+
+%type <s0qualstlst> conq0uaseq
+%type <s0expopt> coni0ndopt
+%type <s0expopt> cona0rgopt
+%type <d0atcon> d0atcon
+%type <d0atconlst> d0atconseq
+%type <d0atconlst> bard0atconseq
+
+%type <d0atdec> d0atdec
+%type <d0atdeclst> andd0atdecseq
+%type <s0expdeflst> s0expdefseqopt
+
+%type <e0xndec> e0xndec
+%type <e0xndeclst> ande0xndecseq
+
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+%type <s0upclss> s0upclss
+%type <m0thdef> m0thdef
+%type <m0thdec> m0thdec
+%type <m0thdeclst> m0thdecseq
+%type <c0lassdec> c0lassdec
+*/
+
+%type <p0arg> p0arg
+%type <p0arglst> p0argseq
+%type <p0arglst> commap0argseq
+
+%type <d0arg> d0arg
+%type <d0arglst> d0argseq
+
+%type <extnamopt> extnamopt
+%type <d0cstdec> d0cstdec
+%type <d0cstdeclst> andd0cstdecseq
+
+%type <s0vararg> s0vararg
+%type <s0exparg> s0exparg
+
+%type <s0elop> s0elop
+%type <witht0ype> witht0ype
+
+%type <p0at> p0at
+%type <p0at> atmp0at
+%type <p0at> argp0at
+%type <p0atlst> argp0atseq
+%type <p0atlst> p0atseq
+%type <p0atlst> commap0atseq
+%type <labp0atlst> labp0atseq
+%type <labp0atlst> commalabp0atseq
+
+%type <f0arg> f0arg1
+%type <f0arglst> f0arg1seq
+%type <f0arg> f0arg2
+%type <f0arglst> f0arg2seq
+
+/*
+%type <s0exp> objc0ls // HX-2010-05-12: the OOP plan is permanently abandoned
+*/
+
+%type <d0exp> d0exp
+%type <d0exp> atmd0exp
+%type <d0exp> s0expdarg
+%type <d0explst> s0expdargseq
+%type <d0exp> argd0exp
+%type <d0explst> argd0expseq
+
+%type <d0arrind> d0arrind
+%type <s0expopt> colons0expopt
+%type <e0fftaglstopt> funarrow
+
+%type <i0nvresstate> caseinv
+
+%type <ifhead> ifhead
+%type <ifhead> sifhead
+%type <casehead> casehead
+%type <casehead> scasehead
+%type <loophead> forhead
+%type <loophead> whilehead
+%type <tryhead> tryhead
+
+%type <d0explst> d0expcommaseq
+%type <d0explst> commad0expseq
+%type <d0explst> d0expsemiseq0
+%type <d0explst> d0expsemiseq1
+%type <labd0explst> commalabd0expseq
+%type <labd0explst> labd0expseq
+
+%type <m0atch> m0atch
+%type <m0atchlst> m0atchseq
+%type <m0atchlst> andm0atchseq
+
+%type <guap0at> guap0at
+
+%type <c0lau> c0lau
+%type <c0laulst> c0lauseq
+%type <c0laulst> barc0lauseq
+
+%type <sc0lau> sc0lau
+%type <sc0laulst> sc0lauseq
+%type <sc0laulst> barsc0lauseq
+
+%type <s0qualstopt> i0nvqua
+%type <s0explstopt> i0nvmet
+
+%type <i0nvarg> i0nvarg
+%type <i0nvarglst> i0nvargseq
+%type <i0nvarglst> commai0nvargseq
+%type <i0nvarglst> i0nvargstate
+
+%type <s0qualstopt> i0nvresqua
+
+%type <i0nvresstate> i0nvresstate
+%type <loopi0nv> loopi0nv
+%type <initestpost> initestpost
+
+%type <i0de> m0arg
+%type <i0delst> m0argseq
+%type <i0delst> commam0argseq
+%type <m0acarg> m0acarg
+%type <m0acarglst> m0acargseq
+
+%type <m0acdef> m0acdef
+%type <m0acdeflst> andm0acdefseq
+
+%type <v0aldec> v0aldec
+%type <v0aldeclst> andv0aldecseq
+%type <f0undec> f0undec
+%type <f0undeclst> andf0undecseq
+
+%type <v0arwth> v0arwth
+%type <v0ardec> v0ardec
+%type <v0ardeclst> andv0ardecseq
+
+%type <i0mpdec> i0mpdec
+
+%type <d0ec> d0ec
+%type <s0qualst> d0ecarg
+%type <s0qualstlst> d0ecargseq
+
+%type <d0ec> d0ec_sta
+%type <guad0ec> guad0ec_sta
+%type <d0eclst> d0ecseq_sta
+%type <d0ecllst> d0ecseq_sta_rev
+
+%type <d0ec> d0ec_dyn
+%type <guad0ec> guad0ec_dyn
+%type <d0eclst> d0ecseq_dyn
+%type <d0ecllst> d0ecseq_dyn_rev
+
+%type <d0eclst> theStartEntry
+
+/* ****** ****** */
+
+%start theStartEntry
+
+/* ****** ****** */
+
+%%
+
+/* ****** ****** */
+
+theStartEntry
+  : ISSTATIC d0ecseq_sta TOKEN_eof      { $$ = $2 ; return 0 ; }
+  | ISDYNAMIC d0ecseq_dyn TOKEN_eof     { $$ = $2 ; return 0 ; }
+; /* end of [theStartEntry] */
+
+/* ****** ****** */
+
+abskind
+  : ABSPROP                             { $$ = abskind_prop () ; }
+  | ABSTYPE                             { $$ = abskind_type () ; }
+  | ABST0YPE                            { $$ = abskind_t0ype () ; }
+  | ABSVIEW                             { $$ = abskind_view () ; }
+  | ABSVIEWTYPE                         { $$ = abskind_viewtype () ; }
+  | ABSVIEWT0YPE                        { $$ = abskind_viewt0ype () ; }
+; /* end of [abskind] */
+
+dcstkind
+  : FUN                                 { $$ = dcstkind_fun () ; }
+  | VAL                                 { $$ = dcstkind_val () ; }
+  | CASTFN                              { $$ = dcstkind_castfn () ; }
+  | PRAXI                               { $$ = dcstkind_praxi () ; }
+  | PRFUN                               { $$ = dcstkind_prfun () ; }
+  | PRVAL                               { $$ = dcstkind_prval () ; }
+; /* end of [dcstkind] */
+
+datakind
+  : DATAPROP                            { $$ = datakind_prop () ; }
+  | DATATYPE                            { $$ = datakind_type () ; }
+  | DATAVIEW                            { $$ = datakind_view () ; }
+  | DATAVIEWTYPE                        { $$ = datakind_viewtype () ; }
+; /* end of [datakind] */
+
+stadefkind
+  : STADEF                              { $$ = stadefkind_generic () ; }
+  | PROPDEF                             { $$ = stadefkind_prop ($1) ; }
+  | TYPEDEF                             { $$ = stadefkind_type ($1) ; }
+  | VIEWDEF                             { $$ = stadefkind_view ($1) ; }
+  | VIEWTYPEDEF                         { $$ = stadefkind_viewtype ($1) ; }
+; /* end of [stadefkind] */
+
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+clskind
+  : MODCLS                              { $$ = clskind_mod ($1) ; }
+  | OBJCLS                              { $$ = clskind_obj ($1) ; }
+;
+
+objkind
+  : DLROBJ_T                            { $$ = objkind_obj_t ($1) ; }
+  | DLROBJ_VT                           { $$ = objkind_obj_vt ($1) ; }
+  | DLROBJMOD                           { $$ = objkind_objmod ($1) ; }
+;
+*/
+
+valkind
+  : VAL                                 { $$ = valkind_val () ; }
+  | VALMINUS                            { $$ = valkind_valminus () ; }
+  | VALPLUS                             { $$ = valkind_valplus () ; }
+  | PRVAL                               { $$ = valkind_prval () ; }
+; /* end of [valkind] */
+
+funkind
+  : FN                                  { $$ = funkind_fn () ; }
+  | FNSTAR                              { $$ = funkind_fnstar () ; }
+  | FUN                                 { $$ = funkind_fun () ; }
+  | CASTFN                              { $$ = funkind_castfn () ; }
+  | PRFN                                { $$ = funkind_prfn () ; }
+  | PRFUN                               { $$ = funkind_prfun () ; }
+; /* end of [funkind] */
+
+/* ****** ****** */
+
+lamkind
+  : LAM                                 { $$ = lamkind_lam ($1) ; }
+  | ATLAM                               { $$ = lamkind_atlam ($1) ; }
+  | LLAM                                { $$ = lamkind_llam ($1) ; }
+  | ATLLAM                              { $$ = lamkind_atllam ($1) ; }
+; /* end of [lamkind] */
+
+fixkind
+  : FIX                                 { $$ = fixkind_fix ($1) ; }
+  | ATFIX                               { $$ = fixkind_atfix ($1) ; }
+; /* end of [fixkind] */
+
+/* ****** ****** */
+
+srpifkind
+  : SRPIF                               { $$ = srpifkindtok_if ($1) ; }
+  | SRPIFDEF                            { $$ = srpifkindtok_ifdef ($1) ; }
+  | SRPIFNDEF                           { $$ = srpifkindtok_ifndef ($1) ; }
+;
+
+srpelifkind
+  : SRPELIF                             { $$ = srpifkindtok_if ($1) ; }
+  | SRPELIFDEF                          { $$ = srpifkindtok_ifdef ($1) ; }
+  | SRPELIFNDEF                         { $$ = srpifkindtok_ifndef ($1) ; }
+;
+
+srpthenopt
+  : /* empty */                         { ; }
+  | SRPTHEN                             { ; }
+;
+
+/* ****** ****** */
+
+i0de /* identifier */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+  | IDENTIFIER_sym                      { $$ = $1 ; }
+/* keysymb */
+  | AMPERSAND                           { $$ = i0de_make_ampersand($1) ; }
+  | BACKSLASH                           { $$ = i0de_make_backslash($1) ; }
+  | BANG                                { $$ = i0de_make_bang($1) ; }
+  | EQ                                  { $$ = i0de_make_eq($1) ; }
+  | GT                                  { $$ = i0de_make_gt($1) ; }
+  | GTLT                                { $$ = i0de_make_gtlt($1) ; }
+  | LT                                  { $$ = i0de_make_lt($1) ; }
+  | MINUSGT                             { $$ = i0de_make_minusgt($1) ; }
+  | MINUSLTGT                           { $$ = i0de_make_minusltgt($1) ; }
+  | TILDE                               { $$ = i0de_make_tilde($1) ; }
+; /* end of [i0de] */
+
+i0de_dlr /* identifier beginning with $ */
+  : IDENTIFIER_dlr                      { $$ = $1 ; }
+; /* end of [i0de_dlr] */
+
+i0deseq /* identifier sequence */
+  : /* empty */                         { $$ = i0delst_nil() ; }
+  | i0de i0deseq                        { $$ = i0delst_cons($1, $2) ; }
+; /* end of [i0deseq] */
+
+/* ****** ****** */
+
+i0dext /* extern identifier for loading syndef */
+  : IDENTIFIER_ext                      { $$ = $1 ; }
+/* keyword */
+  | DO                                  { $$ = i0de_make_DO($1) ; }
+  | WHILE                               { $$ = i0de_make_WHILE($1) ; }
+; /* end of [i0dext] */
+
+/* ****** ****** */
+
+l0ab /* label */
+  : i0de                                { $$ = l0ab_ide($1) ; }
+  | LITERAL_int                         { $$ = l0ab_int($1) ; }
+  | LPAREN l0ab RPAREN                  { $$ = $2 ; }
+; /* end of [l0ab] */
+
+stai0de /* idenitifer for packages */
+  : IDENTIFIER_alp                      { $$ = stai0de_make($1) ; }
+; /* end of [stai0de] */
+
+/* ****** ****** */
+
+p0rec /* precedence */
+  : /* empty */                         { $$ = p0rec_emp() ; }
+  | LITERAL_int                         { $$ = p0rec_int($1) ; }
+  | LPAREN i0de RPAREN                  { $$ = p0rec_ide($2) ; }
+  | LPAREN i0de IDENTIFIER_sym LITERAL_int RPAREN
+                                        { $$ = p0rec_opr($2, $3, $4) ; }
+; /* end of [p0rec] */
+
+/* ****** ****** */
+
+e0xp /* generic expression */
+  : e0xp atme0xp                        { $$ = e0xp_app($1, $2) ; }
+  | atme0xp                             { $$ = $1 ; }
+; /* end of [e0xp] */
+
+atme0xp /* atomic generic expression */
+  : LITERAL_char                        { $$ = e0xp_char($1) ; }
+  | LITERAL_float                       { $$ = e0xp_float($1) ; }
+  | LITERAL_int                         { $$ = e0xp_int($1) ; }
+  | LITERAL_string                      { $$ = e0xp_string($1) ; }
+  | i0de                                { $$ = e0xp_ide($1) ; }
+  | LPAREN e0xpseq RPAREN               { $$ = e0xp_list($1, $2, $3) ; }
+  | PERCENTLPAREN e0xp RPAREN           { $$ = e0xp_eval($1, $2, $3) ; }
+; /* end of [atme0xp] */
+
+e0xpseq /* generic expression sequence */
+  : /* empty */                         { $$ = e0xplst_nil() ; }
+  | e0xp commae0xpseq                   { $$ = e0xplst_cons($1, $2) ; }
+; /* end of [e0xpseq] */
+
+commae0xpseq
+  : /* empty */                         { $$ = e0xplst_nil() ; }
+  | COMMA e0xp commae0xpseq             { $$ = e0xplst_cons($2, $3) ; }
+; /* end of [commae0xpseq] */
+  
+e0xpopt
+  : /* empty */                         { $$ = e0xpopt_none() ; }
+  | e0xp                                { $$ = e0xpopt_some($1) ; }
+; /* end of [e0xpopt] */
+
+/* ****** ****** */
+
+e0ffid /* alphanum identifier for effects */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+; /* end of [e0ffid] */
+
+e0fftag /* effect tag */
+  : BANG e0ffid                         { $$ = e0fftag_cst (0, $2) ; }
+  | TILDE e0ffid                        { $$ = e0fftag_cst (1, $2) ; }
+  | e0ffid                              { $$ = e0fftag_var($1) ; }
+  | FUN                                 { $$ = e0fftag_var_fun($1) ; }
+  | LITERAL_int                         { $$ = e0fftag_int($1) ; }
+; /* end of [e0fftag] */
+
+e0fftagseq /* effect tag sequence */
+  : /* empty */                         { $$ = e0fftaglst_nil() ; }
+  | e0fftag commae0fftagseq             { $$ = e0fftaglst_cons($1, $2) ; }
+; /* end of [e0fftagseq] */
+
+commae0fftagseq
+  : /* empty */                         { $$ = e0fftaglst_nil() ; }
+  | COMMA e0fftag commae0fftagseq       { $$ = e0fftaglst_cons($2, $3) ; }
+; /* end of [commae0fftagseq] */
+
+colonwith /* effection annotation */
+  : COLON                               { $$ = e0fftaglstopt_none() ; }
+  | COLONLTGT                           { $$ = e0fftaglstopt_some(e0fftaglst_nil()) ; }
+  | COLONLT e0fftagseq GT               { $$ = e0fftaglstopt_some($2) ; }
+; /* end of [colonwith] */
+
+/* ****** ****** */
+
+/* sorts and sortpols */
+
+/* ****** ****** */
+
+s0rt /* sort */
+  : s0rt atms0rt                        { $$ = s0rt_app($1, $2) ; }
+  | atms0rt                             { $$ = $1 ; }
+; /* end of [s0rt] */
+
+s0rtq /* sort qualifier */
+  : i0de_dlr DOT                        { $$ = s0rtq_sym($1) ; }
+  | DOLLAR LITERAL_string DOT           { $$ = s0rtq_str($2) ; }
+; /* end of [s0rtq] */
+
+s0rtid /* sort identifier */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+  | IDENTIFIER_sym                      { $$ = $1 ; }
+  | T0YPE                               { $$ = i0de_make_t0ype($1) ; }
+  | VIEWT0YPE                           { $$ = i0de_make_viewt0ype($1) ; }
+  | BACKSLASH                           { $$ = i0de_make_backslash($1) ; }
+  | MINUSGT                             { $$ = i0de_make_minusgt($1) ; }
+  | MINUSLTGT                           { $$ = i0de_make_minusltgt($1) ; }
+; /* end of [s0rtid] */
+
+atms0rt /* atomic sort */
+  : s0rtid                              { $$ = s0rt_ide($1) ; }
+  | s0rtq s0rtid                        { $$ = s0rt_qid($1, $2) ; }
+  | LPAREN s0rtseq RPAREN               { $$ = s0rt_list($1, $2, $3) ; }
+  | ATLPAREN s0rtseq RPAREN             { $$ = s0rt_tup($1, $2, $3) ; }
+; /* end of [atms0rt] */
+
+s0rtseq /* sort sequence */
+  : /* empty */                         { $$ = s0rtlst_nil() ; }
+  | s0rt commas0rtseq                   { $$ = s0rtlst_cons($1, $2) ; }
+; /* end of [s0rtseq] */
+
+commas0rtseq
+  : /* empty */                         { $$ = s0rtlst_nil() ; }
+  | COMMA s0rt commas0rtseq             { $$ = s0rtlst_cons($2, $3) ; }
+; /* end of [commas0rtseq] */
+
+s0rtpol /* sort with polarity */
+  : s0rt                                { $$ = s0rtpol_make($1, 0) ; }
+  | PROPMINUS                           { $$ = s0rtpol_make(s0rt_prop($1), -1) ; }
+  | PROPPLUS                            { $$ = s0rtpol_make(s0rt_prop($1),  1) ; }
+  | TYPEMINUS                           { $$ = s0rtpol_make(s0rt_type($1), -1) ; }
+  | TYPEPLUS                            { $$ = s0rtpol_make(s0rt_type($1),  1) ; }
+  | T0YPEMINUS                          { $$ = s0rtpol_make(s0rt_t0ype($1), -1) ; }
+  | T0YPEPLUS                           { $$ = s0rtpol_make(s0rt_t0ype($1),  1) ; }
+  | VIEWMINUS                           { $$ = s0rtpol_make(s0rt_view($1), -1) ; }
+  | VIEWPLUS                            { $$ = s0rtpol_make(s0rt_view($1),  1) ; }
+  | VIEWTYPEMINUS                       { $$ = s0rtpol_make(s0rt_viewtype($1), -1) ; }
+  | VIEWTYPEPLUS                        { $$ = s0rtpol_make(s0rt_viewtype($1),  1) ; }
+  | VIEWT0YPEMINUS                      { $$ = s0rtpol_make(s0rt_viewt0ype($1), -1) ; }
+  | VIEWT0YPEPLUS                       { $$ = s0rtpol_make(s0rt_viewt0ype($1),  1) ; }
+; /* end of [s0rtpol] */
+
+/* ****** ****** */
+
+d0atsrtcon /* datasort constructor */
+  : i0de                                { $$ = d0atsrtcon_make_none($1) ; }
+  | i0de OF s0rt                        { $$ = d0atsrtcon_make_some($1, $3) ; }
+; /* end of [d0atsrtcon] */
+
+d0atsrtconseq /* datasort constructor sequence */
+  : bard0atsrtconseq                    { $$ = $1 ; }
+  | d0atsrtcon bard0atsrtconseq         { $$ = d0atsrtconlst_cons($1, $2) ; }
+; /* end of [d0atsrtconseq] */
+
+bard0atsrtconseq
+  : /* empty */                         { $$ = d0atsrtconlst_nil() ; }
+  | BAR d0atsrtcon bard0atsrtconseq     { $$ = d0atsrtconlst_cons($2, $3) ; }
+; /* end of [bard0atsrtconseq] */
+
+d0atsrtdec /* datasort declaration */
+  : i0de EQ d0atsrtconseq               { $$ = d0atsrtdec_make($1, $3) ; }
+; /* end of [d0atsrtdec] */
+
+andd0atsrtdecseq /* additional datasort declaration sequence */
+  : /* empty */                         { $$ = d0atsrtdeclst_nil() ; }
+  | AND d0atsrtdec andd0atsrtdecseq     { $$ = d0atsrtdeclst_cons($2, $3) ; }
+; /* end of [andd0atsrtdecseq] */
+
+/* ****** ****** */
+
+s0taq /* static qualifier */
+  : i0de_dlr DOT                        { $$ = s0taq_symdot($1) ; }
+  | i0de_dlr COLON                      { $$ = s0taq_symcolon($1) ; }
+  | DOLLAR LITERAL_string DOT           { $$ = s0taq_fildot($2) ; }
+; /* end of [s0taq] */
+
+d0ynq /* dynamic qualifier */
+  : i0de_dlr DOT                        { $$ = d0ynq_symdot($1) ; }
+  | i0de_dlr COLON                      { $$ = d0ynq_symcolon($1) ; }
+  | i0de_dlr i0de_dlr COLON             { $$ = d0ynq_symdot_symcolon ($1, $2) ; }
+  | DOLLAR LITERAL_string DOT           { $$ = d0ynq_fildot($2) ; }
+  | DOLLAR LITERAL_string i0de_dlr COLON
+                                        { $$ = d0ynq_fildot_symcolon($2, $3) ; }
+;  /* end of [d0ynq] */
+
+/* ****** ****** */
+
+si0de /* static identifiers */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+  | IDENTIFIER_sym                      { $$ = $1 ; }
+/* keyword */
+  | R0EAD                               { $$ = i0de_make_r0ead($1) ; }
+/* keysymb */
+  | AMPERSAND                           { $$ = i0de_make_ampersand($1) ; }
+  | BACKSLASH                           { $$ = i0de_make_backslash($1) ; }
+  | BANG                                { $$ = i0de_make_bang($1) ; }
+  | GT                                  { $$ = i0de_make_gt($1) ; }
+  | LT                                  { $$ = i0de_make_lt($1) ; }
+  | MINUSGT                             { $$ = i0de_make_minusgt($1) ; }
+  | TILDE                               { $$ = i0de_make_tilde($1) ; }
+; /* end of [si0de] */
+
+sqi0de /* qualified static identifier */
+  : si0de                               { $$ = sqi0de_make_none($1) ; }
+  | s0taq si0de                         { $$ = sqi0de_make_some($1, $2) ; }
+; /* end of [sqi0de] */
+
+commasi0deseq /* additional static identifier sequence */
+  : /* empty */                         { $$ = i0delst_nil() ; }
+  | COMMA si0de commasi0deseq           { $$ = i0delst_cons($2, $3) ; }
+; /* end of [commasi0deseq] */
+
+/* ****** ****** */
+
+di0de /* dynamic identifier */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+  | IDENTIFIER_sym                      { $$ = $1 ; }
+/* keysymb identifier */
+  | BANG                                { $$ = i0de_make_bang($1) ; }
+  | BACKSLASH                           { $$ = i0de_make_backslash($1) ; }
+  | EQ                                  { $$ = i0de_make_eq($1) ; }
+  | GT                                  { $$ = i0de_make_gt($1) ; }
+  | GTLT                                { $$ = i0de_make_gtlt($1) ; }  
+  | LT                                  { $$ = i0de_make_lt($1) ; }
+  | TILDE                               { $$ = i0de_make_tilde($1) ; }
+; /* end of [di0de] */
+
+dqi0de /* qualified dynamic identifier */
+  : di0de                               { $$ = dqi0de_make_none($1) ; }
+  | d0ynq di0de                         { $$ = dqi0de_make_some($1, $2) ; }
+; /* end of [dqi0de] */
+
+pi0de /* dynamic pattern identifier */
+  : IDENTIFIER_alp                      { $$ = $1 ; }
+  | IDENTIFIER_sym                      { $$ = $1 ; }
+; /* end of [pi0de] */
+
+fi0de /* dynamic function identifier */
+  : di0de                               { $$ = $1 ; }
+  | OP di0de                            { $$ = $2 ; }
+; /* end of [fi0de] */
+  
+arri0de /* array identifier */
+  : IDENTIFIER_arr                      { $$ = $1 ; }
+; /* end of [arri0de] */
+
+arrqi0de /* qualified array identifier */
+  : arri0de                             { $$ = arrqi0de_make_none($1) ; }
+  | d0ynq arri0de                       { $$ = arrqi0de_make_some($1, $2) ; }
+; /* end of [arrqi0de] */
+
+tmpi0de /* template identifier */
+  : IDENTIFIER_tmp                      { $$ = $1 ; }
+; /* end of [tmpi0de] */
+
+tmpqi0de /* qualified template identifier */
+  : tmpi0de                             { $$ = tmpqi0de_make_none($1) ; }
+  | d0ynq tmpi0de                       { $$ = tmpqi0de_make_some($1, $2) ; }
+; /* end of [tmpqi0de] */
+
+/* ****** ****** */
+
+colons0rtopt /* optional sort annotation */
+  : /* empty */                         { $$ = s0rtopt_none() ; }
+  | COLON s0rt                          { $$ = s0rtopt_some($2) ; }
+; /* end of [colons0rtopt] */
+
+/* ****** ****** */
+
+s0arg /* static argument */
+  : si0de colons0rtopt                  { $$ = s0arg_make($1, $2) ; }
+; /* end of [s0arg] */
+
+s0argseq /* static argument sequence */
+  : /* empty */                         { $$ = s0arglst_nil() ; }
+  | s0arg commas0argseq                 { $$ = s0arglst_cons ($1, $2) ; }
+; /* end of [s0argseq] */
+
+commas0argseq
+  : /* empty */                         { $$ = s0arglst_nil() ; }
+  | COMMA s0arg commas0argseq           { $$ = s0arglst_cons ($2, $3) ; }
+; /* end of [commas0argseq] */
+
+s0argseqseq /* static argument sequence sequence */
+  : /* empty */                         { $$ = s0arglstlst_nil() ; }
+  | si0de s0argseqseq                   { $$ = s0arglstlst_cons_ide($1, $2) ; }
+  | LPAREN s0argseq RPAREN s0argseqseq  { $$ = s0arglstlst_cons($2, $4); }
+; /* end of [s0argseqseq] */
+
+/* ****** ****** */
+
+/*
+** template argument variables
+*/
+
+decs0argseq
+  : /* empty */ %prec TMPSARG           { $$ = s0arglst_nil() ; }
+  | s0arg commadecs0argseq              { $$ = s0arglst_cons($1, $2) ; }
+; /* end of [decs0argseq] */
+
+commadecs0argseq
+  : /* empty */ %prec TMPSARG           { $$ = s0arglst_nil() ; }
+  | COMMA s0arg commadecs0argseq        { $$ = s0arglst_cons($2, $3) ; }
+; /* end of [commadecs0argseq] */
+
+decs0argseqseq
+  : /* empty */                         { $$ = s0arglstlst_nil() ; }
+  | LBRACE decs0argseq RBRACE decs0argseqseq
+                                        { $$ = s0arglstlst_cons($2, $4) ; }
+; /* end of [decs0argseqseq] */
+
+/* ****** ****** */
+
+sp0at /* static pattern */
+  : sqi0de LPAREN s0argseq RPAREN       { $$ = sp0at_con($1, $3, $4) ; }
+; /* end of [sp0at] */
+
+/* ****** ****** */
+
+/*
+** static expressions
+*/
+
+s0exp /* static expression */
+  : apps0exp                            { $$ = $1 ; }
+  | s0exp COLON s0rt                    { $$ = s0exp_ann($1, $3) ; }
+  | LAM s0argseqseq colons0rtopt EQGT s0exp %prec SEXPLAM
+                                        { $$ = s0exp_lams($1, $2, $3, $5) ; }
+; /* end of [s0exp] */
+
+atms0exp /* atomic static expression */
+  : LITERAL_char                        { $$ = s0exp_char($1) ; }
+  | LITERAL_int                         { $$ = s0exp_int($1) ; }
+  | LITERAL_intsp                       { $$ = s0exp_intsp_err($1) ; }
+  | si0de                               { $$ = s0exp_ide($1) ; }
+  | OP si0de                            { $$ = s0exp_opide($1, $2) ; }
+  | s0taq si0de                         { $$ = s0exp_qid($1, $2) ; }
+/*
+  | sqi0de HASHLBRACE labs0expseq RBRACE
+                                        { $$ = s0exp_mod($1, $3, $4) ; }
+*/
+  | DLREXTYPE LITERAL_string            { $$ = s0exp_extern($1, $2) ; }
+  | LPAREN s0expseq RPAREN              { $$ = s0exp_list($1, $2, $3) ; }
+  | LPAREN s0expseq BAR s0expseq RPAREN { $$ = s0exp_list2($1, $2, $4, $5) ; }
+
+  | ATLPAREN s0expseq RPAREN            { $$ = s0exp_tytup(0, $1, $2, $3) ; }
+  | QUOTELPAREN s0expseq RPAREN         { $$ = s0exp_tytup(1, $1, $2, $3) ; }
+  | DLRTUP_T LPAREN s0expseq RPAREN     { $$ = s0exp_tytup(2, $1, $3, $4) ; }
+  | DLRTUP_VT LPAREN s0expseq RPAREN    { $$ = s0exp_tytup(3, $1, $3, $4) ; }
+
+  | ATLPAREN s0expseq BAR s0expseq RPAREN
+                                        { $$ = s0exp_tytup2(0, $1, $2, $4, $5) ; }
+  | QUOTELPAREN s0expseq BAR s0expseq RPAREN
+                                        { $$ = s0exp_tytup2(1, $1, $2, $4, $5) ; }
+  | DLRTUP_T LPAREN s0expseq BAR s0expseq RPAREN
+                                        { $$ = s0exp_tytup2(2, $1, $3, $5, $6) ; }
+  | DLRTUP_VT LPAREN s0expseq BAR s0expseq RPAREN
+                                        { $$ = s0exp_tytup2(3, $1, $3, $5, $6) ; }
+
+  | ATLBRACE labs0expseq RBRACE         { $$ = s0exp_tyrec(0, $1, $2, $3) ; }
+  | QUOTELBRACE labs0expseq RBRACE      { $$ = s0exp_tyrec(1, $1, $2, $3) ; }
+  | DLRREC_T LBRACE labs0expseq RBRACE  { $$ = s0exp_tyrec(2, $1, $3, $4) ; }
+  | DLRREC_VT LBRACE labs0expseq RBRACE { $$ = s0exp_tyrec(3, $1, $3, $4) ; }
+  | DLREXTYPE_STRUCT LITERAL_string OF LBRACE labs0expseq RBRACE
+                                        { $$ = s0exp_tyrec_ext($1, $2, $5, $6) ; }
+
+  | ATLBRACKET s0exp RBRACKET LBRACKET s0arrind
+                                        { $$ = s0exp_tyarr($1, $2, $5) ; }
+
+/*
+//
+// HX-2010-11-01: it is removed to simplify the syntax of ATS
+//
+  | STRUCT LBRACE labs0expseq RBRACE    { $$ = s0exp_struct($1, $3, $4) ; }
+  | UNION atms0exp LBRACE labs0expseq RBRACE
+                                        { $$ = s0exp_union($1, $2, $4, $5) ; }
+*/
+  | MINUSLT e0fftagseq GT               { $$ = s0exp_imp($1, $2, $3) ; }
+  | MINUSLTGT                           { $$ = s0exp_imp_emp($1) ; }
+  | LBRACE s0quaseq RBRACE              { $$ = s0exp_uni($1, $2, $3) ; }
+  | LBRACKET s0quaseq RBRACKET          { $$ = s0exp_exi($1, 0/*funres*/, $2, $3) ; }
+  | HASHLBRACKET s0quaseq RBRACKET      { $$ = s0exp_exi($1, 1/*funres*/, $2, $3) ; }
+; /* end of [atms0exp] */
+
+apps0exp /* static application */
+  : apps0exp atms0exp                   { $$ = s0exp_app($1, $2) ; }
+  | atms0exp                            { $$ = $1 ; }
+; /* end of [apps0exp] */
+
+s0expelt /* type for array or list elements */
+  : /* empty */                         { $$ = s0expopt_none () ; }
+  | LBRACE s0exp RBRACE                 { $$ = s0expopt_some ($2) ; }
+; /* end of [s0expelt] */
+
+s0arrind /* static array indexes */
+  : s0expseq RBRACKET %prec SARRIND     { $$ = s0arrind_make_sing($1, $2) ; }
+  | s0expseq RBRACKET LBRACKET s0arrind { $$ = s0arrind_make_cons($1, $4) ; }
+; /* end of [s0arrind] */
+
+s0qua /* static quantification */
+  : apps0exp                            { $$ = s0qua_prop($1) ; }
+  | si0de commasi0deseq COLON s0rtext   { $$ = s0qua_vars($1, $2, $4) ; }
+; /* end of [s0qua] */
+
+s0quaseq /* static quantification sequence */
+  : /* empty */                         { $$ = s0qualst_nil() ; }
+  | s0qua barsemis0quaseq               { $$ = s0qualst_cons($1, $2) ; }
+; /* end of [s0quaseq] */
+
+barsemis0quaseq /* semicolon may substitute for bar */
+  : /* empty */                         { $$ = s0qualst_nil() ; }
+  | BAR s0qua barsemis0quaseq           { $$ = s0qualst_cons($2, $3) ; }
+  | SEMICOLON s0qua barsemis0quaseq     { $$ = s0qualst_cons($2, $3) ; }
+; /* end of [barsemis0quaseq] */
+
+s0rtext /* extended sort (sort and subset sort) */
+  : s0rt                                { $$ = s0rtext_srt($1) ; }
+  | LBRACE si0de COLON s0rtext BAR s0exp barsemis0expseq RBRACE
+                                        { $$ = s0rtext_sub($1, $2, $4, $6, $7, $8) ; }
+; /* end of [s0rtext] */
+
+s0expseq /* static expression sequence */
+  : /* empty */                         { $$ = s0explst_nil() ; }
+  | s0expseq1                           { $$ = $1 ; }
+; /* end of [s0expseq] */
+
+barsemis0expseq /* semicolon may substitute for bar */
+  : /* empty */                         { $$ = s0explst_nil() ; }
+  | BAR s0exp barsemis0expseq           { $$ = s0explst_cons($2, $3) ; }
+  | SEMICOLON s0exp barsemis0expseq     { $$ = s0explst_cons($2, $3) ; }
+; /* end of [barsemis0expseq] */
+
+commas0expseq
+  : /* empty */                         { $$ = s0explst_nil() ; }
+  | COMMA s0exp commas0expseq           { $$ = s0explst_cons($2, $3) ; }
+; /* end of [commas0expseq] */
+
+s0expseq1
+  : s0exp commas0expseq                 { $$ = s0explst_cons($1, $2) ; }
+; /* end of [s0expseq1] */
+
+labs0expseq /* labeled static expression sequence */
+  : /* empty */                         { $$ = labs0explst_nil() ; }
+  | l0ab EQ s0exp commalabs0expseq      { $$ = labs0explst_cons($1, $3, $4) ; }
+; /* end of [labs0expseq] */
+
+commalabs0expseq
+  : /* empty */                         { $$ = labs0explst_nil() ; }
+  | COMMA l0ab EQ s0exp commalabs0expseq
+                                        { $$ = labs0explst_cons($2, $4, $5) ; }
+; /* end of [commalabs0expseq] */
+
+/* ****** ****** */
+
+/*
+** template argument expressions
+*/
+
+t0mps0exp
+  : atms0exp                            { $$ = $1 ; }
+  | t0mps0exp atms0exp                  { $$ = s0exp_app($1, $2) ; }
+; /* end of [t0mps0exp] */
+
+t1mps0exp
+  : t0mps0exp %prec TMPSEXP             { $$ = $1 ; }
+/*
+// HX-2010-12-04: removal
+  | si0de EQ t0mps0exp %prec TMPSEXP    { $$ = s0exp_named ($1, $3) ; }
+*/
+; /* end of [t1mps0exp] */
+
+t1mps0expseq
+  : /* empty */ %prec TMPSEXP           { $$ = s0explst_nil() ; }
+  | t1mps0exp commat1mps0expseq         { $$ = s0explst_cons($1, $2) ; }
+; /* end of [t1mps0expseq] */
+
+commat1mps0expseq
+  : /* empty */ %prec TMPSEXP           { $$ = s0explst_nil() ; }
+  | COMMA t1mps0exp commat1mps0expseq   { $$ = s0explst_cons($2, $3) ; }
+; /* end of [commat1mps0expseq] */
+
+gtlt_t1mps0expseqseq
+  : /* empty */                         { $$ = gtlt_t1mps0expseqseq_nil() ; }
+  | GTLT t1mps0expseq gtlt_t1mps0expseqseq
+                                        { $$ = gtlt_t1mps0expseqseq_cons_tok($1, $2, $3) ; }
+; /* end of [gtlt_t1mps0expseqseq] */
+
+/* ****** ****** */
+
+impqi0de
+  : dqi0de                              { $$ = impqi0de_make_none($1) ; }
+  | tmpqi0de t1mps0expseq gtlt_t1mps0expseqseq GT
+                                        { $$ = impqi0de_make_some($1, $2, $3, $4) ; }
+; /* end of [impqi0de] */
+
+/* ****** ****** */
+
+/*
+** static declarations
+*/
+
+/* ****** ****** */
+
+s0rtdef /* sort definition */
+  : s0rtid EQ s0rtext                   { $$ = s0rtdef_make($1, $3) ; }
+; /* end of [s0rtdef] */
+
+ands0rtdefseq /* additional sort definition sequence */
+  : /* empty */                         { $$ = s0rtdeflst_nil() ; }
+  | AND s0rtdef ands0rtdefseq           { $$ = s0rtdeflst_cons($2, $3) ; }
+; /* end of [ands0rtdefseq] */
+
+/* ****** ****** */
+
+d0atarg /* datatype argument */
+  : s0rtpol                             { $$ = d0atarg_srt($1) ; }
+  | i0de COLON s0rtpol                  { $$ = d0atarg_id_srt($1, $3) ; }
+; /* end of [d0atarg] */
+
+d0atargseq /* datatype argument sequence */
+  : /* empty */                         { $$ = d0atarglst_nil() ; }
+  | d0atarg commad0atargseq             { $$ = d0atarglst_cons($1, $2) ; }
+; /* end of [d0atargseq] */
+
+commad0atargseq
+  : /* empty */                         { $$ = d0atarglst_nil() ; }
+  | COMMA d0atarg commad0atargseq       { $$ = d0atarglst_cons($2, $3) ; }
+; /* end of [commad0atargseq] */
+
+/* ****** ****** */
+
+s0tacon /* abstract static constructor */
+  : si0de                               { $$ = s0tacon_make_none_none($1) ; }
+  | si0de LPAREN d0atargseq RPAREN      { $$ = s0tacon_make_some_none($1, $3, $4) ; }
+  | si0de EQ s0exp                      { $$ = s0tacon_make_none_some($1, $3) ; }
+  | si0de LPAREN d0atargseq RPAREN EQ s0exp
+                                        { $$ = s0tacon_make_some_some($1, $3, $6) ; }
+; /* end of [s0tacon] */
+
+ands0taconseq /* additional abstract static constructor sequence */
+  : /* empty */                         { $$ = s0taconlst_nil() ; }
+  | AND s0tacon ands0taconseq           { $$ = s0taconlst_cons($2, $3) ; }
+; /* end of [ands0taconseq] */
+
+/* ****** ****** */
+
+s0tacst /* static constant */
+  : si0de COLON s0rt                    { $$ = s0tacst_make_none($1, $3) ; }
+  | si0de LPAREN d0atargseq RPAREN COLON s0rt
+                                        { $$ = s0tacst_make_some($1, $3, $6) ; }
+; /* end of [s0tacst] */
+
+ands0tacstseq /* additional static constant sequence */
+  : /* empty */                         { $$ = s0tacstlst_nil() ; }
+  | AND s0tacst ands0tacstseq           { $$ = s0tacstlst_cons($2, $3) ; }
+; /* end of [ands0tacstseq] */
+
+/* ****** ****** */
+
+s0tavar /* static variable */
+  : si0de COLON s0rt                    { $$ = s0tavar_make($1, $3) ; }
+; /* end of [s0tavar] */
+
+ands0tavarseq /* additional static constant sequence */
+  : /* empty */                         { $$ = s0tavarlst_nil() ; }
+  | AND s0tavar ands0tavarseq           { $$ = s0tavarlst_cons($2, $3) ; }
+; /* end of [ands0tavarseq] */
+
+/* ****** ****** */
+
+s0expdef /* static definition */
+  : si0de s0argseqseq colons0rtopt EQ s0exp
+                                        { $$ = s0expdef_make ($1, $2, $3, $5) ; }
+; /* end of [s0expdef] */
+
+ands0expdefseq /* additional static definition sequence */
+  : /* empty */                         { $$ = s0expdeflst_nil() ; }
+  | AND s0expdef ands0expdefseq         { $$ = s0expdeflst_cons($2, $3) ; }
+; /* end of [ands0expdefseq] */
+
+/* ****** ****** */
+
+s0aspdec /* static assumption (for a static abstract constructor) */
+  : sqi0de s0argseqseq colons0rtopt EQ s0exp
+                                        { $$ = s0aspdec_make($1, $2, $3, $5) ; }
+; /* end of [s0aspdec] */
+
+/* ****** ****** */
+
+/*
+** dataprop/type/view/viewtype declarations
+*/
+
+conq0uaseq /* quantifiers */
+  : /* empty */                         { $$ = s0qualstlst_nil() ; }
+  | LBRACE s0quaseq RBRACE conq0uaseq   { $$ = s0qualstlst_cons($2, $4) ; }
+; /* end of [conq0uaseq] */
+
+coni0ndopt /* type indexes are optional */
+  : /* empty */                         { $$ = s0expopt_none() ; }
+  | LPAREN s0expseq RPAREN              { $$ = s0expopt_some(s0exp_list($1, $2, $3)) ; }
+; /* end of [coni0ndopt] */
+
+cona0rgopt /* arguments are optional */
+  : /* empty */                         { $$ = s0expopt_none() ; }
+  | OF s0exp                            { $$ = s0expopt_some($2) ; }
+; /* end of [cona0rgopt] */
+
+d0atcon /* data constructor */
+  : conq0uaseq di0de coni0ndopt cona0rgopt
+                                        { $$ = d0atcon_make($1, $2, $3, $4) ; }
+; /* end of [d0atcon] */
+
+d0atconseq /* data constructor sequence: the first bar is optional */
+  : bard0atconseq                       { $$ = $1 ; }
+  | d0atcon bard0atconseq               { $$ = d0atconlst_cons($1, $2) ; }
+; /* end of [d0atconseq] */
+
+bard0atconseq
+  : /* empty */                         { $$ = d0atconlst_nil() ; }
+  | BAR d0atcon bard0atconseq           { $$ = d0atconlst_cons($2, $3) ; }
+; /* end of [bard0atconseq] */
+
+d0atdec /* datatype declaration */
+  : si0de EQ d0atconseq                 { $$ = d0atdec_make_none($1, $3) ; }
+  | si0de LPAREN d0atargseq RPAREN EQ d0atconseq
+                                        { $$ = d0atdec_make_some($1, $3, $4, $6) ; }
+; /* end of [d0atdec] */
+
+andd0atdecseq /* additional datatype declaration sequence */
+  : /* empty */                         { $$ = d0atdeclst_nil() ; }
+  | AND d0atdec andd0atdecseq           { $$ = d0atdeclst_cons($2, $3) ; }
+; /* end of [andd0atdecseq] */
+
+s0expdefseqopt /* optional static definition sequence */
+  : /* empty */                         { $$ = s0expdeflst_nil() ; }
+  | WHERE s0expdef ands0expdefseq       { $$ = s0expdeflst_cons($2, $3) ; }
+; /* end of [s0expdefseqopt] */
+
+/* ****** ****** */
+
+/*
+** exception constructor declaration
+*/
+
+e0xndec
+  : conq0uaseq di0de cona0rgopt         { $$ = e0xndec_make($1, $2, $3) ; }
+; /* end of [e0xndec] */
+
+ande0xndecseq
+  : /* empty */                         { $$ = e0xndeclst_nil() ; }
+  | AND e0xndec ande0xndecseq           { $$ = e0xndeclst_cons($2, $3) ; }
+; /* end of [ande0xndecseq] */
+
+/* ****** ****** */
+
+/*
+//
+// HX-2010-05-12: the OOP plan is permanently abandoned
+//
+s0upclss: SUPER COLON s0expseq          { $$ = $3 ; }
+;
+
+m0thdef
+   :                                    { $$ = d0expopt_none() ; }
+   | EQ d0exp                           { $$ = d0expopt_some($2) ; }
+;
+
+m0thdec
+   : METHOD di0de f0arg1seq colonwith s0exp m0thdef
+                                        { $$ = m0thdec_make_mtd($1, $2, $3, $4, $5, $6) ; }
+   | VAL di0de COLON s0exp m0thdef      { $$ = m0thdec_make_val($1, $2, $4, $5) ; }
+   | VAR di0de COLON s0exp m0thdef      { $$ = m0thdec_make_var($1, $2, $4, $5) ; }
+   | IMPLEMENT di0de f0arg2seq colons0expopt EQ d0exp
+                                        { $$ = m0thdec_make_imp($1, $2, $3, $4, $6) ; }
+;
+
+m0thdecseq
+  :                                     { $$ = m0thdeclst_nil() ; }
+  | m0thdec m0thdecseq                  { $$ = m0thdeclst_cons($1, $2) ; }
+;
+
+c0lassdec
+  : si0de s0argseqseq EQ LBRACE s0upclss m0thdecseq RBRACE
+                                        { $$ = c0lassdec_make($1, $2, $5, $6, $7) ; }
+;
+*/
+
+/* ****** ****** */
+
+/*
+** dynamic variable with optional type annotation
+*/
+
+p0arg
+  : pi0de                               { $$ = p0arg_make_none($1) ; }
+  | pi0de COLON s0exp                   { $$ = p0arg_make_some($1, $3) ; }
+; /* end of [p0arg] */
+
+p0argseq
+  : /* empty */                         { $$ = p0arglst_nil() ; }
+  | p0arg commap0argseq                 { $$ = p0arglst_cons($1, $2) ; }
+; /* end of [p0argseq] */
+
+commap0argseq
+  : /* empty */                         { $$ = p0arglst_nil() ; }
+  | COMMA p0arg commap0argseq           { $$ = p0arglst_cons($2, $3) ; }
+; /* end of [commap0argseq] */
+
+d0arg
+  : pi0de                               { $$ = d0arg_var($1) ; }
+  | LPAREN p0argseq RPAREN              { $$ = d0arg_dyn($1, $2, $3) ; }
+  | LPAREN p0argseq BAR p0argseq RPAREN { $$ = d0arg_dyn2($1, $2, $4, $5) ; }
+  | LBRACE s0quaseq RBRACE              { $$ = d0arg_sta($1, $2, $3) ; }
+; /* end of [d0arg] */
+
+d0argseq
+  : /* empty */                         { $$ = d0arglst_nil() ; }
+  | d0arg d0argseq                      { $$ = d0arglst_cons($1, $2) ; }
+; /* end of [d0argseq] */
+
+/* ****** ****** */
+
+extnamopt
+  : /* empty */                         { $$ = extnamopt_none() ; }
+  | EQ LITERAL_string                   { $$ = extnamopt_some($2) ; }
+; /* end of [extnamope] */
+
+d0cstdec
+  : di0de d0argseq colonwith s0exp extnamopt
+                                        { $$ = d0cstdec_make($1, $2, $3, $4, $5) ; }
+; /* end of [d0cstdec] */
+
+andd0cstdecseq
+  : /* empty */                         { $$ = d0cstdeclst_nil() ; }
+  | AND d0cstdec andd0cstdecseq         { $$ = d0cstdeclst_cons($2, $3) ; }
+; /* end of [andd0cstdecseq] */
+
+/* ****** ****** */
+
+s0vararg
+  : DOTDOT                              { $$ = s0vararg_one() ; }
+  | DOTDOTDOT                           { $$ = s0vararg_all() ; }
+  | s0argseq                            { $$ = s0vararg_seq($1) ; }
+; /* end of [s0vararg] */
+
+s0exparg
+  : DOTDOT                              { $$ = s0exparg_one() ; }
+  | DOTDOTDOT                           { $$ = s0exparg_all() ; }
+  | s0expseq1                           { $$ = s0exparg_seq($1) ; }
+; /* end of [s0exparg] */
+
+s0elop
+  : DOT                                 { $$ = s0elop_make (0, $1) ; }
+  | MINUSGT                             { $$ = s0elop_make (1, $1) ; }
+; /* end of [s0elop] */
+
+witht0ype
+  : /* empty */                         { $$ = witht0ype_none() ; }
+  | WITHPROP s0exp                      { $$ = witht0ype_prop($2) ; }
+  | WITHTYPE s0exp                      { $$ = witht0ype_type($2) ; }
+  | WITHVIEW s0exp                      { $$ = witht0ype_view($2) ; }
+  | WITHVIEWTYPE s0exp                  { $$ = witht0ype_viewtype($2) ; }
+; /* end of [withtype] */
+
+/* ****** ****** */
+
+/*
+** dynamic patterns
+*/
+
+p0at
+  : atmp0at argp0atseq                  { $$ = p0at_apps($1, $2) ; }
+  | p0at COLON s0exp                    { $$ = p0at_ann($1, $3) ; }
+  | pi0de AS p0at %prec PATAS           { $$ = p0at_as($1, $3) ; }
+  | BANG pi0de AS p0at %prec PATAS      { $$ = p0at_refas($1, $2, $4) ; }
+  | TILDE p0at %prec PATFREE            { $$ = p0at_free($1, $2) ; }
+; /* end of [p0at] */
+
+atmp0at
+  : LITERAL_char                        { $$ = p0at_char($1) ; }
+  | LITERAL_int                         { $$ = p0at_int($1) ; }
+  | LITERAL_float                       { $$ = p0at_float($1) ; }
+  | LITERAL_string                      { $$ = p0at_string($1) ; }
+  | pi0de                               { $$ = p0at_ide($1) ; }
+  | BANG pi0de                          { $$ = p0at_ref($1, $2) ; }
+  | OP pi0de                            { $$ = p0at_opide($1, $2) ; }
+  | d0ynq pi0de                         { $$ = p0at_qid($1, $2) ; }
+  | LPAREN p0atseq RPAREN               { $$ = p0at_list($1, $2, $3) ; }
+  | LPAREN p0atseq BAR p0atseq RPAREN   { $$ = p0at_list2($1, $2, $4, $5) ; }
+  | QUOTELBRACKET p0atseq RBRACKET      { $$ = p0at_lst($1, $2, $3) ; }
+  | ATLPAREN p0atseq RPAREN             { $$ = p0at_tup(0, $1, $2, $3) ; }
+  | QUOTELPAREN p0atseq RPAREN          { $$ = p0at_tup(1, $1, $2, $3) ; }
+  | ATLPAREN p0atseq BAR p0atseq RPAREN { $$ = p0at_tup2(0, $1, $2, $4, $5) ; }
+  | QUOTELPAREN p0atseq BAR p0atseq RPAREN
+                                        { $$ = p0at_tup2(1, $1, $2, $4, $5) ; }
+  | ATLBRACE labp0atseq RBRACE          { $$ = p0at_rec(0, $1, $2, $3) ; }
+  | QUOTELBRACE labp0atseq RBRACE       { $$ = p0at_rec(1, $1, $2, $3) ; }
+  | LBRACKET s0argseq RBRACKET          { $$ = p0at_exist($1, $2, $3) ; }
+; /* end of [atmp0at] */
+
+argp0at
+  : atmp0at                             { $$ = $1 ; }
+  | LBRACE s0vararg RBRACE              { $$ = p0at_svararg($1, $2, $3) ; }
+; /* end of [argp0at] */
+
+argp0atseq
+  : /* empty */                         { $$ = p0atlst_nil() ; }
+  | argp0at argp0atseq                  { $$ = p0atlst_cons($1, $2) ; }
+; /* end of [argp0atseq] */
+
+p0atseq
+  : /* empty */                         { $$ = p0atlst_nil() ; }
+  | p0at commap0atseq                   { $$ = p0atlst_cons($1, $2) ; }
+; /* end of [p0atseq] */
+
+commap0atseq
+  : /* empty */                         { $$ = p0atlst_nil() ; }
+  | COMMA p0at commap0atseq             { $$ = p0atlst_cons($2, $3) ; }
+; /* end of [commap0atseq] */
+
+labp0atseq
+  : /* empty */                         { $$ = labp0atlst_nil() ; }
+  | DOTDOTDOT                           { $$ = labp0atlst_dot() ; }
+  | l0ab EQ p0at commalabp0atseq        { $$ = labp0atlst_cons($1, $3, $4) ; } 
+; /* end of [labp0atseq] */
+
+commalabp0atseq
+  : /* empty */                         { $$ = labp0atlst_nil() ; }
+  | COMMA DOTDOTDOT                     { $$ = labp0atlst_dot() ; }
+  | COMMA l0ab EQ p0at commalabp0atseq  { $$ = labp0atlst_cons($2, $4, $5) ; }
+; /* end of [commalabp0atseq] */
+
+/* ****** ****** */
+
+/*
+** dynamic function arguments
+*/
+
+f0arg1
+  : LBRACE s0quaseq RBRACE              { $$ = f0arg_sta1($1, $2, $3) ; }
+  | atmp0at                             { $$ = f0arg_dyn($1) ; }
+  | DOTLT s0expseq GTDOT                { $$ = f0arg_met_some($1, $2, $3) ; }
+  | DOTLTGTDOT                          { $$ = f0arg_met_none($1) ; }
+; /* end of [f0arg1] */
+
+f0arg1seq
+  : /* empty */                         { $$ = f0arglst_nil() ; }
+  | f0arg1 f0arg1seq                    { $$ = f0arglst_cons($1, $2) ; }
+; /* end of [f0arg1seq] */
+
+f0arg2
+  : LBRACE s0argseq RBRACE              { $$ = f0arg_sta2($1, $2, $3) ; }
+  | atmp0at                             { $$ = f0arg_dyn($1) ; }
+/*
+  | DOTLT s0expseq GTDOT                { $$ = f0arg_met_some($1, $2, $3) ; }
+  | DOTLTGTDOT                          { $$ = f0arg_met_none($1) ; }
+*/
+; /* end of [f0arg2] */
+
+f0arg2seq
+  : /* empty */                         { $$ = f0arglst_nil() ; }
+  | f0arg2 f0arg2seq                    { $$ = f0arglst_cons($1, $2) ; }
+; /* end of [f0arg2seq] */
+
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+objc0ls
+  : LPAREN s0exp RPAREN                 { $$ = $2 ; }
+; // end of [objc0ls]
+*/
+
+/* ****** ****** */
+
+/*
+** dynamic expressions
+*/
+
+d0exp
+  : atmd0exp argd0expseq                { $$ = d0exp_apps($1, $2) ; }
+  | d0exp COLON s0exp                   { $$ = d0exp_ann($1, $3) ; }
+  | ifhead d0exp THEN d0exp %prec DEXPIF
+                                        { $$ = d0exp_if_none($1, $2, $4) ; }
+  | ifhead d0exp THEN d0exp ELSE d0exp %prec DEXPIF
+                                        { $$ = d0exp_if_some($1, $2, $4, $6) ; }
+  | sifhead s0exp THEN d0exp ELSE d0exp %prec DEXPIF
+                                        { $$ = d0exp_sif($1, $2, $4, $6) ; }
+  | casehead d0exp OF c0lauseq %prec DEXPCASE
+                                        { $$ = d0exp_caseof($1, $2, $3, $4) ; }
+  | scasehead s0exp OF sc0lauseq %prec DEXPCASE
+                                        { $$ = d0exp_scaseof($1, $2, $3, $4) ; }
+  | lamkind f0arg1seq colons0expopt funarrow d0exp %prec DEXPLAM
+                                        { $$ = d0exp_lam($1, $2, $3, $4, $5 ) ; }
+  | fixkind di0de f0arg1seq colons0expopt funarrow d0exp %prec DEXPLAM
+                                        { $$ = d0exp_fix($1, $2, $3, $4, $5, $6) ; }
+  | forhead initestpost d0exp %prec DEXPFOR
+                                        { $$ = d0exp_for_itp ($1, $2, $3) ; }
+  | whilehead atmd0exp d0exp %prec DEXPWHILE
+                                        { $$ = d0exp_while ($1, $2, $3) ; }
+  | DLRRAISE d0exp %prec DEXPRAISE      { $$ = d0exp_raise($1, $2) ; }
+  | tryhead d0expsemiseq0 WITH c0lauseq %prec DEXPTRY
+                                        { $$ = d0exp_trywith_seq($1, $2, $3, $4) ; }
+  | d0exp WHERE LBRACE d0ecseq_dyn RBRACE
+                                        { $$ = d0exp_where ($1, $4, $5) ; }
+; /* end of [d0exp] */
+
+atmd0exp /* atomic dynamic expressions */
+  : LITERAL_char                        { $$ = d0exp_char($1) ; }
+  | LITERAL_float                       { $$ = d0exp_float($1) ; }
+  | LITERAL_floatsp                     { $$ = d0exp_floatsp($1) ; }
+  | LITERAL_int                         { $$ = d0exp_int($1) ; }
+  | LITERAL_intsp                       { $$ = d0exp_intsp($1) ; }
+  | LITERAL_string                      { $$ = d0exp_string($1) ; }
+
+  | SRPFILENAME                         { $$ = d0exp_FILENAME($1) ; }
+  | SRPLOCATION                         { $$ = d0exp_LOCATION($1) ; }
+
+  | di0de                               { $$ = d0exp_ide($1) ; }
+  | OP di0de                            { $$ = d0exp_opide($1, $2) ; }
+  | d0ynq i0de                          { $$ = d0exp_qid($1, $2) ; }
+
+  | i0dext                              { $$ = d0exp_idext($1) ; }
+
+  | AMPERSAND                           { $$ = d0exp_ptrof($1) ; }
+  | BREAK                               { $$ = d0exp_loopexn(0, $1) ; }
+  | CONTINUE                            { $$ = d0exp_loopexn(1, $1) ; }
+  | FOLDAT s0expdargseq                 { $$ = d0exp_foldat($1, $2) ; }
+  | FREEAT s0expdargseq                 { $$ = d0exp_freeat($1, $2) ; }
+  | VIEWAT                              { $$ = d0exp_viewat($1) ; }
+  | DLRDECRYPT                          { $$ = d0exp_crypt (-1, $1) ; }
+  | DLRENCRYPT                          { $$ = d0exp_crypt ( 1, $1) ; }
+  | DLRDELAY                            { $$ = d0exp_delay(0, $1) ; }
+  | DLRLDELAY                           { $$ = d0exp_delay(1, $1) ; }
+  | DLRDYNLOAD                          { $$ = d0exp_dynload($1) ; }
+  | DLREFFMASK_ALL                      { $$ = d0exp_effmask_all($1) ; }
+  | DLREFFMASK_EXN                      { $$ = d0exp_effmask_exn($1) ; }
+  | DLREFFMASK_NTM                      { $$ = d0exp_effmask_ntm($1) ; }
+  | DLREFFMASK_REF                      { $$ = d0exp_effmask_ref($1) ; }
+  | ATLBRACKET s0exp RBRACKET LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_arrinit_none ($1, $2, $5, $6) ; }
+  | ATLBRACKET s0exp RBRACKET LBRACKET d0exp RBRACKET LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_arrinit_some ($1, $2, $5, $8, $9) ; }
+  | DLRARRSZ s0expelt LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_arrsize ($1, $2, $3, $4, $5) ; }
+  | arrqi0de d0arrind                   { $$ = d0exp_arrsub ($1, $2) ; }
+  | s0elop l0ab                         { $$ = d0exp_sel_lab ($1, $2) ; }
+  | s0elop LBRACKET d0arrind            { $$ = d0exp_sel_ind ($1, $3) ; }
+  | tmpqi0de t1mps0expseq gtlt_t1mps0expseqseq GT
+                                        { $$ = d0exp_tmpid ($1, $2, $3, $4) ; }
+  | HASHLBRACKET s0exparg BAR d0exp RBRACKET
+                                        { $$ = d0exp_exist ($1, $2, $3, $4, $5) ; }
+  | LPAREN d0expcommaseq RPAREN         { $$ = d0exp_list ($1, $2, $3) ; }
+  | LPAREN d0expcommaseq BAR d0expcommaseq RPAREN
+                                        { $$ = d0exp_list2 ($1, $2, $4, $5) ; }
+
+  | DLRLST_T s0expelt LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_lst (0, $1, $2, $3, $4, $5) ; }
+  | DLRLST_VT s0expelt LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_lst (1, $1, $2, $3, $4, $5) ; }
+  | QUOTELBRACKET d0expcommaseq RBRACKET
+                                        { $$ = d0exp_lst_quote ($1, $2, $3) ; }
+
+  | BEGIN d0expsemiseq0 END             { $$ = d0exp_seq ($1, $2, $3) ; }
+  | LPAREN d0expsemiseq1 RPAREN         { $$ = d0exp_seq ($1, $2, $3) ; }
+
+/* dynamic tuples */
+  | ATLPAREN d0expcommaseq RPAREN       { $$ = d0exp_tup (0, $1, $2, $3) ; }
+  | QUOTELPAREN d0expcommaseq RPAREN    { $$ = d0exp_tup (1, $1, $2, $3) ; }
+  | DLRTUP_T LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_tup (2, $1, $3, $4) ; }
+  | DLRTUP_VT LPAREN d0expcommaseq RPAREN
+                                        { $$ = d0exp_tup (3, $1, $3, $4) ; }
+
+/* dynamic tuple pairs */
+  | ATLPAREN d0expcommaseq BAR d0expcommaseq RPAREN
+                                        { $$ = d0exp_tup2 (0, $1, $2, $4, $5) ; }
+  | QUOTELPAREN d0expcommaseq BAR d0expcommaseq RPAREN
+                                        { $$ = d0exp_tup2 (1, $1, $2, $4, $5) ; }
+
+/* dynamic records */
+  | ATLBRACE labd0expseq RBRACE         { $$ = d0exp_rec (0, $1, $2, $3) ; }
+  | QUOTELBRACE labd0expseq RBRACE      { $$ = d0exp_rec (1, $1, $2, $3) ; }
+  | DLRREC_T LBRACE labd0expseq RBRACE  { $$ = d0exp_rec (2, $1, $3, $4) ; }
+  | DLRREC_VT LBRACE labd0expseq RBRACE { $$ = d0exp_rec (3, $1, $3, $4) ; }
+
+/*
+//
+// HX-2010-05-12: the OOP plan is permanently abandoned
+//
+    // dynamic objects
+  | objkind objc0ls LBRACE m0thdecseq RBRACE
+                                        { $$ = d0exp_obj($1, $2, $4, $5) ; }
+*/
+    /* external dynamic value */
+  | DLREXTVAL LPAREN s0exp COMMA LITERAL_string RPAREN
+                                        { $$ = d0exp_extval($1, $3, $5, $6) ; }
+/* macsyn */
+  | PERCENTLPAREN d0exp RPAREN          { $$ = d0exp_macsyn_cross($1, $2, $3) ; }
+  | COMMALPAREN d0exp RPAREN            { $$ = d0exp_macsyn_decode($1, $2, $3) ; }
+  | BACKQUOTELPAREN d0expsemiseq0 RPAREN
+                                        { $$ = d0exp_macsyn_encode_seq($1, $2, $3) ; }
+/* letexp */
+  | LET d0ecseq_dyn IN d0expsemiseq0 END
+                                        { $$ = d0exp_let_seq($1, $2, $3, $4, $5) ; }
+/* decseq as exp */
+  | LBRACE d0ecseq_dyn RBRACE           { $$ = d0exp_decseq($1, $2, $3) ; }
+; /* end of [atmd0exp] */
+
+s0expdarg
+  : LBRACE s0exparg RBRACE              { $$ = d0exp_sexparg($1, $2, $3) ; }
+; /* end of [s0expdarg] */
+
+s0expdargseq
+  : /* empty */ %prec SEXPDARGSEQEMPTY  { $$ = d0explst_nil() ; }
+  | s0expdarg s0expdargseq              { $$ = d0explst_cons($1, $2) ;  }
+; /* end of [s0expdargseq] */
+
+argd0exp
+  : atmd0exp                            { $$ = $1 ; }
+  | s0expdarg                           { $$ = $1 ; }
+; /* end of [argd0exp] */
+
+argd0expseq
+  : /* empty */                         { $$ = d0explst_nil() ; }
+  | argd0exp argd0expseq                { $$ = d0explst_cons($1, $2) ; }
+; /* end of [argd0expseq] */
+
+d0arrind
+  : d0expcommaseq RBRACKET              { $$ = d0arrind_make_sing($1, $2) ; }
+  | d0expcommaseq RBRACKET LBRACKET d0arrind
+                                        { $$ = d0arrind_make_cons($1, $4) ; }
+; /* end of [d0arrind] */
+
+colons0expopt
+  : /* empty */                         { $$ = s0expopt_none() ; }
+  | COLON s0exp                         { $$ = s0expopt_some($2) ; }
+; /* end of [colons0expopt] */
+
+funarrow
+  : EQGT                                { $$ = e0fftaglstopt_none() ; }
+  | EQLTGT                              { $$ = e0fftaglstopt_some(e0fftaglst_nil()) ; }
+  | EQLT e0fftagseq GT                  { $$ = e0fftaglstopt_some($2) ; }
+; /* end of [funarrow] */
+
+caseinv
+  : /* empty */                         { $$ = i0nvresstate_none() ; }
+  | i0nvresstate EQGT                   { $$ = $1 ; }
+; /* end of [caseinv] */
+
+ifhead
+  : IF caseinv                          { $$ = ifhead_make($1, $2) ; }
+; /* end of [ifhead] */
+
+sifhead
+  : SIF caseinv                         { $$ = ifhead_make($1, $2) ; }
+; /* end of [sifhead] */
+
+casehead
+  : CASE caseinv                        { $$ = casehead_make(0, $1, $2) ; }
+  | CASEMINUS caseinv                   { $$ = casehead_make(-1, $1, $2) ; }
+  | CASEPLUS caseinv                    { $$ = casehead_make(1, $1, $2) ; }
+; /* end of [casehead] */
+
+scasehead
+  : SCASE caseinv                       { $$ = casehead_make(0, $1, $2) ; }
+; /* end of [scasehead] */
+
+forhead
+  : FOR                                 { $$ = loophead_make_none($1) ; }
+  | FORSTAR loopi0nv EQGT               { $$ = loophead_make_some($1, $2, $3) ; }
+; /* end of [forhead] */
+
+whilehead
+/*
+  : WHILE                               { $$ = loophead_make_none($1) ; }
+*/
+  : WHILESTAR loopi0nv EQGT             { $$ = loophead_make_some($1, $2, $3) ; }
+; /* end of [whilehead] */
+
+tryhead
+  : TRY /* no invariant */              { $$ = tryhead_make($1) ; }
+; /* end of [tryhead] */
+
+/*
+** dynamic expression sequences
+*/
+
+d0expcommaseq
+  : /* empty */                         { $$ = d0explst_nil() ; }
+  | d0exp commad0expseq                 { $$ = d0explst_cons($1, $2) ; }
+; /* end of [d0expcommaseq] */
+
+commad0expseq
+  : /* empty */                         { $$ = d0explst_nil() ; }
+  | COMMA d0exp commad0expseq           { $$ = d0explst_cons($2, $3) ; }
+; /* end of [commad0expseq] */
+
+d0expsemiseq0
+  : /* empty */                         { $$ = d0explst_nil() ; }
+  | d0exp                               { $$ = d0explst_sing($1) ; }
+  | d0exp SEMICOLON d0expsemiseq0       { $$ = d0explst_cons($1, $3) ; }
+; /* end of [d0expsemiseq0] */
+
+d0expsemiseq1 // containing at least on semicolon
+  : d0exp SEMICOLON d0expsemiseq0       { $$ = d0explst_cons($1, $3) ; }
+; /* end of [d0expsemiseq1] */
+
+labd0expseq
+  : /* empty */                         { $$ = labd0explst_nil() ; }
+  | l0ab EQ d0exp commalabd0expseq      { $$ = labd0explst_cons($1, $3, $4) ; }
+; /* end of [labd0expseq] */
+
+commalabd0expseq
+  : /* empty */                         { $$ = labd0explst_nil() ; }
+  | COMMA l0ab EQ d0exp commalabd0expseq
+                                        { $$ = labd0explst_cons($2, $4, $5) ; }
+; /* end of [commalabd0expseq] */
+
+/*
+** pattern matching
+*/
+
+m0atch
+  : d0exp                               { $$ = m0atch_make_none ($1) ; }
+  | d0exp AS p0at                       { $$ = m0atch_make_some ($1, $3) ; }
+; /* end of [m0atch] */
+
+m0atchseq
+  : m0atch andm0atchseq                 { $$ = m0atchlst_cons ($1, $2 ) ; }
+; /* end of [m0atchseq] */
+
+andm0atchseq
+  : /* empty */                         { $$ = m0atchlst_nil () ; }
+  | AND m0atch andm0atchseq             { $$ = m0atchlst_cons ($2, $3 ) ; }
+; /* end of [andm0atchseq] */
+
+guap0at
+  : p0at                                { $$ = guap0at_make_none($1) ; }
+  | p0at WHEN m0atchseq                 { $$ = guap0at_make_some($1, $3) ; }
+; /* end of [guap0at] */
+
+c0lau
+  : guap0at EQGT d0exp %prec CLAUS      { $$ = c0lau_make ($1, 0, 0, $3) ; }
+  | guap0at EQGTGT d0exp %prec CLAUS    { $$ = c0lau_make ($1, 1, 0, $3) ; }
+  | guap0at EQSLASHEQGT d0exp %prec CLAUS
+                                        { $$ = c0lau_make ($1, 0, 1, $3) ; }
+  | guap0at EQSLASHEQGTGT d0exp %prec CLAUS
+                                        { $$ = c0lau_make ($1, 1, 1, $3) ; }
+; /* end of [c0lau] */
+
+c0lauseq
+  : barc0lauseq                         { $$ = $1 ; }
+  | c0lau barc0lauseq                   { $$ = c0laulst_cons($1, $2) ; }
+; /* end of [c0lauseq] */
+
+barc0lauseq
+  : /* empty */ %prec BARCLAUSSEQNONE   { $$ = c0laulst_nil() ; } 
+  | BAR c0lau barc0lauseq               { $$ = c0laulst_cons($2, $3) ; }
+; /* end of [barc0lauseq] */
+
+sc0lau
+  : sp0at EQGT d0exp %prec CLAUS        { $$ = sc0lau_make($1, $3) ; }
+; /* end of [sc0lau] */
+
+sc0lauseq
+  : barsc0lauseq                        { $$ = $1 ; }
+  | sc0lau barsc0lauseq                 { $$ = sc0laulst_cons($1, $2) ; }
+; /* end of [sc0lauseq] */
+
+barsc0lauseq
+  : /* empty */ %prec BARCLAUSSEQNONE   { $$ = sc0laulst_nil() ; } 
+  | BAR sc0lau barsc0lauseq             { $$ = sc0laulst_cons($2, $3) ; }
+; /* end of [barsc0lauseq] */
+
+/*
+** invariants
+*/
+
+i0nvqua
+  : /* empty */                         { $$ = s0qualstopt_none() ; }
+  | LBRACE s0quaseq RBRACE              { $$ = s0qualstopt_some($2) ; }
+; /* end of [i0nvqua] */
+
+i0nvmet
+  : /* empty */                         { $$ = s0explstopt_none() ; }
+  | DOTLT s0expseq GTDOT                { $$ = s0explstopt_some($2) ; }
+  | DOTLTGTDOT                          { $$ = s0explstopt_some(s0explst_nil()) ; }
+; /* end of [i0nvmet] */ /* end of [i0nvmet] */
+
+i0nvarg
+  : di0de COLON                         { $$ = i0nvarg_make_none($1) ; }
+  | di0de COLON s0exp                   { $$ = i0nvarg_make_some($1, $3) ; }
+; /* end of [i0nvarg] */ /* end of [i0nvarg] */
+
+i0nvargseq
+  : /* empty */                         { $$ = i0nvarglst_nil() ; }
+  | i0nvarg commai0nvargseq             { $$ = i0nvarglst_cons($1, $2) ; }
+; /* end of [i0nvargseq] */ /* end of [i0nvargseq] */
+
+commai0nvargseq
+  : /* empty */                         { $$ = i0nvarglst_nil() ; }
+  | COMMA i0nvarg commai0nvargseq       { $$ = i0nvarglst_cons($2, $3) ; }
+; /* end of [commai0nvargseq] */ /* end of [commai0nvargseq] */
+
+i0nvargstate
+  : LPAREN i0nvargseq RPAREN            { $$ = $2 ; }
+; /* end of [i0nvargstate] */ /* end of [i0nvargstate] */
+
+i0nvresqua
+  : /* empty */                         { $$ = s0qualstopt_none() ; }
+  | LBRACKET s0quaseq RBRACKET          { $$ = s0qualstopt_some($2) ; }
+; /* end of [i0nvresqua] */ /* end of [i0nvresqua] */
+
+i0nvresstate
+  : /* empty */                         { $$ = i0nvresstate_none() ; }
+  | COLON i0nvresqua LPAREN i0nvargseq RPAREN
+                                        { $$ = i0nvresstate_some($2, $4) ; }
+; /* end of [i0nvresstate] */ /* end of [i0nvresstate] */
+
+loopi0nv
+  : i0nvqua i0nvmet i0nvargstate i0nvresstate
+                                        { $$ = loopi0nv_make($1, $2, $3, $4) ; }
+; /* end of [loopi0nv] */ /* end of [loopi0nv] */
+
+initestpost
+  : LPAREN d0expcommaseq SEMICOLON d0expcommaseq SEMICOLON d0expcommaseq RPAREN
+                                        { $$ = initestpost_make ($1,$2,$3,$4,$5,$6,$7) ; }
+; /* end of [initestpost] */ /* end of [initestpost] */
+
+/* ****** ****** */
+
+/*
+** macro definitions
+*/
+
+m0arg : pi0de                           { $$ = $1 ; }
+; /* end of [m0arg] */
+
+m0argseq
+  : /* empty */                         { $$ = i0delst_nil() ; }
+  | m0arg commam0argseq                 { $$ = i0delst_cons($1, $2) ; }
+; /* end of [m0argseq] */
+
+commam0argseq
+  : /* empty */                         { $$ = i0delst_nil() ; }
+  | COMMA m0arg commam0argseq           { $$ = i0delst_cons($2, $3) ; }
+; /* end of [commam0argseq] */
+
+m0acarg
+  : m0arg                               { $$ = m0acarg_one ($1) ; }
+  | LPAREN m0argseq RPAREN              { $$ = m0acarg_lst ($1, $2, $3) ; }
+; /* end of [m0acarg] */
+
+m0acargseq
+  : /* empty */                         { $$ = m0acarglst_nil () ; }
+  | m0acarg m0acargseq                  { $$ = m0acarglst_cons ($1, $2) ; }
+; /* end of [m0acargseq] */
+
+m0acdef
+  : di0de m0acargseq EQ d0exp           { $$ = m0acdef_make($1, $2, $4) ; }
+; /* end of [m0acdef] */
+
+andm0acdefseq
+  : /* empty */                         { $$ = m0acdeflst_nil() ; }
+  | AND m0acdef andm0acdefseq           { $$ = m0acdeflst_cons($2, $3) ; }
+; /* end of [andm0acdefseq] */
+
+/* ****** ****** */
+
+/*
+** individual declarations
+*/
+
+v0aldec
+  : p0at EQ d0exp witht0ype             { $$ = v0aldec_make ($1, $3, $4) ; }
+; /* end of [v0aldec] */
+
+andv0aldecseq
+  : /* empty */                         { $$ = v0aldeclst_nil() ; }
+  | AND v0aldec andv0aldecseq           { $$ = v0aldeclst_cons($2, $3) ; }
+; /* end of [andv0aldecseq] */
+
+f0undec
+  : fi0de f0arg1seq EQ d0exp witht0ype
+                                        { $$ = f0undec_make_none($1, $2, $4, $5) ; }
+  | fi0de f0arg1seq colonwith s0exp EQ d0exp witht0ype
+                                        { $$ = f0undec_make_some($1, $2, $3, $4, $6, $7) ; }
+; /* end of [f0undec] */
+
+andf0undecseq
+  : /* empty */                         { $$ = f0undeclst_nil() ; }
+  | AND f0undec andf0undecseq           { $$ = f0undeclst_cons($2, $3) ; }
+; /* end of [andf0undecseq] */
+
+v0arwth
+  : /* empty */                         { $$ = v0arwth_none () ; }
+  | WITH pi0de                          { $$ = v0arwth_some ($2) ; }
+; /* end of [v0arwth] */
+
+v0ardec /* stack-allocated variable */
+  : pi0de v0arwth EQ d0exp              { $$ = v0ardec_make_none_some(0, $1, $2, $4) ; }
+  | BANG pi0de v0arwth EQ d0exp         { $$ = v0ardec_make_none_some(1, $2, $3, $5) ; }
+  | pi0de COLON s0exp v0arwth           { $$ = v0ardec_make_some_none(0, $1, $3, $4) ; }
+  | pi0de COLON s0exp v0arwth EQ d0exp  { $$ = v0ardec_make_some_some(0, $1, $3, $4, $6) ; }
+; /* end of [v0ardec] */
+
+andv0ardecseq
+  : /* empty */                         { $$ = v0ardeclst_nil() ; }
+  | AND v0ardec andv0ardecseq           { $$ = v0ardeclst_cons($2, $3) ; }
+; /* end of [andv0ardecseq] */
+
+i0mpdec
+  : impqi0de f0arg2seq colons0expopt EQ d0exp
+                                        { $$ = i0mpdec_make($1, $2, $3, $5) ; }
+; /* end of [i0mpdec] */ /* end of [i0mpdec] */
+
+/* ****** ****** */
+
+/*
+** generic declarations
+*/
+
+d0ec
+  : INFIX p0rec i0deseq                 { $$ = d0ec_infix($1, $2,  0, $3) ; }
+  | INFIXL p0rec i0deseq                { $$ = d0ec_infix($1, $2, -1, $3) ; }
+  | INFIXR p0rec i0deseq                { $$ = d0ec_infix($1, $2,  1, $3) ; }
+  | PREFIX p0rec i0deseq                { $$ = d0ec_prefix($1, $2, $3) ; }
+  | POSTFIX p0rec i0deseq               { $$ = d0ec_postfix($1, $2, $3) ; }
+  | NONFIX i0deseq                      { $$ = d0ec_nonfix($1, $2) ; }
+  | SYMINTR i0deseq                     { $$ = d0ec_symintr($1, $2) ; }
+  | SRPUNDEF i0de                       { $$ = d0ec_e0xpundef($2) ; }
+  | SRPDEFINE i0de e0xpopt              { $$ = d0ec_e0xpdef($2, $3) ; }
+  | SRPASSERT e0xp                      { $$ = d0ec_e0xpact_assert($2) ; }
+  | SRPERROR e0xp                       { $$ = d0ec_e0xpact_error($2) ; }
+  | SRPPRINT e0xp                       { $$ = d0ec_e0xpact_print($2) ; }
+  | SORTDEF s0rtdef ands0rtdefseq       { $$ = d0ec_srtdefs($2, $3) ; }
+  | DATASORT d0atsrtdec andd0atsrtdecseq
+                                        { $$ = d0ec_datsrts(0, $2, $3) ; }
+  | DATAPARASORT d0atsrtdec andd0atsrtdecseq
+                                        { $$ = d0ec_datsrts(1, $2, $3) ; }
+  | abskind s0tacon ands0taconseq       { $$ = d0ec_stacons($1, $2, $3) ; }
+  | STA s0tacst ands0tacstseq           { $$ = d0ec_stacsts($2, $3) ; }
+  | STAVAR s0tavar ands0tavarseq        { $$ = d0ec_stavars($2, $3) ; }
+  | stadefkind s0expdef ands0expdefseq  { $$ = d0ec_sexpdefs($1, $2, $3) ; }
+  | ASSUME s0aspdec                     { $$ = d0ec_saspdec($2) ; }
+  | datakind d0atdec andd0atdecseq s0expdefseqopt
+                                        { $$ = d0ec_datdecs($1, $2, $3, $4) ; }
+  | EXCEPTION e0xndec ande0xndecseq     { $$ = d0ec_exndecs($1, $2, $3) ; } 
+/*
+// HX-2010-05-12: the OOP plan is permanently abandoned
+  | clskind d0ecargseq c0lassdec s0expdefseqopt
+                                        { $$ = d0ec_classdec($1, $2, $3, $4) ; }
+*/
+  | CLASSDEC si0de                      { $$ = d0ec_classdec_none ($1, $2) ; }
+  | CLASSDEC si0de COLON s0exp          { $$ = d0ec_classdec_some ($1, $2, $4) ; }
+
+  | OVERLOAD di0de WITH dqi0de          { $$ = d0ec_overload($1, $2, $4) ; }
+  | OVERLOAD LBRACKET RBRACKET WITH dqi0de
+                                        { $$ = d0ec_overload_lrbrackets($1, $2, $3, $5) ; }
+  | MACDEF m0acdef andm0acdefseq        { $$ = d0ec_macdefs(0, $2, $3) ; }
+  | MACDEF REC m0acdef andm0acdefseq    { $$ = d0ec_macdefs(-1/*error*/, $3, $4) ; }
+  | MACRODEF m0acdef andm0acdefseq      { $$ = d0ec_macdefs(1, $2, $3) ; }
+  | MACRODEF REC m0acdef andm0acdefseq  { $$ = d0ec_macdefs(2, $3, $4) ; }
+  | DYNLOAD LITERAL_string              { $$ = d0ec_dynload($2) ; }
+  | STALOAD LITERAL_string              { $$ = d0ec_staload_none($2) ; }
+  | STALOAD stai0de EQ LITERAL_string   { $$ = d0ec_staload_some($2, $4) ; }
+; /* end of [d0ec] */
+
+d0ecarg
+  : LBRACE s0quaseq RBRACE              { $$ = $2 ; }
+; /* end of [d0ecarg] */
+
+d0ecargseq
+  : /* empty */                         { $$ = s0qualstlst_nil() ; }
+  | d0ecarg d0ecargseq                  { $$ = s0qualstlst_cons($1, $2) ; }
+; /* end of [d0ecargseq] */
+
+semicolonseq
+  : /* empty */                         { ; }
+  | semicolonseq SEMICOLON              { ; }
+; /* end of [semicolonseq] */
+
+d0ec_sta
+  : d0ec                                { $$ = $1 ; }
+  | dcstkind d0ecargseq d0cstdec andd0cstdecseq
+                                        { $$ = d0ec_dcstdecs($1, $2, $3, $4) ; }
+  | LITERAL_extcode                     { $$ = d0ec_extcode_sta($1) ; }
+  | srpifkind guad0ec_sta               { $$ = d0ec_guadec($1, $2) ; }
+  | SRPINCLUDE LITERAL_string           { $$ = d0ec_include(0/*sta*/, $2) ; }
+  | LOCAL d0ecseq_sta IN d0ecseq_sta END
+                                        { $$ = d0ec_local($1, $2, $4, $5) ; }
+; /* end of [d0ec_sta] */
+
+guad0ec_sta
+  : e0xp srpthenopt d0ecseq_sta SRPENDIF
+                                        { $$ = guad0ec_one($1, $3, $4) ; }
+  | e0xp srpthenopt d0ecseq_sta SRPELSE d0ecseq_sta SRPENDIF
+                                        { $$ = guad0ec_two($1, $3, $5, $6) ; }
+  | e0xp srpthenopt d0ecseq_sta srpelifkind guad0ec_sta
+                                        { $$ = guad0ec_cons($1, $3, $4, $5) ; }
+; /* end of [guad0ec_sta] */
+
+d0ecseq_sta_rev /* tail-recursive */
+  : /* empty */                         { $$ = d0ecllst_nil() ; }
+  | d0ecseq_sta_rev d0ec_sta semicolonseq
+                                        { $$ = d0ecllst_cons($1, $2) ; }
+; /* end of [d0ecseq_sta_rev] */
+
+d0ecseq_sta
+  : d0ecseq_sta_rev                     { $$ = d0ecllst_reverse($1) ; }
+; /* end of [d0ecseq_sta] */
+
+d0ec_dyn
+  : d0ec                                { $$ = $1 ; }
+  | EXTERN dcstkind d0ecargseq d0cstdec andd0cstdecseq
+                                        { $$ = d0ec_dcstdecs($2, $3, $4, $5) ; }
+  | EXTERN TYPEDEF LITERAL_string EQ s0exp
+                                        { $$ = d0ec_extype($3, $5) ; }  
+  | EXTERN VAL LITERAL_string EQ d0exp  { $$ = d0ec_extval($3, $5) ; }
+  | valkind v0aldec andv0aldecseq       { $$ = d0ec_valdecs($1, $2, $3) ; }
+  | VAL PAR v0aldec andv0aldecseq       { $$ = d0ec_valdecs_par($3, $4) ; }
+  | VAL REC v0aldec andv0aldecseq       { $$ = d0ec_valdecs_rec($3, $4) ; }
+  | funkind d0ecargseq f0undec andf0undecseq       
+                                        { $$ = d0ec_fundecs($1, $2, $3, $4) ; }
+  | VAR v0ardec andv0ardecseq           { $$ = d0ec_vardecs($2, $3) ; }
+  | IMPLEMENT decs0argseqseq i0mpdec    { $$ = d0ec_impdec($1, $2, $3) ; }
+  | LOCAL d0ecseq_dyn IN d0ecseq_dyn END
+                                        { $$ = d0ec_local($1, $2, $4, $5) ; }
+  | LITERAL_extcode                     { $$ = d0ec_extcode_dyn($1) ; }
+  | srpifkind guad0ec_dyn               { $$ = d0ec_guadec($1, $2) ; }
+  | SRPINCLUDE LITERAL_string           { $$ = d0ec_include(1/*dyn*/, $2) ; }
+; /* end of [d0ec_dyn] */
+
+guad0ec_dyn
+  : e0xp srpthenopt d0ecseq_dyn SRPENDIF
+                                        { $$ = guad0ec_one($1, $3, $4) ; }
+  | e0xp srpthenopt d0ecseq_dyn SRPELSE d0ecseq_dyn SRPENDIF
+                                        { $$ = guad0ec_two($1, $3, $5, $6) ; }
+  | e0xp srpthenopt d0ecseq_dyn srpelifkind guad0ec_dyn
+                                        { $$ = guad0ec_cons($1, $3, $4, $5) ; }
+; /* end of [guad0ec_dyn] */
+
+d0ecseq_dyn_rev /* tail-recursive */
+  : /* empty */                         { $$ = d0ecllst_nil() ; }
+  | d0ecseq_dyn_rev d0ec_dyn semicolonseq
+                                        { $$ = d0ecllst_cons($1, $2) ; }
+; /* end of [d0ecseq_dyn_rev] */
+
+d0ecseq_dyn
+  : d0ecseq_dyn_rev                     { $$ = d0ecllst_reverse($1) ; }
+; /* end of [d0ecseq_dyn] */
+
+/* ****** ****** */
+
+%%
+
+/* ****** ****** */
+
+int
+yylex_tok0 = -1 ;
+
+int
+yylex() {
+//
+  int tok ;
+//
+  if (yylex_tok0 >= 0) {
+    tok = yylex_tok0 ; yylex_tok0 = -1 ;
+  } else {
+    tok = atsopt_lexer_token_get () ;
+  } // end of [if]
+/*
+** fprintf (stdout, "tok = %i\n", tok) ;
+*/
+  return tok ;
+//
+} /* end of [yylex_tok0] */
+
+//
+// HX: needed in [ats_lexer.lats]
+//
+ats_void_type
+yylval_char_set(c0har_t val)
+  { yylval.c0har = val ; return ; }
+
+ats_void_type
+yylval_extcode_set(e0xtcode_t val)
+  { yylval.e0xtcode = val ; return ; }
+
+ats_void_type
+yylval_float_set(f0loat_t val)
+  { yylval.f0loat = val ; return ; }
+
+ats_void_type
+yylval_floatsp_set(f0loatsp_t val)
+  { yylval.f0loatsp = val ; return ; }
+
+ats_void_type
+yylval_ide_set(i0de_t val)
+  { yylval.i0de = val ; return ; }
+
+ats_void_type
+yylval_int_set(i0nt_t val)
+  { yylval.i0nt = val ; return ; }
+
+ats_void_type
+yylval_intsp_set(i0ntsp_t val)
+  { yylval.i0ntsp = val ; return ; }
+
+ats_void_type
+yylval_string_set(s0tring_t val)
+  { yylval.s0tring = val ; return ; }
+
+ats_void_type
+yylval_token_set(t0kn_t val)
+  { yylval.t0kn = val ; return ; }
+
+// HX: implemented in [ats_filename.dats]
+extern ats_void_type atsopt_filename_prerr () ;
+//
+extern ats_ptr_type lexing_fstpos_get () ;
+extern ats_void_type lexing_prerr_position (ats_ptr_type) ;
+//
+void
+yyerror(char *s) {
+  fprintf (stderr, "%s: ", s) ;
+  atsopt_filename_prerr () ;
+  fprintf (stderr, ": [") ;
+  lexing_prerr_position (lexing_fstpos_get ()) ;
+  fprintf (stderr, "]\n") ;
+  exit (1) ; // HX: no error recovery yet; maybe in future
+  return ;
+} /* end of [yyerror] */
+
+ats_ptr_type
+yyparse_main (
+  ats_int_type tok0
+) {
+/*
+** HX: must take care of garbage collection
+*/
+  // fprintf (stderr, "yyparse_main: &yyss = %p\n", &yyss) ;
+  // ATS_GC_MARKROOT (&yyss, sizeof(short*)) ; // [ats_malloc_ngc] is used
+  // fprintf (stderr, "yyparse_main: &yyvs = %p\n", &yyvs) ;
+  // ATS_GC_MARKROOT (&yyvs, sizeof(YYSTYPE*)) ;  // [ats_malloc_ngc] is used
+/*
+** HX-2010-02-25:
+** if BISON is used then [yyval] is a stack variable and
+** thus there is no need to treat it as a GC root explicitly
+*/
+  extern YYSTYPE yyval;
+  // fprintf (stderr, "yyparse_main: &yyval = %p\n", &yyval) ;
+  ATS_GC_MARKROOT (&yyval, sizeof(YYSTYPE)) ;
+//
+  extern YYSTYPE yylval;
+  // fprintf (stderr, "yyparse_main: &yylval = %p\n", &yylval) ;
+  ATS_GC_MARKROOT (&yylval, sizeof(YYSTYPE)) ;
+//
+  yylex_tok0 = tok0 ;
+//
+  yyparse () ;
+//
+  return yyval.d0eclst ;
+} /* end of [yyparse_main] */
+
+/* ****** ****** */
+
+/* end of [ats_grammar.yats] */

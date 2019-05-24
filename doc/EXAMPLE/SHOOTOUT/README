@@ -1,0 +1,41 @@
+The examples in this directory are taken from the following site (The Great
+Computer Language Shootout):
+
+  http://shootout.alioth.debian.org/
+
+I mostly translated existing ML programs or C programs into ATS programs
+in all these examples. I did this during the first weekend of June, 2007.
+
+Given the performance of each tested ATS program, it is probably fair to
+say that ATS code (in functional style) can be as efficient as the C
+code. ATS at this point clearly outperforms Haskell (GHC), O'Caml
+(ocamlopt) and ML (both MLton and SML/NJ) on most of these examples by a
+significant margin as far as efficiency is of the concern.
+
+------
+
+README
+Makefile
+
+binary-search.dats
+binary-search-lin.dats
+fannkuch.dats
+fasta.dats
+fasta_output.txt (input file for k-nucleotime and reverse-complement)
+k-nucleotide.dats
+mandelbrot.dats
+nbody.dats
+nsieve-bits.dats
+nsieve.dats
+nsieve.ml.dats
+partial-sums.dats
+pidigits.dats
+recursive.dats
+reverse-complement.dats
+spectral-norm.dats
+sum-file.dats
+sum-file-input.txt (input file for sum-file)
+
+
+
+

@@ -1,0 +1,48 @@
+<pre>
+ats-lang-anairiats-0.2.2:
+
+As usual, this release contains a large number of fixes. Also, many new
+coding examples are added. Compared to the previous version, the ATS
+interface for libc functions is greatly extended, and there are now many
+examples involving systems programming that are available in the following
+directory:
+
+$ATSHOME/doc/EXAMPLES/AUP/.
+
+A (partial) list of the changes since the last release are given as
+follows:
+
+1. -D_ATS_TERMINATION_CHECK is changed to -D_ATS_PROOFCHECK; fixing a
+   related bug in [d3explst_funarg_tr].
+2. Fixing a bug involving type-checking variadic functions
+3. Fixing a bug involving solving top-level constraints
+4. $ATSHOME/libc/SATS/complex.sats and $ATSHOME/libc/DATS/complex.dats
+   are compiled and then added to libats.a
+5. Adding support for #undef
+6. Thoroughly testing the support for ATS running on Cygwin
+7. Implementing libats/vector (dynamically resizable vectors)
+8. $ATSHOME may now contain the space character (' ').
+9. Fixing a bug involving mishandling of proofs during proof erasure
+   (ats_trans4)
+10. Fixing a bug involving mishandling negative long integers
+11. Adding rarray (reversed array) implementation
+12. Adding libc/pwd, which correspond to pwd.h
+13. Adding libc/grp, which correspond to grp.h
+14. Adding libc/termios, which corresponds to termios.h
+15. Adding libc/curses, which corresponds to curses.h
+16. Adding libc/utime, which corresponds to utime.h
+17. Adding libc/sys/statvfs, which corresponds to sys/statvfs.h
+18. Adding libc/ctype, which corresponds to ctype
+19. Adding libc/DATS/stdio.dats
+20. Modifying the types for malloc_ngc and free_ngc
+21. Clearing up libc/pthread and libc/pthread_uplock
+22. Implementing lib/pthread_upbarr
+23. Incorporating [parcomb] into $ATSHOME/contrib
+24. Adding libc/sys/resource, which corresponds to sys/resource.h
+25. Adding [assertloc] macdef
+26: Adding libc/sys/socket_in and libc/sys/socket_un
+27: Adding libc/netdb
+28. Adding libc/sys/sockaddr and libc/sys/sockopt
+29: Adding prelude/unsafe!!!
+30: Adding libats/ptrarr (* for arrays ending with a null ptr *)
+</pre>

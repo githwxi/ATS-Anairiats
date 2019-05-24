@@ -1,0 +1,17 @@
+##
+##
+## A Garbage Collector for Multithreaded Programming in ATS 
+##
+## Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+## Time: October, 2009
+##
+
+######
+
+##
+## Notes:
+##
+## 1. For maximal portability, TLS (thread-local storage) must be properly addressed.
+##
+
+###### end of [README] ######

@@ -1,0 +1,18 @@
+(*
+// HX: Trying to implement an ENIGMA simulator by following SE principles
+*)
+
+Time: 5-7 August, 2011
+
+I have to say that I did not acquire a good understanding of ENIGMA after
+studying the VDM specification of ENIGMA. I found a paper ENIGMA machine
+on-line and played it. Afterwards, I specified various functions in
+enigma.sats and then did the implementation (enigma.dats). It all went
+smoothly.
+
+Unfortunately, the rotor implementation was not correct (due to my
+inadequate understanding of the rotor mechanism). I then gave an algebraic
+specification of a rotor and fixed the problem.
+
+Overall, I do not feel that VDM is particularly effective when applied to
+this example.

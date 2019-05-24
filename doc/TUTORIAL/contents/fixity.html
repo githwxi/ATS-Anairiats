@@ -1,0 +1,105 @@
+<!-- beg of [fixity.html] -->
+
+<H2><A id="fixity" name="fixity">Fixity Declaration</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Given a function <i>f</i> of arity <i>n</i>, the standard syntax for
+applying <i>f</i> to <i>n</i> arguments <i>v_1</i>, ..., <i>v_n</i> is
+<i>f(v_1, ..., v_n)</i>. It is, however, allowed in ATS to use infix
+notation for a binary function application, and prefix or postifix notation
+for a unary function application.
+<P>
+
+In ATS, each identifier can be assigned one of the following fixities:
+prefix, infix and postfix.  The fixity declarations for many commonly used
+identifiers can be found in <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/fixity.ats">prelude/fixity.ats</A>.
+We often use the name <i>operator</i> to refer to an identifier that is
+assigned a fixity.
+<P>
+
+For instance, we use the following syntax to declare that <i>+</i> and
+<i>-</i> are infix operators of precedence value 50:
+
+<pre>
+infixl 50 + -
+</pre>
+
+After this declaration, we can write an expression
+like <i>1 + 2 - 3</i>, which is parsed into
+<i>-(+(1, 2), 3)</i> in terms of the standard syntax for function
+application.
+
+The keyword <i>infixl</i> indicates that the declared infix operators are
+left-associative. For right-associative and non-associative infix
+operators, please use the keywords <i>infixr</i> and <i>infix</i>,
+respectively. If the precedence value is omitted in a fixity declaration,
+it is assumed to equal 0.
+<P>
+
+We can also use the following syntax to declare that
+<i>iadd</i>, <i>fadd</i>, <i>padd</i> and <i>uadd</i> are left-associative
+infix operators with a precedence value equal to that of the operator
+<i>+</i>:
+
+<pre>
+infixl (+) iadd fadd padd uadd
+</pre>
+
+This is useful as it is difficult in practice to remember the precedence
+values of (a large collection of) declared operators. Sometimes, we may
+need to specify that the precedence value of one operator in relation to
+that of another one. For instance, the following syntax declares that
+<i>opr2</i> is a left-associative infix operator and its precedence value
+is that of <i>opr1</i> plus 10:
+
+<pre>
+infixl (opr1 + 10) opr2
+</pre>
+
+If the plus sign (+) is changed to the minus sign (-), then the precedence
+value of <i>opr2</i> is that of <i>opr1</i> minus 10.
+<P>
+
+We can also turn an identifier <i>opr</i> into a non-associative infix
+operator (of precedence value 0) by putting the backslash symbol <i>\</i>
+in front of it. For instance, the expression
+<i>$exp_1 \opr $exp_2</i> stands for <i>opr ($exp_1, $exp_2)</i>, where
+<i>$exp_1</i> and <i>$exp_2</i>
+refer to some expressions, either static or dynamic.
+<P>
+
+The syntax for declaring (unary) prefix and postfix operators are
+similar. For instance, the following syntax declares that
+<i>~</i> and <i>?</i> are prefix and postfix operators
+of precedence values 61 and 69, respectively:
+
+<pre>
+prefix 61 ~
+postfix 69 ?
+</pre>
+
+Please find an example involving a postfix operator <A
+HREF="fixity.dats">here</A>.
+<P>
+
+For a given occurrence of an operator, we can deprive it of its assigned
+fixity by simply putting the keyword <i><u>op</u></i> in front of it. For
+instance <i>1 + 2 - 3</i> can be writen as <i><u>op</u>- (<u>op</u>+ (1,
+2), 3)</i>.  It is also possible to (permanently) deprive an operator of its
+assigned fixity.  For instance, the following syntax does so to the
+operators
+<i>iadd</i>, <i>fadd</i>, <i>padd</i> and <i>uadd</i>:
+
+<pre>
+nonfix iadd fadd padd uadd
+</pre>
+
+Lastly, please note that fixity declarations are lexically scoped, and each
+fixity declaration is only effective within its legal scope.
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+<!-- end of [fixity.html] -->

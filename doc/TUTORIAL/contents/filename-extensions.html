@@ -1,0 +1,54 @@
+<!-- beg of [filename-extensions.html] -->
+
+<H2><A id="filename-extensions" name="filename-extensions">Filename
+Extensions</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+In ATS, we use the filename extensions ".sats" and ".dats" to indicate
+static and dynamic files, respectively. These two extensions have
+some special meaning attached to them and thus should not be replaced
+arbitrarily.
+<P>
+
+A static file may contain sort definitions, datasort declarations, static
+definitions, abstract type declarations, exception declarations, datatype
+declarations, macro definition, interfaces for dynamic values and
+functions, etc.  In terms of functionality, a static file in ATS is similar
+to a header file (with the extension ".h") in C or an interface file (with
+the extension ".mli") in Objective Caml.
+<P>
+
+A dynamic file may contain everything in a static file. In addition, it may
+also contain defintions for dynamic values and functions.
+<P>
+
+In general, the syntax for constructing code in a static file can also be
+used for constructing code in a dynamic file. The only exception involves
+declaring interfaces for dynamic values and functions. For instance, in a
+<em>static</em> file, we can use the following syntax to declare interfaces
+(or types) for a value named <i>pi</i> and a function named
+<i>area_of_circle</i>.
+
+<pre>
+val pi : double
+fun area_of_circle (radius: double): double
+</pre>
+
+When doing the same thing in a <em>dynamic</em> file, we need to use the
+following slightly different syntax:
+
+<pre>
+extern val pi : double
+extern fun area_of_circle (radius: double): double
+</pre>
+
+where <i>extern</i> is a keyword in ATS.
+<P>
+
+As a convention, we often use the filename extension ".cats" to indicate
+that a file contains some C code that is supposed to be combined with ATS
+code in certain manner. However, the use of this filename extension is not
+mandatory.
+
+<!-- end of [filename-extensions.html] -->

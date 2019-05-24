@@ -1,0 +1,51 @@
+ATS/CBLAS API Conventions
+================================ beg ================================
+
+CBLAS routines tend to have a lot of parameters. So it is good to have
+some conventions that guide the ordering of these parameters.
+
+The parameters can be grouped into 6 (so far( categories:
+
+1. Layout. All matrix arguments must be either in row-major or
+   column-major. So there is a single argument, the first always, that
+   describes this.
+
+2. Side. Some matrix arguments can be applied from the left or from
+   the right. Usually only one such argument is needed, and it is
+   specified right after the layout argument. If more are needed, they
+   should be specified one after the other in the same order as the
+   corresponding matrix arguments are specified later.
+
+4. Matrix operation. Every matrix argument can potentially have one of
+   the following operations: nothing, transpose, conjugate-transpose,
+   conjugate, inverse, conjugate-inverse-transpose, conjugate-inverse,
+   on it. Not all are applicable always. Such arguments are specified
+   next in the usual left to right manner. [From a usability point of
+   view it is better to specify these oprations right after the LDA
+   for that matrix. However, this is not what is currently done.]
+
+3. Size. All matrix arguments need their sizes specified, and they are
+   uniformly done together as the next set of arguments. Unfortunately
+   CBLAS does not do this in a uniform way. It first specifies the
+   input-output common sizes, and then the interior sizes. (See gemm
+   arguments.). When we have the choice we will follow a strict left
+   to right specification of the sizes too.
+
+4. Scalar, vector, matrix. Next we specify all the array
+   arguments. All array arguments are specified left to right as they
+   occur in the mathematical expression. For expressions that are
+   non-commutative this ordering is well-determined. However, there
+   are commutative operations. For scalar multiplication we always
+   assume that the scalar goes first. For addition we assume that the
+   destination argument (if any) goes last. This is also the CBLAS
+   convention.
+
+5. Work arrays. Usually work arrays are specified last. The length of
+   the array is specified immediately after the pointer argument for that
+   array.
+
+6. Error. If error conditions are possible, they are returned as the
+   value of the function call. This is not the CBLAS approach, but the
+   one that is more natural.
+
+================================ end ================================

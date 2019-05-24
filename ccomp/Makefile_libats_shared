@@ -1,0 +1,54 @@
+#
+#
+# HX-2010-08-29: this is for generating shared libats file (libats.so)
+#
+#
+
+######
+
+OUTPUT=$(ATSHOME)/ccomp/lib/output
+OUTPUT=$(ATSHOME)/ccomp/lib64/output
+
+######
+
+ATSLIB=$(ATSHOME)/bin/atslib
+
+######
+
+all:: step1
+all:: step2
+
+######
+
+step1:: ; $(ATSLIB) -fPIC --libats
+step1:: ; $(ATSLIB) -fPIC ${ATSHOME}/libc/dynloadall.dats
+step2:: ; cd $(OUTPUT); \
+  gcc -shared -o ../libats.so -Wl,-soname,libats.so `ar t ../libats.a` -ldl -lgmp -lpcre
+
+######
+
+step1:: ; $(ATSLIB) -fPIC -D_ATS_MULTITHREAD --libats_mt
+step1:: ; $(ATSLIB) -fPIC ${ATSHOME}/libats/dynloadall.dats
+step2:: ; cd $(OUTPUT); \
+  gcc -shared -o ../libats_mt.so -Wl,-soname,libats_mt.so `ar t ../libats_mt.a` -lpthread
+
+######
+
+#
+# step1:: ; $(ATSLIB) -fPIC --libats_smlbas
+# step2 :: ; cd $(OUTPUT); \
+#   gcc -shared -o ../libats_smlbas.so -Wl,-soname,libats_smlbas.so `ar t ../libats_smlbas.a`
+# step1:: ; $(ATSLIB) -fPIC ${ATSHOME}/libats/smlbas/dynloadall.dats
+#
+
+######
+
+RMF=rm -f
+
+######
+
+cleanall:: ; $(RMF) lib/libats.so
+cleanall:: ; $(RMF) lib/libats_mt.so
+cleanall:: ; $(RMF) lib/libats_smlbas.so
+
+###### end of [Makefile_libats_shared.txt] ######

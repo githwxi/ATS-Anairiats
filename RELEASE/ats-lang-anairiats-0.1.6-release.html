@@ -1,0 +1,22 @@
+<pre>
+ats-lang-aniriats-0.1.6:
+
+As usual, this release contains a large number of bug fixes. Some of the
+significant changes are listed as follows:
+
+1. Support for OOP is under development. So far, typechecking is done.
+
+2. Type error message reporting is made more informative. This is ongoing.
+
+3. Adding $ATSHOME/ccomp/lib64 for storing libfiles for 64-bit machines.
+
+4. The Makefile in $ATSHOME is re-designed by Likai Liu. It now allows
+   ATS to be installed in a selected directory. Just issue the following
+   command before calling 'make':
+
+./configure --prefix=&lt;DESTDIR&gt;
+
+   where &lt;DESTDIR&gt; is the directory for final installation. After 'make'
+   is done, please call 'make install'.
+
+</pre>

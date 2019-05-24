@@ -1,0 +1,118 @@
+(*
+**
+** HOLITMUS: a proof checker for higher-order logic
+**
+** Originally implemented in OCaml
+**    by Chad Brown (cebrown AT mathgate DOT info)
+** Time: March/September, 2008
+**
+** Translated to ATS
+**    by Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: November, 2008
+**
+*)
+
+(* ****** ****** *)
+
+%{ // preamble
+
+staload "lexer.sats"
+
+(* ****** ****** *)
+
+fn process_keyword (): void = () // placeholder
+
+(* ****** ****** *)
+
+macdef LPAREN = extval (token_t, "LPAREN")
+macdef RPAREN = extval (token_t, "RPAREN")
+macdef DOT = extval (token_t, "DOT")
+macdef COLON = extval (token_t, "COLON")
+macdef EQ = extval (token_t, "EQ")
+macdef SHARP = extval (token_t, "SHARP")
+macdef SEMICOLON = extval (token_t, "SEMICOLON")
+macdef BANG = extval (token_t, "BANG")
+macdef QMARK = extval (token_t, "QMARK")
+macdef AMPERSAND = extval (token_t, "AMPERSAND")
+macdef BAR = extval (token_t, "BAR")
+macdef TILDA = extval (token_t, "TILDA")
+macdef BLACKSLASH = extval (token_t, "BLACKSLASH")
+macdef SLASH = extval (token_t, "SLASH")
+macdef GT = extval (token_t, "GT")
+macdef UNDERSCORE = extval (token_t, "UNDERSCORE")
+macdef COLONCOLONEQ = extval (token_t, "COLONCOLONEQ")
+macdef EQUIV = extval (token_t, "EQUIV")
+macdef XIRULE = extval (token_t, "XIRULE")
+macdef TRUE = extval (token_t, "TRUE")
+macdef FALSE = extval (token_t, "FALSE")
+macdef VAR = extval (token_t, "VAR")
+macdef HYP = extval (token_t, "HYP")
+macdef CONST = extval (token_t, "CONST")
+macdef DEF = extval (token_t, "DEF")
+
+(* ****** ****** *)
+
+%} // end of preamble
+
+(* ****** ****** *)
+
+// definition of constant regular expressions
+
+blanks = [ '\f' '\r' '\n' '\t' ' ' ] +
+
+digit = ['0' - '9']
+ident_fst = ['a' - 'z' 'A' - 'Z']
+ident_rst = ['0' - '9' 'a' - 'z' 'A' - 'Z']
+
+%%
+
+MAIN () =
+  | $blank { MAIN () }
+  | '(' { LPAREN }
+  | ')' { RPAREN }
+  | '.' { DOT }
+  | ':' { COLON }
+  | '=' { EQ }
+  | '#' { SHARP }
+  | ';' { SEMICOLON }
+  | '!' { BANG }
+  | '?' { QMARK }
+  | '&' { AMPERSAND }
+  | '|' { BAR }
+  | '~' { TILDA }
+  | '\\' { BLACKSLASH }
+  | '/' { SLASH }
+  | '>' { GT }
+  | '_' { UNDERSCORE }
+  | "::=" { COLONCOLONEQ }
+  | "<=>" { EQUIV }
+  | "'xi" { XIRULE }
+  | "true" { TRUE }
+  | "false" { FALSE }
+  | "var" { VAR }
+  | "hyp" { HYP }
+  | "const" { CONST }
+  | "def" { DEF }
+  | "abstract" { ABSTRACT }
+  | "abstract_all" { ABSTRACT_ALL }
+  | "allow_eta" { ALLOW_ETA }
+  | "allow_xi" { ALLOW_XI }
+  | "allow_defaults" { ALLOW_DEFAULTS }
+  | "known" { KNOWN }
+  | "claim" { CLAIM }
+  | "proof" { PROOF }
+  | "accept" { ACCEPT }
+  | "accept_all_claims" { ACCEPT_ALL_CLAIMS }
+  | "inconsisten" { INCONSISTENT }
+  | '*' { PROP }
+  | $ident_fst $ident_rst { process_identifer () }
+  | $EOF { TOKEN_eof }
+  | [^] { process_illegal_token () } // [^]: wildcard
+
+%%
+
+// postamble
+
+(* ****** ****** *)
+
+(* end of [lexer.lats] *)

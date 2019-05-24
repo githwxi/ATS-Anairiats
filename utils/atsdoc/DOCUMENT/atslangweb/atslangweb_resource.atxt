@@ -1,0 +1,264 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBRESOURCE: atext =
+  strcst"<strong>Resources</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBRESOURCE", _ATSLANGWEBRESOURCE)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_resource.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]('\
+./styles/atslangweb_resource.css\
+')
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks2("RESOURCE")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Resources for ATS Users</h1>
+
+#menu('\
+#litxt(#ulink("RESOURCE\#ATS_edit", "Editing ATS source code"))
+<!--
+#litxt(#ulink("RESOURCE\#ATS_view", "Viewing ATS source code"))
+-->
+#litxt(#ulink("RESOURCE\#ATS_eval", "Evaluating ATS source code on-line"))
+#litxt(#ulink("RESOURCE\#ATS_utility", "ATS-related utility commands"))
+#litxt(#ulink("RESOURCE\#ATS_compile", "Compiling projects based on ATS"))
+#litxt(#ulink("RESOURCE\#ATS_mlguide", "ML programmer\'s guide to ATS"))
+#litxt(#ulink("RESOURCE\#ATS_courses", "Courses about ATS and based on ATS"))
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("ATS_edit", "Editing ATS source code")</h2>
+
+#menu("\
+#lisub('\
+A #ulink1("#ATSLANGSVNROOTget()/utils/vim/ats.vim", "mode") for editing ATS source code in vim.
+')
+#lisub('\
+A #ulink1("#ATSLANGSVNROOTget()/utils/emacs/ats-mode.el", "mode") for editing ATS source code in emacs.
+')
+")#comment("menu")
+
+#ignore("\
+#HR(1)
+
+<h2>#uid("ATS_view", "Viewing ATS source code")</h2>
+#menu("\
+#lisub('\
+A #ulink("http://xrats.illtyped.com", "site")
+for viewing ATS source code with cross-reference support.
+')
+")#comment("menu")
+")
+
+#HR(1)
+
+<h2>#uid("ATS_eval", "Evaluating ATS source code on-line")</h2>
+#menu("\
+#lisub('\
+A #ulink("http://ats-lang.sourceforge.net/COMPILED/doc/PROJECT/LARGE/TUTORATS/services/patsopt-atscc2js-trial2/", "site")
+for compiling ATS source code into JavaScript for on-line evaluation.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_utility", "ATS-related utility commands")</h2>
+
+#menu("\
+#lisub('\
+
+#ulink("RESOURCE/utils/atsccman.html", "atscc")
+is a wrapper for convenience around the ATS compilation command
+#ulink("utils/atsoptman.html", "atsopt").\
+
+')
+
+#lisub('\
+
+#ulink("RESOURCE/utils/atsoptman.html", "atsopt")
+
+is the command for directly invoking the ATS compiler that typechecks ATS
+(source) code and then compiles it into C (target) code.\
+
+')
+
+#lisub('\
+
+#ulink("\
+http://ats-lang.sourceforge.net/htdocs-old/DOCUMENT/atsdocman/atsdocman.html\
+", "atsdoc")
+is a utility implemented in ATS for helping write documentation on ATS and
+beyond.\
+
+')
+
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_compile", "Compiling projects based on ATS")</h2>
+#menu("\
+#lisub('\
+
+#ulink("https://github.com/steinwaywhw/ATS-CMake", "ATS-CMake") is a
+#ulink("http://www.cmake.org", "CMake") utility for compiling ATS source
+code (contained in multiple files).\
+
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_mlguide", "ML programmer\'s guide to ATS")</h2>
+
+#menu("\
+#lisub('\
+A
+#ulink("http://cs.likai.org/ats/ml-programmers-guide-to-ats", "guide")
+to learning ATS for someone who is familiar with an ML-like language.
+')
+")#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATS_courses", "Courses about ATS and based on ATS")</h2>
+
+#menu('\
+
+#lisub("\
+#strong("BU CAS CS 320:")
+ATS is mostly used like SML in this undergraduate-level course:
+#para("")
+#menu('\
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Summer14/CS320.html", "Summer1 2014"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Spring14/CS320.html", "Spring 2014"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Spring13/CS320.html", "Spring 2013"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Summer10/CS320.html", "Summer1, 2010"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Summer09/CS320.html", "Summer1, 2009"))
+')#comment("menu")
+#para("")
+")
+
+#lisub("\
+#strong("BU CAS CS 511:")
+ATS is employed
+primarily as a programming language advocating formal specification and verification:
+#para("")
+#menu('\
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Spring12/CS511.html", "Spring\'12"))
+')#comment("menu")
+#para("")
+")#comment("lisub")
+
+#lisub("\
+#strong("BU CAS CS 520:")
+Many advanced features in ATS such as dependent types and linear types are
+presented in this graduate-level course:
+#para("")
+#menu('\
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall13/CS520.html", "Fall\'13"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall12/CS520.html", "Fall\'12"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall11/CS520.html", "Fall\'11"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall10/CS520.html", "Fall\'10"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall09/CS520.html", "Fall\'09"))
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Fall08/CS520.html", "Fall\'08"))
+')#comment("menu")
+#para("")
+")#comment("lisub")
+
+#lisub("\
+#strong("BU CAS CS 525:")
+ATS is employed in compiler construction:
+#para("")
+#menu('\
+#litxt(#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Spring11/CS525.html", "Spring'11"))
+#lisub("\
+#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/Spring09/CS525.html", "Spring'09"):
+#ulink("http://www.cs.bu.edu/~hwxi/academic/courses/CS525/Spring09/code/Tiger/", "TIGERATS")
+is a compiler written in ATS for the Tiger language presented in Andrew
+Appel\'s book on modern compiler design and implementation. This compiler
+currently targets x86-32 and MIPS32 (plus pseudo instructions accepted by
+#ulink("http://spimsimulator.sourceforge.net", "SPIM")).
+")#comment("lisub")
+')#comment("menu")
+#para("")
+")#comment("lisub")
+
+')#comment("menu")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks3("RESOURCE")
+</div>
+'))
+
+%{
+
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+
+%}

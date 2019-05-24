@@ -1,0 +1,178 @@
+<!-- beg of [dataviews.html] -->
+
+<H2><A id="dataviews" name="dataviews">Dataviews</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+A view is a linear prop, where the meaning of the word
+<i>linear</i> is in the sense of linear logic. Dataviews are often declared
+to encode recursively defined relations on linear resources.  As an
+example, we declare a dataview as follows to describe and then reason about
+the probably most common data structure in use: arrays.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">dataview</FONT> <FONT COLOR="#009000"><FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT> viewt@ype+<FONT COLOR="#000000">,</FONT> int<FONT COLOR="#000000">,</FONT> addr<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">l<FONT COLOR="#000000">:</FONT>addr</FONT><FONT COLOR="#000000">}</FONT> array_v_none <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">n<FONT COLOR="#000000">:</FONT>nat</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">l<FONT COLOR="#000000">:</FONT>addr</FONT><FONT COLOR="#000000">}</FONT> array_v_some <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n+1<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a @ l<FONT COLOR="#000000">,</FONT> array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l+sizeof a<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT></FONT>
+</FONT></PRE>
+
+The syntax introduces a view constructor <i>array_v</i> and two
+proof constructors <i>array_v_none</i> and <i>array_v_some</i>
+associated with <i>array_v</i>, which are assigned the following
+props:
+
+<pre>
+<FONT COLOR="#009000">array_v_none <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT></FONT>
+<FONT COLOR="#009000">array_v_some <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>a @ l<FONT COLOR="#000000">,</FONT> array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l+sizeof a<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> array_v_some <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n+1<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT></FONT>
+</pre>
+
+Given a viewtype <i>VT</i>, an integer <i>I</i> and an address <i>L</i>,
+the view <i>array_v(VT, I, L)</i> indicates that an array of size <i>I</i>
+is located at the address <i>L</i> and each element in the array is of
+viewtype <i>VT</i>.
+<P>
+The prop assigned to <i>array_v_none</i> indicates that we can assume an
+array of size <i>0</i> located at any given address, while the prop
+assigned to <i>array_v_some</i> states that an array of <i>I+1</i>
+elements of viewtype <i>VT</i> is located at some address <i>L</i>
+if an element of viewtype <i>VT</i> is located at <i>L</i>
+and also an array of <i>I</i> elements of viewtype <i>VT</i> is located
+at <i>L+sizeof(VT)</i>, where <i>sizeof(VT)</i> is the size of
+<i>VT</i>, or more precisely, the size of an element of viewtype
+<i>VT</i>.
+<P>
+
+Let us establish some propoerties on arrays.  The following proof function
+<i>array_v_split</i> shows that an array of size <i>N</i> can be decomposed
+into two adjacently located arrays of sizes <i>I</i> and <i>N - I</i>,
+respectively, where <i>I</i> can be any natural number satisfying <i>I <=
+N</i>.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">(*
+ * array_v_split
+ *   {a:viewt@ype} {n,i:nat | i &lt;= n} {l:addr} {off: int} .&lt;i&gt;.
+ *   (pf_arr: array_v (a, n, l), pf_mul: MUL (i, sizeof a, off))
+ *   : (array_v (a, i, l), array_v (a, n-i, l+off))
+ *)</FONT>
+
+<FONT COLOR="#000000">prfun</FONT> <FONT COLOR="#009000">array_v_split
+  <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">,</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i &lt;= n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>off<FONT COLOR="#000000">:</FONT> int<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT>i<FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">MUL <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> sizeof a<FONT COLOR="#000000">,</FONT> off<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n-i<FONT COLOR="#000000">,</FONT> l+off<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#009000"><FONT COLOR="#000000">sif</FONT> <FONT COLOR="#0000FF">i <FONT COLOR="#000000">&gt;</FONT> 0</FONT> <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_arr</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULind pf_mul <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT>pf_arr1<FONT COLOR="#000000">,</FONT> pf_arr2<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_split <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT>array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr1<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> pf_arr2<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULbas <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT>array_v_none <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT></FONT></FONT>
+</FONT></PRE>
+
+The next proof function <i>array_v_unsplit</i> is the
+inverse of <i>array_v_split</i>: It states that two adjacently
+located arrays of sizes <i>N_1</i> and <i>N_2</i> can be
+combined into a single array of sizes <i>N_1+N_2</i>.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">(*
+ * array_v_unsplit
+ *   {a:viewt@ype} {n1,n2:nat} {l:addr} {off: int} .&lt;n1&gt;.
+ *   (pf_arr1: array_v (a, n1, l),
+ *    pf_arr2: array_v (a, n2, l+off),
+ *    pf_mul: MUL (n1, sizeof a, off))
+ *   : array_v (a, n1+n2, l)
+ *)</FONT>
+
+<FONT COLOR="#000000">prfun</FONT> <FONT COLOR="#009000">array_v_unsplit
+  <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n1<FONT COLOR="#000000">,</FONT>n2<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>off<FONT COLOR="#000000">:</FONT> int<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT>n1<FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>pf_arr1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n1<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> pf_arr2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n2<FONT COLOR="#000000">,</FONT> l+off<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">MUL <FONT COLOR="#000000">(</FONT>n1<FONT COLOR="#000000">,</FONT> sizeof a<FONT COLOR="#000000">,</FONT> off<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n1+n2<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#009000"><FONT COLOR="#000000">sif</FONT> <FONT COLOR="#0000FF">n1 <FONT COLOR="#000000">&gt;</FONT> 0</FONT> <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_arr1</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULind pf_mul <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf_arr <FONT COLOR="#000000">=</FONT> array_v_unsplit <FONT COLOR="#000000">(</FONT>pf_arr1<FONT COLOR="#000000">,</FONT> pf_arr2<FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">in</FONT>
+    array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">array_v_none <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_arr1</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULbas <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    pf_arr2
+  <FONT COLOR="#000000">end</FONT></FONT></FONT>
+</FONT></PRE>
+
+The following proof function states that given an array of size
+<i>N</i> and a natural number <i>I</i> satisfying <i>I < N</i>,
+the element indexed by <i>I</i> can be taken out of the array,
+leaving the array with a hole inside.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">(*
+ * array_v_takeout
+ *   {n,i:nat | i &lt; n} {l:addr} {off: int}
+ *   (pf_arr: array_v (a, n, l), pf_mul: MUL (i, sizeof a, off))
+ *   : (a @ (l+off), a @ (l+off) -&lt;lin&gt; array_v (a, n, l))
+ *)</FONT>
+
+<FONT COLOR="#000000">prfun</FONT> <FONT COLOR="#009000">array_v_takeout
+  <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">,</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>off<FONT COLOR="#000000">:</FONT> int<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT>i<FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">MUL <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> sizeof a<FONT COLOR="#000000">,</FONT> off<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a @ <FONT COLOR="#000000">(</FONT>l+off<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> a @ <FONT COLOR="#000000">(</FONT>l+off<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;</FONT>lin<FONT COLOR="#000000">&gt;</FONT> array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#009000"><FONT COLOR="#000000">sif</FONT> <FONT COLOR="#0000FF">i <FONT COLOR="#000000">&gt;</FONT> 0</FONT> <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_arr</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULind pf_mul <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT>pf_out<FONT COLOR="#000000">,</FONT> pf_rst<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_takeout <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT>pf_out<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">llam</FONT> pf_out <FONT COLOR="#000000">=&gt;</FONT> array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_rst pf_out<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">MULbas <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf_mul</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT>  <FONT COLOR="#000000">=</FONT> pf_arr</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">llam</FONT> pf_at <FONT COLOR="#000000">=&gt;</FONT> array_v_some <FONT COLOR="#000000">(</FONT>pf_at<FONT COLOR="#000000">,</FONT> pf_arr<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT></FONT></FONT>
+</FONT></PRE>
+
+The following code shows how the proof function
+<i>array_v_takeout</i> can be used to implement functions
+for accessing and updating arrays.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#787878">// a template function for read through a pointer
+</FONT><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> ptr_get <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a @ l</FONT></FONT> <FONT COLOR="#000000">|</FONT> p<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a @ l <FONT COLOR="#000000">|</FONT> a<FONT COLOR="#000000">)</FONT></FONT>
+
+<FONT COLOR="#000000">extern</FONT> <FONT COLOR="#787878">// a template function for write through a pointer
+</FONT><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> ptr_set <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a @ l</FONT></FONT> <FONT COLOR="#000000">|</FONT> p<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a @ l <FONT COLOR="#000000">|</FONT> void<FONT COLOR="#000000">)</FONT></FONT>
+
+<FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// a template function for array read
+</FONT>  array_ptr_get_at <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">,</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT></FONT> <FONT COLOR="#000000">|</FONT> p<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l</FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">size_t i</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> a<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mul</FONT> <FONT COLOR="#000000">|</FONT> off<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> mul2_size1_size1 <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> sizeof&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT><FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT>pf_elt<FONT COLOR="#000000">,</FONT> pf_rst<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_takeout <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_elt</FONT> <FONT COLOR="#000000">|</FONT> x<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> ptr_get&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_elt</FONT> <FONT COLOR="#000000">|</FONT> p + off<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_rst pf_elt</FONT> <FONT COLOR="#000000">|</FONT> x<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+
+<FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// a template function for array write
+</FONT>  array_ptr_set_at <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">,</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT></FONT> <FONT COLOR="#000000">|</FONT> p<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l</FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">size_t i</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">|</FONT> void<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mul</FONT> <FONT COLOR="#000000">|</FONT> off<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> mul2_size1_size1 <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> sizeof&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT><FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT>pf_elt<FONT COLOR="#000000">,</FONT> pf_rst<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_takeout <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">,</FONT> pf_mul<FONT COLOR="#000000">)</FONT></FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_elt</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> ptr_set&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_elt</FONT> <FONT COLOR="#000000">|</FONT> p + off<FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_rst pf_elt</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+Note that the code here is primarily for the purpose of illustration. In
+practice, array access and update functions in ATS/Anairiats are implemented
+as primtives for the sake of efficiency.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="dataviews.dats">here</a>.
+
+<!-- end of [dataviews.html] -->

@@ -1,0 +1,421 @@
+########################################################################
+
+ats-lang-anairiats-0.2.10:
+
+1. arrsz -> arrpsz
+   arraysize -> arrayptrsize
+2. list0_of_list1 -> list0_of_list
+   list1_of_list0 -> list_of_list0
+3. Fixing a glitch involving tail-call optimization
+4. Fixing a glitch involving exceptions declared in prelude/SATS
+5. Fixing a minor flaw in atsopt-depgen
+6. Adding linset_copy in libats/linset_avltree
+7. Renaming linset_takeout as linset_choose_out
+8. Differentiating _ from (_): the former pattern is expandable
+   whereas the latter is not
+
+########################################################################
+
+ats-lang-anairiats-0.2.9:
+
+1. Fixing some macros in ccomp/runtime/ats_exception.h
+2. Removing the field tmpvar_root in tmpvar and related functions.
+3. Adding support for using CMake to build projects written in ATS.
+   Kudos to Hanwen!
+4. $showtype support for debugging is added (2012-11-24)
+5. Adding libats/linmap_skiplist for linear maps based on skip-lists.
+6. ((<exp1>, ..., <exp2>)) -> @(<exp1>, ..., <exp2>)
+7. If the assigned external name of a function is empty, then its
+   internal name should be used in the place where its external name
+   is needed. For example, the following declarations are equivalent:
+   fun foo (x: int): void = "ext#"
+   fun foo (x: int): void = "ext#foo"
+   The following two are equivalent as well:
+   fun bar (x: int): void = "mac#"
+   fun bar (x: int): void = "mac#bar"
+
+########################################################################
+
+ats-lang-anairiats-0.2.8:
+
+1. Fixing a bug involving assumed abstract types.
+2. Adding list_mapopt_* functions.
+3. Packaging libatsdoc into ATS-0.2.8
+4. Packaging utils/atsdoc into ATS-0.2.8
+5. Adding contrib/mysql
+6. Adding contrib/jansson (based on previous work by Chris Double)
+
+########################################################################
+
+ats-lang-anairiats-0.2.7:
+
+1. free_gc_viewt0ype_addr_view -> free_gc_t0ype_addr_view
+   free_gc_viewt0ype_int_addr_view -> free_gc_t0ype_int_addr_view
+2. ptr_free and array_ptr_free: interface change
+3. Adding funheap_binomial and linheap_binomial
+4. Adding libats/SATS/bimatrix.sats. Thanks to Artyom!
+5. The s2exp_syneq function (syn. eq.) now employs eta-expansion
+6. !READ(string) -> string (SHARED is introduced to do the opposite)
+7. Adding libats/lockptr_spin and libats/lockref_spin (spinlocks)
+8. The docbook source for the ATS intro book is now included.
+9. The closures in each infile object are made to be linear and they
+   are freed when the infile object is freed.
+10. The compiler now generates code to prevent an abstract type from
+    being implemented (assumed) more than once.
+11. && and || are now macros (long overdue!)
+12. The libats/ngc/linmap_pavltree package is added. Kudos to Artyom!
+13: Adding libats/funmset_listord (functional multiset implementation)
+14: Fixing a bug involving tailcall optimization (argument movement)
+15: Fixing a minor bug involving p2at_arg_tr.
+16: The interface for pthread creation in ATS is slightly modified.
+
+########################################################################
+
+ats-lang-anairiats-0.2.6:
+
+1. Adding contrib/JNI for interface ATS and Java.
+2. Adding the --xrefprelude flag to make cross-referencing work again.
+3. The keyword [sta] can now also be written as [stacst].
+4. If a name refers to several static constants, then the latest declared
+   non-functional one is chosen (if there is one).
+5. The tutorial (doc/TUTORIAL) is no longer put into the release package.
+6. Allowing #FILENAME and #LOCATION to be used as e0xp. For instance, the
+   following line is now legal:
+   #print (#FILENAME)
+7. Fixing a bug related to xref that caused illegal xhtml files to be
+   generated (cases of A elements being embedded inside another A element).
+   Thanks, David!
+8. Introducing ISALIGNED to handle alignment.
+9. Introducing NULLABLE to handle ptr_zero and ptr_zero_tsz.
+10. Adding libats/funmap_rbtree (functional maps based on red-black trees)
+11. Adding contrib/gtkglext (based on gtkglext-1.0)
+12. Adding contrib/atspslide for doing slide presentation and other things.
+13: Adding libc/gdbm/gdbm (API for gdbm in ATS).
+14: Adding libc/gdbm/ndbm (API for gdbm-ndbm in ATS).
+15: Adding libats/ngc/DATS/dlist.dats. Thanks to Artyom!
+16: [atslib] can now process flags for each individual file. See .libfiles.
+17: pervasive changes: free_gc_v (T, ...) => free_gc_v (T?, ...)
+
+########################################################################
+
+ats-lang-anairiats-0.2.5:
+
+1. Fixing a bug in handling call-by-reference. I was really surprised that
+   the bug had not shown up earlier.
+2. input_line_vt is added in prelude/filebas for returning a linear string
+3. Fixing a bug in [valprim_is_mutable]: casting was incorrectly handled.
+4. atslib_feof and atslib_ferror are changed to inlined functions (instead
+   of macros). This is done to fix Cgwin's defining feof as a macro.
+5. Some changes are made to support ATS on FreeBSD.
+6. Fixing a bug involving linear closures (of the form <lin,cloptr>).
+7. Adding support for if!: if! (e_cond, e_then, e_else) is for the
+   following expression: (if e_cond then e_then else e_else).
+8. Adding libats/funset_avltree to support (functional) sets.
+9. The original *_clo and *_cloptr functions are renamed as *_vclo and
+   *_vcloptr respectively, and the new *_clo and *_cloptr functions no
+   longer require a (linear) proof argument.
+10. [gc_stack_get_dir] is re-written to fix a bug triggered due to a form
+    of over-optimization by gcc-4.6: a volatile function may get inlined.
+    Kudos to Matthew for helping me on this one!
+11. Fixing a bug that wrongly affected the exn-effect tracking.
+12. Adding contrib/GLES2 to support OpenGL/ES2 binding. Thanks to Artyom!
+13. Renaming: list_vt_*_clo -> list_vt_*_vclo. Also adding various functions:
+    list_vt_*_cloptr and list_vt_*_vcloptr
+14. Makefile_macosx is added for building ATS on MAC OS X. Thanks to Georg!
+15. Renaming (in various packages): *_clo -> *_vclo and *_cloptr -> *_vcloptr
+16. Adding libatsdoc.
+17. Adding the [atsdoc] utility for writing documents
+18. Adding atsdoc/DOCUMENT/TUTORIALATS
+19. Finishing part 3 of the book on Introduction to Programming in ATS
+20. Adding contrib/atswebpage for helping build web pages
+21. Adding util/atsdoc/DOCUMENT/atslangweb for creating webpages for ATS
+
+`########################################################################
+
+ats-lang-anairiats-0.2.4:
+
+1. Adding the package contrib/testing to facilitate construction of
+   testing code.
+2. Adding support for value templates.
+3. Adding various examples in doc/EXAMPLE/PCPV to demonstrate a style
+   of program verification that is described as being programmer-centric.
+4. Adding the package contrib/scripting to support scripting in ATS.
+5. Bison is now the default tool for generate [ats_grammar_yats.c].
+6. Adding some functions in prelude/list.
+7. Adding some functions in prelude/lazy_vt.
+8. ATS/Anairiats is kept up-to-date for bootstrapping.
+9. $ATSHOME/contrib/glib/glist: overhauling many function interfaces.
+10. The file ats_fixity.dats is splitted into the following two files:
+    ats_fixity_prec.dats and ats_fixity_fxty.dats.
+11. Adding some functions for parsing various syntax trees.
+12. Renaming various 'get' and 'set' functions according to some adopted
+    naming convention.
+13. Starting to build API in $ATSHOME/contrib/linux for supporting linux
+    kernel programming. This is going to be a long journey!
+14: Renaming: fun__main -> funenv
+    Renaming: fun_tsz__main -> funenv_tsz
+    Renaming: clo_tsz__main -> cloenv_tsz
+    Renaming: __main -> _funenv (for various higher-order functions)
+15: matrix_v (a, m, n, l) is now defined as mtrxt (a, m, n) @ l
+16: stack-allocated closures are now statically allocated (instead of
+    being dynamically allocated via alloca) (svn-version: 2519)
+17: prelude/array and prelude/matrix have been cleaned up considerably
+18: naming change: "#foo" -> "mac#foo" (for external macros)
+19: using names like "sta#foo" to support external static functions
+20: adding contrib/linux to support linux kernel programming (very long term)
+21: adding libats/ngc/deque_arr
+22: basing libats/linqueue_arr and libats/linstack_arr on libats/ngc/deque_arr
+24. ATSstaticdec() and ATSglobaldec() are now employed in emitted C code
+    for indicating whether a function is global or static.
+25. reloading a pervasive .sats file is allowed; doing so is like a no-op.
+
+########################################################################
+
+ats-lang-anairiats-0.2.3:
+
+1. Adding READ: READ(string) is read-only!
+2. Renaming prelude/?ATS/file.?ats to prelude/?ATS/filebas.?ats
+3. Adding support -DATS flags: -DATSXYZ=12345 or -DATS XYZ=12345
+4. Adding support for ATS/Anairiats to output #line pragma in the C code
+   generated by atsopt.
+5. Adding support for compiling fixed-point expressions (constructed via
+   fix and @fix).
+6. Introducing various macros in ccomp/runtime/ats_basics.h to give more
+   structure to the C code generated by atsopt.
+7. Introducing block expressions: { decseq_syn }
+8. Supporting syndef-loaded external identifers
+9. DO and WHILE are external ids: both while-loop and do-while-loop are
+   supported.
+10. print! and println! are now supported.
+11. fprint! and fprintln! are now supported.
+12. tupz! is now supported.
+13. $ATSHOME/utils/atsgrammar is added for documenting the grammar of ATS.
+14. Implementing the $ATSHOME/libats/fundeque_fingertree package.
+15. "><" (GTLT) can now be used as a dynamic identifier.
+16. Syntax like [val <pat> = <SomeProof>] is now ruled out: 'val' needs to be
+    replaced with 'prval'.
+17. Removing named types (S2Enamed), which is inadequate for its purpose
+18. S2Eextype can now carry arguments
+19. overhauling partial template implementation
+20. ptrout -> vptrout and ptroutopt -> vptroutopt
+21. ptropt_v -> optvar_v
+22. [ptrself] is introduced as a named type of the name "ats_ptrself_type"
+23. The '$fun' suffix is no longer in use. If a function is declared as a
+    'val', then the function is now treated as an ordinary value.
+
+########################################################################
+
+ats-lang-anairiats-0.2.2:
+
+1. -D_ATS_TERMINATION_CHECK is changed to -D_ATS_PROOFCHECK; fixing a
+   related bug in [d3explst_funarg_tr].
+2. Fixing a bug involving type-checking variadic functions
+3. Fixing a bug involving solving top-level constraints
+4. $ATSHOME/libc/SATS/complex.sats and $ATSHOME/libc/DATS/complex.dats
+   are compiled and then added to libats.a
+5. Adding support for #undef
+6. Thoroughly testing the support for ATS running on Cygwin
+7. Implementing libats/vector (dynamically resizable vectors)
+8. $ATSHOME may now contain the space character (' ').
+9. Fixing a bug involving mishandling of proofs during proof erasure
+   (ats_trans4)
+10. Fixing a bug involving mishandling negative long integers
+11. Adding rarray (reversed array) implementation
+12. Adding libc/pwd, which correspond to pwd.h
+13. Adding libc/grp, which correspond to grp.h
+14. Adding libc/termios, which corresponds to termios.h
+15. Adding libc/curses, which corresponds to curses.h
+16. Adding libc/utime, which corresponds to utime.h
+17. Adding libc/sys/statvfs, which corresponds to sys/statvfs.h
+18. Adding libc/ctype, which corresponds to ctype
+19. Adding libc/DATS/stdio.dats
+20. Modifying the types for malloc_ngc and free_ngc
+21. Clearing up libc/pthread and libc/pthread_uplock
+22. Implementing lib/pthread_upbarr
+23. Incorporating [parcomb] into $ATSHOME/contrib
+24. Adding libc/sys/resource, which corresponds to sys/resource.h
+25. Adding [assertloc] macdef
+26: Adding libc/sys/socket_in and libc/sys/socket_un
+27: Adding libc/netdb
+28. Adding libc/sys/sockaddr and libc/sys/sockopt
+29: Adding prelude/unsafe!!!
+30: Adding libats/ptrarr (* for arrays ending with a null ptr *)
+31: SDL is no longer built automatically
+
+########################################################################
+
+ats-lang-anairiats-0.2.1:
+
+1. The support for 'atsopt --depgen' is revamped.
+2. The support for boolean patterns is made available.
+3. Most string-generating functions now return linear strings
+   (strptr). This is a change that can have pervasive impact.
+4. Some support for GMP/MPQ and GMP/MPF functions are added. See
+   libc/SATS/gmp.sat for details.
+5. Overhauling the ATS building system (Yuri D'Elia).
+
+########################################################################
+
+ats-lang-anairiats-0.2.0:
+
+This is a milestone release. The original plan for OOP support in ATS
+has been scratched completely, resulting in about 1500 lines of code being
+removed. Instead, some support is added to interface ATS with external
+code written in OOP-style.
+
+The following libraries are now available for use:
+
+contrib/glib
+contrib/cairo
+contrib/pango
+contrib/X11
+contrib/GTK
+contrib/GL (OpenGL, GLU and GLUT)
+contrib/SDL
+
+Much more effort is needed to expand the APIs for these libraries. So far,
+only the APT for cairo is close to completion.
+
+########################################################################
+
+ats-lang-anairiats-0.1.9:
+
+(*
+// this feature is retracted as it is difficult to support
+1. overloaded symbols in a macro definition is re-loaded when the macro
+   definition is expanded. This change can greatly facilitate the use of
+   macros defined in $ATSHOME/prelude/macrodef.sats
+2. macro expansion is now handled by [d1exp_tr] in [ats_trans2_dyn1.dats]
+   (instead of being done by [d2exp_tr] in [ats_trans3_dyn2.dats])
+*)
+3. The semantics for symbol overloading is greatly simplified.
+4. Adding libc/sched based on /usr/include/sched.x
+5. Adding libats/parworkshop to support multicore programming.
+6. The examples in doc/EXAMPLE/MULTICORE are modified to run again.
+7. Adding support for lliunt and ullint.
+
+......
+
+########################################################################
+
+ats-lang-anairiats-0.1.8:
+
+1. string generation functions have been modified to return linear strings
+   that can be freed.
+2. $extype_struct is introduced to interface with C structs
+3. Fixing a serious mistake causing static unification variable to be
+   wrongly tagged.
+
+########################################################################
+
+ats-lang-anairiats-0.1.7:
+
+1. Adding support for implementing variadic functions in ATS.
+   Please see the files: $ATSHOME/libc/?ATS/stdarg.?ats
+2. Adding a check to detect looping caused by recursive staloading
+   and/or including
+3. Overhauling [prelude/SATS/array.sats]
+4. Adding support for special constants $FILENAME and $LOCATION.
+
+########################################################################
+
+ats-lang-anairiats-0.1.6:
+
+1. Support for OOP is under development. So far, typechecking is done.
+2. Type error message reporting is made more informative. This is ongoing.
+3. Adding $ATSHOME/ccomp/lib64 for storing libfiles for 64-bit machines.
+4. Makefiles are re-designed by Likai Liu.
+
+########################################################################
+
+ats-lang-anariats-0.1.5:
+
+1. A character whose ascii code is greater than 127 is treated as the null
+   character by the ATS lexer. So any chars can now appear in comments.
+2. Some location information is reported when a match failure occurs at
+   run-time.
+3. [atscc] now returns a nonzero exit status to the OS if compilation does
+   not finish normally.
+4. various list functions (e.g., list_map_* functions) now return linear
+   lists instead of nonlinear ones.
+5. Some packages in SML Basis Library are implemented in [libats/smlbas]
+6. A bug is fixed that was due to nonlinear constructor patterns being
+   given reference arguments.
+7. The constant [div_int_int_int_bool] is re-defined as the previous
+   definition was wrong if the divider and the dividee are of different
+   signs.
+8. A bug is fixed that was duo to [as] patterns being wrongly compiled.
+9. [prelude/SATS/matrix0.sats] and [prelude/DATS/matrix0.dats] are added.
+
+########################################################################
+
+ats-lang-anariats-0.1.4:
+
+1. [atscc] invokes a C compiler to compile the C code generated by the ATS
+   compiler [atsopt]. If the C compiler to be used is not [gcc], please set
+   the environment variable [ATSCCOMP] to the name of this C compiler.
+
+########################################################################
+
+ats-lang-anariats-0.1.3:
+
+1. Various bug fixes. In particular, a bug causing incorrect compilation
+   of pattern matching is fixed.
+2. It is now possible to generate html files for cross-referencing. The
+   flag for this feature is [--posmark_xref=XREF], where XREF should be
+   replaced with the name of some directory (already created) to store
+   the html files to be generated.
+
+########################################################################
+
+ats-lang-anariats-0.1.2:
+
+1. Linear lazy evaluation is now supported. See [prelude/DATS/file.dats]
+   for some code using this cool feature.
+2. Many new tutorials have been added. There is also a all-in-one format
+   that allows for easy printout.
+3. Many examples from the book K&R are translated into the directory:
+   [doc/EXAMPLE/KernighanRitchie].   
+
+########################################################################
+
+ats-lang-anariats-0.1.1:
+
+1. A type [schar] for signed chars is added. Now, the type [char] depends
+   on the interpretation of the C compiler used to compile the C code that
+   is generated from ATS programs by [atsopt].
+2. [scase] is now supported.
+3. [x1,x2:int] <pat> is now a legal pattern; it is equivalent to the following
+   pattern [x1:int,x2:int] <pat>
+4. It is now allowed in ATS to allocate (linear) arrays on stack at run-time.
+
+########################################################################
+
+ats-lang-anariats-0.1.0:
+
+1. The syntax for template implementation is changed:
+   previous syntax: implement foo<a,b><c> (...) = ...
+   current  syntax: implement{a,b}{c} foo (...) = ...
+2. It is now allowed to implement a special template instantiation:
+   implement foo<double,string><int> (...) = ...
+3. Various bug fixes can be found in BUGS.txt.
+
+########################################################################
+
+ats-lang-anariats-0.0.2:
+
+1. fixed a bug affecting [nonfix] declarations.
+2. [ats_trans1.dats] is splitted into the following two:
+   [ats_trans1_sat.dats] and [ats_trans1_dyn.dats]
+3. Make/Install is significantly improved. There is no need to set
+   ATSHOME (and ATSHOMERELOC) before 'make all' is executed.
+4. The confusion between array and array0 is resolved.
+5. [EXAMPLE/SHOOTOUT/SUMBIT] is created.
+6. The function [intvec_normalize_gte] did not handle the case [gcd > 1]
+   correctly. It is fixed now.
+7. The incorrect handling of [continue] in a for loop is fixed now.  See
+   [BUGS.txt]
+8. The command [atspackage] no longer puts the source code for Anairiats
+   into a distribution.
+
+########################################################################

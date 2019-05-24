@@ -1,0 +1,587 @@
+\documentclass[pdf]{prosper}
+\usepackage{amssymb}
+
+\renewcommand{\slidetopmargin}{25mm}
+\renewcommand{\slidebottommargin}{12mm}
+\renewcommand{\slideleftmargin}{0mm}
+\renewcommand{\sliderightmargin}{32mm}
+
+%%%%%%
+%%
+%% Title:
+%% A Programmer-Centric Approach to Program Verification
+%% Author:
+%% Zhiqiang (Alex) Ren and Hongwei Xi, Boston University
+%%
+%% Date: the 9th of June, 2013
+%%
+%% Automated Reasoning in Security and Software Verification
+%% ARSEC 2013, A Workshop with CADE24
+%% Lake Placid, New York, 9 June 2013
+
+%%
+\title{%
+\huge\bf%
+A Programmer-Centric Approach to Program Verification%
+}
+\author{~\\~\\
+{\large Zhiqiang (Alex) Ren and \underline{Hongwei Xi}} \\~\\
+{\large Boston University} \\~\\~\\~\\
+\institution{Work partly funded by NSF}}
+\slideCaption{\footnotesize{\em Views and Viewtypes in ATS}}
+%%%%%%
+%%
+%% Abstract
+%%
+%% ATS is a statically typed general-purpose programming language.  The
+%% signatory feature of ATS is a programming paradigm named
+%% programming-with-theorem-proving in which code for (run-time) computation
+%% and code for proof construction can be written in a syntactically
+%% intertwined manner.  In ATS, there is direct support for both dependent
+%% types and linear types. While the dependent types in ATS, which are of a
+%% restricted form originated from the development of Dependent ML (DML), are
+%% well-studied, the linear types in ATS are much less well-known.  In this
+%% talk, I will give an introduction to a notion of linear types referred to
+%% as viewtypes in ATS, which combine views (i.e., linear types for proofs)
+%% and types (for run-time values). In addition, I will present several
+%% concrete examples to illustrate certain practical uses of views and
+%% viewtypes.
+%%
+%%%%%%
+\begin{document}
+%%%%%%
+%%
+%% Slide 1
+%%
+%%%%%%
+\maketitle
+%%%%%%
+%%
+%% Slide 2
+%%
+%%%%%%
+\begin{slide}{\em ATS(1)}
+\begin{itemize}
+\item
+ATS is a statically typed programming language that unifies implementation
+with formal specification.
+\item
+The type system of ATS is rooted in the framework {\em Applied Type System},
+which gives the language its name.
+\item
+Both dependent types (DML-style) and linear types are available in ATS.
+\item
+The current compiler of ATS (ATS/Anairiats) is written in ATS itself,
+consisting of approximately 100K lines of code.
+\item
+ATS2, the next generation of ATS, is under active development and its
+compiler (ATS/Postiats) is planned to be released during the summer of
+2013.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 3
+%%
+%%%%%%
+\begin{slide}{\em ATS(2)}
+\begin{itemize}
+\item
+The core of ATS is a call-by-value functional programming language, which
+can also support lazy evaluation.
+\item
+ATS supports a programming paradigm referred to as {\em programming with
+theorem-proving (PwTP)}, allowing code for run-time computation and
+code for proof construction to be written in a syntactically intertwined
+manner.
+\item
+Imperative programming in ATS makes essential use of PwTP.
+\item
+ATS and C share the same native data representation, and
+programs in ATS are compiled directly into C code. To some extent, ATS
+can be thought of as a front-end to C.
+\item
+For more details, please visit:
+\begin{center}
+\texttt{http://www.ats-lang.org}
+\end{center}
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 4
+%%
+%%%%%%
+\def\ATS{\mbox{$\cal A\kern-1.5pt T\kern-3pt S$}}
+\begin{slide}{\em Applied Type System ($\ATS$)}
+\begin{itemize}
+\item
+$\ATS$ is a framework developed to facilitate designing and
+formalizing (advanced) type systems in support of practical
+programming.
+\item
+The name {\em applied type system} refers to a type system formed in
+$\ATS$, which consists of two components:
+\begin{itemize}
+\item
+static component (statics), where types are formed and reasoned about.
+\item
+dynamic component (dynamics), where programs are constructed and evaluated.
+\end{itemize}
+\item
+The key salient feature of $\ATS$ is that statics is completely separate
+from dynamics. In particular, types cannot depend on programs.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 5
+%%
+%%%%%%
+\begin{slide}{\em Examples and Non-Examples of ATS's}
+\begin{itemize}
+
+\item Examples:
+\begin{itemize}
+\item
+The simply-typed $\lambda$-calculus
+\item Dependent ML (DML)
+\item
+The 2nd-order polymorphic $\lambda$-calculus (System $F$)
+\item
+The higher-order polymorphic $\lambda$-calculus (System $F_{\omega}$)
+\item
+System $F_c$ (System $F$ extended with generalized datatypes)
+\end{itemize}
+
+\item Non-Examples:
+\begin{itemize}
+\item The dependent $\lambda$-calculus ($\lambda P$)
+\item The calculus of constructions ($\lambda C$) and its variants
+\end{itemize}
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 6
+%%
+%%%%%%
+\def\sc{{\it sc}}
+\def\basesort{b}
+\def\saddr{{\it addr}}
+\def\sbool{{\it bool}}
+\def\simp{\rightarrow}
+\def\Simp{\Rightarrow}
+\def\sint{{\it int}}
+\def\snat{{\it nat}}
+\def\sprop{{\it prop}}
+\def\stype{{\it type}}
+%% \begin{slide}{{\em Syntax for Statics}}
+%% \begin{itemize}
+%% \item
+%% The statics is a simply typed language and a type in the statics is
+%% referred to as a {\em sort}. We write $b$ for a base sort and assume the
+%% existence of two special base sorts $\stype$ and $\sbool$.
+%% \[\begin{array}{lrcl}
+%% \mbox{sorts} & \sigma & ::= & \basesort\mid\sigma_1\simp\sigma_2 \\
+%% \mbox{c-sorts} & \sigma_c & ::= & (\sigma_1,\ldots.\sigma_n)\Simp\sigma \\
+%% \mbox{sta.cd  terms} & s & ::= & a \mid \sc(s_1,\ldots,s_n) \mid \lambda a:\sigma.s \mid s_1(s_2) \\
+%% \mbox{sta. var. ctx.} & \Sigma & ::= & \emptyset \mid \Sigma, a:\sigma \\
+%% \end{array}\]
+%% \item
+%% In practice, we also have base sorts $\sint$ and $\saddr$ for integers and
+%% addresses (or locations), respectively.  Let us use $B$, $I$, $L$ and $T$
+%% for static terms of sorts $\sbool$, $\sint$, $\saddr$ and $\stype$,
+%% respectively.
+%% \end{itemize}
+%% \end{slide}
+%%%%%%
+%%
+%% Slide 7
+%%
+%%%%%%
+\def\Band{\land}
+\def\Bimp{\supset}
+\def\ttrue{{\it true}}
+\def\ffalse{{\it false}}
+\def\timp{\rightarrow}
+\def\Timp{\Rightarrow}
+\def\tbool{\mbox{\bf bool}}
+\def\tint{\mbox{\bf int}}
+\def\tleq{\leq}
+\def\tpjg{\vdash}
+\def\tunit{{\mathbf 1}}
+%% \begin{slide}{\em Some Static Constants}
+%% \[\begin{array}{rcll}
+%% \\[-24pt]
+%% \tunit & ~:~ & ()\Simp \stype \\[4pt]
+%% \ttrue & ~:~ & ()\Simp \sbool \\[4pt]
+%% \ffalse & ~:~ & ()\Simp \sbool \\[4pt]
+
+%% \timp & ~:~ & (\stype,\stype) \Simp \stype \\[4pt]
+%% \Bimp & ~:~ & (\sbool,\stype) \Simp \stype \\[4pt]
+
+%% \Band & ~:~ & (\sbool,\stype) \Simp \stype \\[4pt]
+%% \tleq & ~:~ & (\stype,\stype) \Simp \sbool & \mbox{(impredicative formulation)}\\[4pt]
+%% \end{array}\]
+%% Also, for each sort $\sigma$, we assume that the two static constructors
+%% $\forall_\sigma$ and $\exists_\sigma$ are assigned the sc-sort
+%% $(\sigma\timp\stype)\Simp\stype$.
+%% \vfill
+%% \end{slide}
+%%%%%%
+%%
+%% Slide 8
+%%
+%%%%%%
+\def\vB{\vec{B}}
+\def\temd{\models}
+\begin{slide}{\em Constraint Relation}
+A constraint relation is of the following form:
+\[\begin{array}{c}
+\Sigma;\vB\temd B
+\end{array}\]
+where $\vB$ stands for a sequence of static boolean terms
+(often referred to as assumptions). This relation holds if
+one of the assumptions in $\vB$ is false or the conclusion $B$
+is true.\\~\\
+\end{slide}
+%%%%%%
+%%
+%% Slide 9
+%%
+%%%%%%
+\begin{slide}{\em A Sample Constraint}
+\def\sz{{\it sz}}
+The following constraint is generated when an
+implementation of binary search on arrays is type-checked:
+\[\begin{array}{rcl}
+\Sigma;\vB & \temd & l+(h-l)/2+1\leq \sz \\
+\end{array}\]
+where
+\[\begin{array}{rcl}
+\Sigma & = & h:\sint, l:\sint, \sz:\sint \\
+\vB & = & l\geq 0, \sz\geq 0, 0\leq h+1, h+1\leq \sz, 0\leq l, l\leq \sz, h\geq l \\
+\end{array}\]
+We may employ linear integer programming to solve such a constraint.\\~\\
+\end{slide}
+%%%%%%
+%%
+%% Slide 10
+%%
+%%%%%%
+\begin{slide}{\em Some (Unfamiliar) Forms of Types}
+\begin{itemize}
+\item Asserting type: $B\Band T$
+\item Guarded type: $B\Bimp T$
+\end{itemize}
+Here is an example involving both guarded and asserting types:
+\[\begin{array}{l}
+\forall a:\sint.~a \geq 0\Bimp (\tint (a) \timp \exists a':\sint.~(a'<0)\Band \tint(a')) \\
+\end{array}\]
+This type can be assigned to a function from nonnegative integers to
+negative integers. As a probably more interesting example, the usual
+run-time assertion function can be given the following type:
+\[\begin{array}{l}
+\forall a:\sbool.~\tbool(a)\timp(a=\ttrue)\Band\tunit \\
+\end{array}\]
+\vfill
+\end{slide}
+%%%%%%
+%%
+%% Slide 11
+%%
+%%%%%%
+\def\dc{{\it dc}}
+\def\dcc{{\it dcc}}
+\def\dcf{{\it dcf}}
+\def\iforall#1{\forall^{+}(#1)}
+\def\eforall#1{\forall^{-}(#1)}
+\def\iguard#1{\supset^{+}\kern-2pt(#1)}
+\def\eguard#1{\supset^{-}\kern-2pt(#1)}
+\def\lam#1#2{\mbox{\bf lam}\;#1.#2}
+\def\app#1#2{\mbox{\bf app}(#1,#2)}
+\def\letin#1#2{\mbox{\bf let}\;#1\;{\bf in}\;#2}
+%% \begin{slide}{\em Syntax for Dynamics}
+%% \[\begin{array}{lrcl}
+%% \mbox{dyn. terms} & d & ::= & x \mid \dc(d_1,\ldots,d_n) \mid \\
+%% & & & \lam{x}{d} \mid \app{d_1}{d_2} \mid \\
+%% & & & \iguard{v} \mid \;\eguard{d} \mid \\
+%% & & & \iforall{v} \mid \eforall{d} \mid \\
+%% & & & \Band(d) \mid \letin{\Band(x)=d_1}{d_2} \mid \\
+%% & & & \exists(d) \mid \letin{\exists(x)=d_1}{d_2} \\
+%% \mbox{values} & v & ::= & x \mid \dcc(v_1,\ldots,v_n) \mid \lam{x}{d} \mid \\
+%% & & & \iguard{v} \mid \iforall{v} \mid \Band(v) \mid \exists(v) \\
+%% \mbox{dyn. var. ctx.} & \Delta & ::= & \emptyset \mid \Delta, x:s \\
+%% \end{array}\]
+%% \end{slide}
+%%%%%%
+%%
+%% Slide 12
+%%
+%%%%%%
+\begin{slide}{\em Typing Judgment}
+A typing judgment is of the following form:
+\[\begin{array}{c}
+\Sigma;\vB;\Delta\tpjg d:T
+\end{array}\]
+where
+\[\begin{array}{rcl}
+\Sigma & : & \mbox{static variable context} \\
+\vB & : & \mbox{assumption set} \\
+\Delta & : & \mbox{dynamic variable context} \\
+d & : & \mbox{dynamic term} \\
+T & : & \mbox{type} \\
+\end{array}\]
+\end{slide}
+%%%%%%
+%%
+%% Slide 13
+%%
+%%%%%%
+\begin{slide}{\em A Datatype Declaration in ATS}
+{\blue\begin{verbatim}
+datatype list (a:type, int) =
+  | nil (a, 0) of ()
+  | {n:int | n >= 0} cons (a, n+1) of (a, list (a, n))
+\end{verbatim}
+}~\\~\\
+The concrete syntax means the following:
+\[\begin{array}{rcl}
+nil & : & \forall a:\stype.~~() \Timp list (a, 0) \\
+cons & : & \forall a:\stype.\forall n:\sint. \\
+     &   & \kern12pt n\geq 0 \Bimp ((a, list (a, n)) \Timp list (a, n+1)) \\
+\end{array}\]
+\vfill
+\end{slide}
+%%%%%%
+%%
+%% Slide 14
+%%
+%%%%%%
+\begin{slide}{\em Programming with Theorem-Proving}
+\begin{itemize}
+\item
+We introduce a new sort $\sprop$ into the statics and use $P$ for static
+terms of sort $\sprop$, which are often referred to as props.
+\item
+A prop is like a type, which is intended to be assigned to special dynamic
+terms that we refer to as proof terms.
+\item
+A proof term is required to be pure and total, and it is to be erased
+before program execution. In particular, we do not extract programs out of
+proofs. Consequently, we can and do construct classical proofs.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 15
+%%
+%%%%%%
+\begin{slide}{\em A Dataprop Declaration in ATS}
+{\blue\begin{verbatim}
+datatype FIB (int, int) =
+  | FIB0 (0, 0) of () // fib(0) = 0
+  | FIB1 (1, 1) of () // fib(1) = 1
+  | {n:nat}{r0,r1:nat} // fib(n+2) = fib(n)+fib(n+1)
+    FIB2 (n+2, r0+r1) of (FIB (n, r0), FIB (n+1, r1))
+\end{verbatim}
+}~\\~\\
+The following function {\it fib} computes Fibonacci numbers:\\~\\
+{\blue\begin{verbatim}
+fun fib {n:nat}
+  (n: int (n)): [r:nat] (FIB (n, r) | int (r))
+// end of [fib]
+\end{verbatim}
+}
+\vfill
+\end{slide}
+%%%%%%
+%%
+%% Slide 16
+%%
+%%%%%%
+\begin{slide}{\em A Direct Implementation of {\it fib}}
+{\blue\begin{verbatim}
+implement fib (n) =
+  case+ n of
+  | 0 => (FIB0 () |  0)
+  | 1 => (FIB1 () |  1)
+  | _ =>> let
+      val (pf0 | r0) = fib (n-2)
+      val (pf1 | r1) = fib (n-1)
+    in
+      (FIB2 (pf0, pf1) | r0 + r1)
+    end // end of [_]
+// end of [fib]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 16-2
+%%
+%%%%%%
+\begin{slide}{\em A Linear-Time Implementation of {\it fib}}
+{
+\blue\begin{verbatim}
+fun fibats (n: int): int = let
+  fun loop (r0: int, r1: int, ni: int): int =
+    if ni > 0 then loop (r1, r0+r1, ni-1) else r0
+  // end of [loop]
+in
+  loop (0, 1, n)
+end // end of [fibats]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 16-2
+%%
+%%%%%%
+\begin{slide}{\em A Linear-Time Implementation of {\it fib}}
+{
+\fontsize{11pt}{12pt}
+\blue\begin{verbatim}
+fun fibats {n:nat} (n: int n)
+  : [r:int] (FIB (n, r) | int r) = let
+  fun loop {n,i:nat | i <= n} {r0,r1:int} .<n-i>.
+  (
+    pf0: FIB (i, r0)
+  , pf1: FIB (i+1, r1)
+  | r0: int (r0), r1: int (r1), ni: int(n-i)
+  ) : [r:int] (FIB (n, r) | int (r)) =
+    if ni > 0 then
+      loop {n,i+1} (pf1, FIB2 (pf0, pf1) | r1, r0+r1, ni-1)
+    else (pf0 | r0) // end of [if]
+in
+  loop (FIB0(), FIB1() | 0, 1, n)
+end // end of [fibats]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 17-1
+%%
+%%%%%%
+\begin{slide}{\em Program-First Program Verification}
+\end{slide}
+%%%%%%
+%%
+%% Slide 17-2
+%%
+%%%%%%
+\begin{slide}{\em Programmer-Centric Program Verification}
+\begin{itemize}
+\item Observation: (informal) proofs are robust but programs are fragile
+\item Observation: theorems are almost always correct but proofs almost always contain flaws.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 18-1
+%%
+%%%%%%
+\begin{slide}{\em Datatype for Generic Functional Lists}
+{\blue
+\fontsize{11}{12}
+\begin{verbatim}
+datatype
+gflist (
+  a:type, ilist(*index*)
+) =
+  | gflist_nil (a, nil) of ()
+  | {x:int} {xs:ilist}
+    gflist_cons (a, cons (x, xs)) of (E (a, x), gflist (a, xs))
+// end of [gflist]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 18-2
+%%
+%%%%%%
+\begin{slide}{\em Interface for List-Sorting}
+{\blue
+\fontsize{11}{12}
+\begin{verbatim}
+fun{a:type}
+sort{xs:ilist}
+(
+  xs: glist (a, xs)
+, compare: (a, a) -> int
+) : [ys:ilist]
+(
+  SORT (xs, ys) | glist (a, ys)
+)
+// end of [sort]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 18-3
+%%
+%%%%%%
+\begin{slide}{\em Verified Insertion Sort}
+{
+\begin{itemize}
+\item Let's take a look at an implementation of list-insertion sort.
+\end{itemize}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 35
+%%
+%%%%%%
+\begin{slide}{\em Conclusion}
+\begin{itemize}
+\item
+ATS is a statically type programming language that unifies implementation
+with a form of formal specification.
+\item
+The signatory feature of ATS is a programming paradigm referred to as
+programming-with-theorem-proving (PwTP) in which code for (run-time)
+computation and code for proof construction can be written in a
+syntactically intertwined manner.
+\item
+We advocate a programmer-centric approach to program verification
+in ATS that puts emphasis on requesting the programmer to explain in
+a literate fashion why his or her code works.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 36
+%%
+%%%%%%
+\begin{slide}{\em Future Direction}
+\begin{itemize}
+\item Applying ATS to systems programming. We need more case studies.
+\item
+Reducing the amount of ``administrative code'' needed for proof
+manipulation. We want to investigate more effective approaches to proof
+management in order to better support PwTP.
+\item
+Identifying the potential of PwTP in areas other than systems programming
+(e.g., security).
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 37
+%%
+%%%%%%
+\begin{slide}{\em The End}
+\vspace{72pt}
+\begin{center}
+{\huge\bf Thank you!}
+\end{center}
+\end{slide}
+\end{document}
+%%%%%% end of [ViewsViewtypes.tex] %%%%%%

@@ -1,0 +1,75 @@
+<!-- beg of [casting-functions.html] -->
+
+<H2><A id="castingfun" name="castingfun">Casting Functions</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+A casting function in ATS is equivalent to the identify function in terms
+of dynamic semantics. A call to such a function is evaluated at
+compile-time, and its argument is returned. For instance, we have the
+following commonly used casting functions:
+
+<PRE>
+castfn int1_of_int (x: int):<> [n:nat] int n
+castfn string1_of_string (x: string):<> [n:nat] string n
+</PRE>
+
+The keyword <i>castfn</i> is for introducing casting functions.
+
+<P>
+
+We now present a typical use of casting functions. The following declared
+function <i>list_concat</i> is intended for concatenating a list of lists:
+
+<PRE>
+fun{a:t@ype} list_concat (xss: List (List a)): List a
+</PRE>
+
+Let us say that we would like to verify that the concatenation of a list of
+lists yields a list whose length equals the sum of the lengths of the lists
+in the given list of lists. This, for instance, can be done as follows by
+introducting a datatype constructor <i>lstlst</i>.
+
+<PRE><span class="dynexp"><span class="keyword">datatype</span> <span class="staexp">lstlst <span class="keyword">(</span>a<span class="keyword">:</span>t@ype+<span class="keyword">,</span> int<span class="keyword">,</span> int<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">m<span class="keyword">,</span>t<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span>
+    lstlst_cons <span class="staexp"><span class="keyword">(</span>a<span class="keyword">,</span> m+1<span class="keyword">,</span> t+n<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>list <span class="keyword">(</span>a<span class="keyword">,</span> n<span class="keyword">)</span><span class="keyword">,</span> lstlst <span class="keyword">(</span>a<span class="keyword">,</span> m<span class="keyword">,</span> t<span class="keyword">)</span><span class="keyword">)</span></span>
+  <span class="keyword">|</span> lstlst_nil <span class="staexp"><span class="keyword">(</span>a<span class="keyword">,</span> 0<span class="keyword">,</span> 0<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span><span class="keyword">)</span></span>
+
+<span class="keyword">fun</span><span class="keyword">{</span><span class="staexp">a<span class="keyword">:</span>t@ype</span><span class="keyword">}</span> _concat <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>t<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>xss<span class="keyword">:</span> <span class="staexp">lstlst <span class="keyword">(</span>a<span class="keyword">,</span> m<span class="keyword">,</span> t<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">list <span class="keyword">(</span>a<span class="keyword">,</span> t<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">case+</span> xss <span class="keyword">of</span>
+  <span class="keyword">|</span> lstlst_cons <span class="keyword">(</span>xs<span class="keyword">,</span> xss<span class="keyword">)</span> <span class="keyword">=&gt;</span> list_append <span class="keyword">(</span>xs<span class="keyword">,</span> _concat&lt;<span class="staexp">a</span><span class="keyword">&gt;</span> xss<span class="keyword">)</span>
+  <span class="keyword">|</span> lstlst_nil <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> list_nil <span class="keyword">(</span><span class="keyword">)</span>
+<span class="comment">// end of [_concat]
+</span></span></PRE>
+
+Given a type <i>T</i> and integers <i>I</i> and <i>J</i>, the type
+<i>lstlst (T, I, J)</i> is for a list of lists such that the length of the
+list is <i>I</i> and each element in the list is a list of values of the
+type <i>T</i> and the sum of the lengths of these elements equals <i>J</i>.
+<P>
+
+The function <i>list_concat</i> is the same as the function <i>_concat</i>
+in terms of dynamic semantics, and it can be implemented as follows:
+
+<PRE><span class="dynexp"><span class="keyword">implement</span><span class="keyword">{</span><span class="staexp">a</span><span class="keyword">}</span> list_concat <span class="keyword">(</span>xss<span class="keyword">)</span> <span class="keyword">=</span>
+  _concat&lt;<span class="staexp">a</span><span class="keyword">&gt;</span> <span class="keyword">(</span>lstlst_of_listlist xss<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+  <span class="keyword">castfn</span> lstlst_of_listlist
+    <span class="staexp"><span class="keyword">{</span>m<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>xss<span class="keyword">:</span> <span class="staexp">list <span class="keyword">(</span>List a<span class="keyword">,</span> m<span class="keyword">)</span></span><span class="keyword">)</span>
+    <span class="keyword">:&lt;&gt;</span> <span class="staexp"><span class="keyword">[</span>t<span class="keyword">:</span>nat<span class="keyword">]</span> lstlst <span class="keyword">(</span>a<span class="keyword">,</span> m<span class="keyword">,</span> t<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">case+</span> xss <span class="keyword">of</span>
+    <span class="keyword">|</span> list_cons <span class="keyword">(</span>xs<span class="keyword">,</span> xss<span class="keyword">)</span> <span class="keyword">=&gt;</span> lstlst_cons <span class="keyword">(</span>xs<span class="keyword">,</span> lstlst_of_listlist xss<span class="keyword">)</span>
+    <span class="keyword">|</span> list_nil <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> lstlst_nil <span class="keyword">(</span><span class="keyword">)</span>
+<span class="keyword">}</span> <span class="comment">// end of [list_concat]
+</span></span></PRE>
+
+Given that <i>lstlst_of_listlist</i> being implemented as a casting
+function, the implementation of <i>list_concat</i> is equivalent to
+the following one in terms of dynamic semantics:
+<PRE>
+implement{a} list_concat (xss) = _concat<a> (xss) // this one does not typecheck
+</PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="casting-functions.dats">here</a>.
+
+<!-- end of [casting-functions.html] -->

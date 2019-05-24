@@ -1,0 +1,68 @@
+/* 8 Queen Problem written by Hongwei Xi */
+
+let
+/*
+   function abs (i: int): int = if (i >= 0) then i else ~i
+*/
+   function abs (i: int): int = if (i >= 0) then i else 0-i
+
+   function print_newline () = (print ("\n"); flush ())
+
+   function print_dots (n: int) =
+     while (n > 0) do (print ("."); n := n - 1)
+
+   type intArray = array of int
+
+   function print_board (board: intArray, size: int) = let
+      var n := 0
+   in
+      for row := 0 to size - 1 do (
+        n := board[row];
+        print_dots (n-1);
+        print ("Q");
+        print_dots (size - n);
+        print_newline ()
+      );
+      print_newline ()
+   end /* end of [function] */
+
+   function test (j: int, board: intArray): int = let
+     var diff := 0
+     var qi := 0
+     var qj := board[j]
+     var result := 1
+   in
+     for i := 0 to j - 1 do
+       (qi := board[i]; diff := abs (qi - qj);
+        if (diff = 0) then (result := 0; break)
+        else if (diff = j - i) then (result := 0; break));
+     result
+   end /* end of [function] */
+
+   function queens (size: int): int = let
+     var board := intArray [ size ] of 0
+     var next := 0
+     var row := 0
+     var count := 0
+   in
+     while (1) do (
+       next := board[row]; next := next + 1;
+       if (next > size) then
+         (if (row = 0) then break else (board[row] := 0; row := row - 1))
+       else (
+         board[row] := next;
+         if test(row, board) then (
+           row := row + 1; if (row = size) then
+             (count := count + 1; print_board (board, size); row := row - 1)
+         ) /* end of [if] */
+       ) /* end of [if] */
+     ) ; /* end of [while] */
+     count
+   end /* end of [function] */
+in
+  print ("queens (8) = "); print_int (queens (8)); print ("\n"); flush ()
+end /* end of [let] */
+
+/* ****** ****** */
+
+/* end of [queens0.tig] */

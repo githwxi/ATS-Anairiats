@@ -1,0 +1,34 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload "libatsdoc/SATS/atsdoc_text.sats"
+%}
+
+%{
+fn author () = TEXTstrcst"John Doe"
+%}
+
+%{
+staload
+UN = "prelude/SATS/unsafe.sats"
+staload TIME = "libc/SATS/time.sats"
+
+fn timestamp
+  (): text = let
+  var time = $TIME.time_get ()
+  val (fpf | x) = $TIME.ctime (time)
+  val x1 = sprintf ("%s", @($UN.castvwtp1(x)))
+  prval () = fpf (x)
+  val x1 = string_of_strptr (x1)
+in
+  TEXTstrcst (x1)
+end // end of [val]
+%}
+
+Author: #author()
+Time of the last modification: #timestamp[NOW]()
+
+%{
+implement main () = fprint_filsub (stdout_ref, "foo2_atxt.txt")
+%}

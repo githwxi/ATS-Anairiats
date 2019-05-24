@@ -1,0 +1,54 @@
+#
+# A simple Makefile
+#
+
+#
+# HX: I took it from Sylvain Nahas
+#
+
+######
+
+#
+# define ATSHOME either from the command line
+# or here
+#
+ATSHOME ?=
+
+PWD:=$(shell pwd)
+
+ifeq ($(ATSHOME),)
+$(error ATSHOME must be defined!)
+endif
+
+KVERS ?= `uname -r`
+
+ATSCC=$(ATSHOME)/bin/atscc
+ATSOPT=$(ATSHOME)/bin/atsopt
+
+######
+
+IATSFLAGS=-IATS $(ATSHOME)/contrib/linux
+IATSFLAGS+=-IATS $(PWD)/ATS
+
+######
+
+all: scull.ko
+
+######
+
+scull_dats.c: ATS/scull.dats ATS/scull.cats ATS/scull.sats
+	$(ATSOPT) $(IATSFLAGS) -o $@ -d $<
+scull_data_dats.c: ATS/scull_data.dats ATS/scull.cats ATS/scull.sats
+	$(ATSOPT) $(IATSFLAGS) -o $@ -d $<
+
+######
+
+scull.ko: scull_dats.c scull_data_dats.c
+	make SUBDIRS=$(PWD) -C /lib/modules/$(KVERS)/build modules
+
+clean:
+	make SUBDIRS=$(PWD) -C /lib/modules/$(KVERS)/build clean
+	-rm -f scull_dats.c
+	-rm -f scull_data_dats.c
+
+###### end of [Makefile] ######

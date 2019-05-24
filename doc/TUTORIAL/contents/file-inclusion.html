@@ -1,0 +1,35 @@
+<!-- beg of [file-inclusion.html] -->
+
+<H2><A id="file-inclusion" name="file-inclusion">File Inclusion</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+As is in C, file inclusion in ATS can be done by using the directive
+<i>#include</i>. For instance, the following line indicates that a file
+named <i>foobar</i> is included, that is, this line is to be replaced with
+the content of the file <i>foobar</i>:
+
+<pre>
+#include "foobar.hats"
+</pre>
+
+Note that the included file is parsed according to the syntax for statics
+or dynamics depending whether the file is included in a static or dynamic
+file.  As a convention, the name of an included file often ends with the
+extension ".hats".
+<P>
+
+A common use of file inclusion is to keep some constants, flags or
+parameters being defined consistently across a set of files. For instance,
+the file <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/params.hats">prelude/params.hats</A>
+serves such a purpose.
+<P>
+
+File inclusion can also be used to emulate (in a limited but rather useful
+manner) the feature of functors (a module-level language construct) as is
+supported in languages such as SML and Objective Caml.  Examples
+illustrating such a use of file inclusion can be found elsewhere.
+<P>
+
+<!-- end of [file-inclusion.html] -->

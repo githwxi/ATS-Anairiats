@@ -1,0 +1,22 @@
+######
+
+The TEST directory contains a list of GL examples:
+
+GL-test01.dats: Hello, world! (a still square)
+GL-test02.dats: A rotating square
+GL-test03-1.dats: Stippled lines
+GL-test03-2.dats: A circling dashed loop in the shape of a square
+GL-test04.dats: A simple example involving texturing
+GL-test05.dats: testing gluUnProject
+GL-test06.dats: Starfield (originally by Nate Robbins)
+GL-test07.dats: Randomly generated regular polygons
+GL-test08.dats: A simple wall clock implementation
+GL-test09.dats: A simple example of antialiaing
+GL-test10.dats: A simple example of bimap
+GL-test11.dats: A simple torus involving a display list
+GL-test12.dats: A simple font involving multiple display lists
+GL-test13.dats: A complete raster font
+GL-test14.dats: A simple example of drawing, copying and zooming pixel data
+GL-test15.dats: Drawing 5 foggy spheres
+
+####### end of [README] ######

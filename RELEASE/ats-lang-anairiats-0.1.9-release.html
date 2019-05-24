@@ -1,0 +1,31 @@
+<pre>
+ats-lang-aniriats-0.1.9:
+
+As usual, this release contains many bug fixes. The most notable
+addition is a package named 'parworkshop' in $ATSHOME/libats, which
+provides some rudimentary support for multicore programming (SMP).
+Please see $ATSHOME/doc/EXAMPLE/MULTICORE for some examples.
+
+(*
+// this feature is retracted as it is difficult to support
+1. overloaded symbols in a macro definition is re-loaded when the macro
+   definition is expanded. This change can greatly facilitate the use of
+   macros defined in $ATSHOME/prelude/macrodef.sats
+
+2. macro expansion is now handled by [d1exp_tr] in [ats_trans2_dyn1.dats]
+   (instead of being done by [d2exp_tr] in [ats_trans3_dyn2.dats])
+*)
+
+3. The semantics for symbol overloading is greatly simplified.
+
+4. Adding libc/sched based on /usr/include/sched.x
+
+5. Adding libats/parworkshop to support multicore programming.
+
+6. The examples in doc/EXAMPLE/MULTICORE are modified to run again.
+
+7. Adding support for lliunt and ullint.
+
+......
+
+</pre>

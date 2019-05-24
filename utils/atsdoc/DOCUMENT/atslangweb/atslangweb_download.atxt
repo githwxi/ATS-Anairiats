@@ -1,0 +1,568 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBDOWNLOAD: atext =
+  strcst"<strong>Download</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBDOWNLOAD", _ATSLANGWEBDOWNLOAD)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_download.css", file_mode_w)
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_download.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks2("DOWNLOAD")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+<h1>Download</h1>
+
+#menu('\
+#litxt(
+#ulink("DOWNLOAD\#ATS_packages", "ATS packages for download")
+)
+#litxt(
+#ulink("DOWNLOAD\#installation_require", "Requirements for installation")
+)
+#litxt(
+#ulink("DOWNLOAD\#installation_debian", "Installation of official Debian package")
+)
+#litxt(
+#ulink("DOWNLOAD\#installation_redhat", "Installation of unofficial Redhat package")
+)
+#ignore("\
+#litxt(
+#ulink("DOWNLOAD\#installation_precomp", "Installation from a precompiled package")
+)\
+")
+#litxt(
+#ulink("DOWNLOAD\#installation_srccomp", "Installation through source compilation")
+)
+#litxt(
+#ulink("DOWNLOAD\#installation_atscntrb", "Installation of ATS2-contrib")
+)
+')
+
+#HR(2)
+
+<h2>
+#uid("ATS_packages", "ATS packages for download")
+</h2>
+
+#para('\
+
+ATS is #ulink("http://www.opensource.org", "Open Source") and
+#ulink("http://www.gnu.org/philosophy/free-sw.html", "Free Software"), and
+it is freely available under the GNU GENERAL PUBLIC LICENSE version 3
+(#ulink("http://www.gnu.org/licenses/gpl-3.0.html", "GPLv3")) as is
+published by the Free Software Foundation.  The current implementation of
+ATS is given the name ATS/Postiats or simply Postiats. Sometimes, this
+implementation is also referred to as ATS2 for it is the successor of the
+previous ATS programming language, which may be referred to as ATS1.  The
+latest released ATS/Postiats packages are available at the following links:
+
+')#comment("para")
+
+#menu('\
+#litxt(
+#para('\
+The current #strong("stable") release of ATS2 is
+<a href="http://sourceforge.net/projects/ats2-lang/download">ats2-positiats-0.1.2</a>
+'))
+#litxt(
+#para('\
+The current #strong("stable") release of ATS2-contrib is
+<a href="http://sourceforge.net/projects/ats2-lang-contrib/download">ats2-lang-contrib-0.1.2</a>
+'))
+
+#ignore('\
+#litxt(
+#para('\
+The current #strong("unstable") version is
+#ulink1(
+"http://www.cs.bu.edu/~hwxi/ATS/IMPLEMENTATION/Positats/ats2-positiats-0.1.3.tgz", "ats2-positiats-0.1.3"
+)
+'))
+')
+
+')#comment("menu")
+
+#HR(1)
+
+<h2>
+#uid("installation_require", "Requirements for installation")
+</h2>
+
+#para('\
+
+The following requirements are supposed to be met in order to install ATS:
+
+')
+
+#menu('\
+#lisub('\
+Operating System requirement: ATS is supported under the following
+operating systems:
+#menu('\
+#lisub("Linux")
+#lisub("Windows with Cygwin")
+#lisub("MacOS")
+')')
+#lisub("\
+Programming Language requirement:
+GNU C-Compiler (gcc). Other C-compilers (e.g., clang) should work in principle.
+")
+')#comment("menu")
+
+#para("\
+
+We plan to port ATS to other platforms in the future. If you have succeeded
+in porting ATS to a platform not listed here, please drop us a note.
+
+")
+
+#para('\
+
+The GMP library (libgmp.a), which is in general included in a GNU/Linux
+distribution, is currently <em>optional</em> and it may be required for
+installing a release of ATS2 in the future.  Please see <a
+href="http://gmplib.org">http://gmplib.org</a> for more details on GMP.
+
+')
+
+#HR(1)
+
+<h2>
+#uid("installation_debian", "Installation of official Debian package")
+</h2>
+
+#para("\
+
+There is an official Debian package (dpkg) of ATS2 currently maintained by
+#ulink("http://cs-people.bu.edu/md/", "Matthew Danish").
+
+")
+
+#HR(1)
+
+<h2>
+#uid("installation_redhat", "Installation of unofficial Redhat package")
+</h2>
+
+#para("\
+
+Please find unofficial RPM distribution of ATS2
+#ulink("http://cs-people.bu.edu/md/", "on-line") currently maintained by
+Matthew Danish.
+
+")
+
+#ignore("\
+
+#HR(1)
+
+<h2>
+#uid("installation_precomp", "Installation through a precompiled package")
+</h2>
+
+#para("\
+
+Please first download a compressed tarball containing a precompiled release of
+ATS2 from the following site that suits your platform:
+
+")
+
+#pcenter('\
+<a href="http://sourceforge.net/projects/ats2-lang/download">http://sourceforge.net/projects/ats2-lang/download</a>
+')#comment("pcenter")
+
+#menu('\
+
+#litxt(
+#para("\
+(#strong("Option 1"))
+
+You can untar the tarball in the root directory (that is, the directory
+#filename("/.")) and then set the shell environment variables PATSHOME to
+#filename("/usr/share/atshome"). This option most likely requires root
+access.\
+
+"))
+
+#litxt(
+#para("\
+(#strong("Option 2"))
+
+You can untar the tarball in the directory #filename("/tmp"), and then move
+the directory /tmp/usr/share/atshome into a directory of your choice, say,
+#filename("FOO"), and then set the environment variables PATSHOME to
+#filename("FOO/atshome").  In addition, you need to put
+#filename("${PATSHOME}/bin") on your execution path or create symbolic links
+to the executables #filename("${PATSHOME}/bin/patscc") and
+#filename("$PATSHOME/bin/patsopt") in a directory that is already on your
+execution path, where ${PATSHOME} refers to the content of PATSHOME.\
+
+"))
+
+')#comment("menu")
+
+")
+
+#HR(1)
+
+<h2>
+#uid("installation_srccomp", "Installation through source compilation")
+</h2>
+
+This installation method requires access to gcc or some other C-compilers
+(such as clang), and it is also in need of the #ulink1("https://www.gmplib.org", "GMP")
+library.
+
+#menu('\
+#lisub('\
+#strong("Step 1:")
+#para("\
+After downloading a compressed tarball containing a release of ATS2 from the
+following site:
+")
+
+#pcenter('\
+<a href="http://sourceforge.net/projects/ats2-lang/download">http://sourceforge.net/projects/ats2-lang/download</a>
+')#comment("pcenter")
+
+#para("\
+
+please untar it in a directory, say FOO, of your choice. This, for
+instance, can be done by executing the following command-line:
+
+")
+
+#command("tar -zvxf ats2-positiats-x.x.x.tgz")
+
+#para("\
+
+where #filename("ats2-positiats-x.x.x.tgz") refers to the downloaded ATS
+package and x.x.x is its version number.
+
+")
+
+#para("\
+
+All the files and directories extracted from the tarball are now in the
+directory #filename("FOO/ATS-Postiats").\
+
+")
+
+#para("\
+
+If you have access to the #emphasis("git") command, then you can also do a
+git-clone to obtain the current release of ATS2:
+
+#command("git clone git://git.code.sf.net/p/ats2-lang/code ATS-Postiats")
+
+")
+
+')#comment("lisub")
+
+#lisub("\
+#strong("Step 2:")
+#para("\
+
+Assume that your current directory is #filename("FOO/ATS-Postiats").
+Please execute #emphasis("./configure") and then:
+
+")
+
+#command("make all")
+
+#para("\
+
+This generates executables #filename("patscc") and #filename("patsopt") in
+the directory #filename("FOO/ATS-Postiats/bin"), which are the commands you
+need for compiling ATS programs, and a library file
+#filename("libatslib.a") in the directory
+#filename("FOO/ATS-Postiats/ccomp/atslib/lib/"), which you <em>may</em>
+need for linking.
+
+")
+
+#para("\
+
+It is possible to choose a C-compiler for compiling #filename("patsopt").
+Currently, the following options are available:
+
+")
+
+#command("make CCOMP=gcc all")
+#command("make CCOMP=clang all")
+
+#para("\
+
+It is also possible to set the flag GCFLAG explicitly so as to choose
+a particular GC for providing memory management needed for running #filename("patsopt").
+Currently, the following options are available:
+
+")
+
+#command("make GCFLAG=-D_ATS_NGC all")
+#command("make GCFLAG=-D_ATS_GCATS all")
+#command("make GCFLAG=-D_ATS_GCBDW all")
+
+#para("\
+
+The first one means no GC support for running #filename("patsopt") while
+the second one and the third one require the built-in GC (of ATS) and the
+Boehm-Demers-Weiser GC, respectively.
+
+")
+
+#para("\
+
+The current default setting is the following one:
+
+")
+
+#command("make CCOMP=gcc GCFLAG=-D_ATS_GCATS all")
+
+#para("\
+
+In general, if the default setting does not work out, please try the no-GC
+option by setting GCFLAG to -D_ATS_NGC.
+
+")
+
+")#comment("lisub")
+
+#lisub("\
+#strong("Step 3:")
+#para("\
+
+If you do not want to install ATS, please set the environment variable
+PATSHOME to #filename("FOO/ATS-Postiats").
+
+")
+")#comment("lisub")
+
+#lisub("\
+#strong("Step 4:")
+
+#para("\
+
+Optionally, you may choose to install ATS.  If you do, please first execute
+the following command-line:
+
+")
+
+#command("./configure --prefix=DESTDIR")
+
+#para("\
+
+where DESTDIR refers to the directory into which ATS is to be installed.
+
+If the argument [--prefix=DESTDIR] is missing, then the default directory
+for installing ATS is #filename("/usr/local").\
+
+")
+
+You can now install by executing:
+
+#command("make install")
+
+#para("\
+
+After installation, you need to set PATSHOME to
+#filename("DESTDIR/lib/ats2-postiats-x.x.x"), which is the directory where
+ATS is installed.
+
+")#comment("para")
+
+#para("\
+
+Note that you can always re-configure before executing
+#emphasis("make install") if you would like to change a previously selected
+directory for installation:
+
+#command("./configure --prefix=DESTDIR2")
+
+")
+
+Also, you can perform staged installation by making use of the variable
+DESTDIR.  Please see explanation
+#ulink1("http://www.gnu.org/prep/standards/html_node/DESTDIR.html", "here").
+
+")#comment("lisub")
+
+')#comment("menu")
+
+<!--
+
+#HR(1)
+
+<h2>
+#uid("installation_bootstrap", "Installation through bootstrapping")
+</h2>
+
+#para('\
+
+This installation method is
+probably the best if you would like to keep abreast of the development of ATS.
+Please find more details #ulink1("#ATSLANGWEBROOTget()/IMPLEMENT/\#ATS_Postiats", "here").
+
+')
+
+-->
+
+<!-- ****** ****** -->
+
+#HR(1)
+
+<h2>
+#uid("installation_atscntrb", "Installation of ATS2-contrib")
+</h2>
+
+#para("\
+
+ATS2-contrib primarily consists of external contributions made to the ATS2
+programming language system in the forms of library packages, tutorials,
+examples, and all sorts of documentation, etc.\
+
+")
+
+#menu('\
+#lisub('\
+#strong("Step 1:")
+#para("\
+
+After downloading a compressed tarball containing a release of
+ATS2-contrib from the following site:\
+
+")
+
+#pcenter('\
+<a href="http://sourceforge.net/projects/ats2-lang-contrib/download">http://sourceforge.net/projects/ats2-lang-contrib/download</a>
+')#comment("pcenter")
+
+#para("\
+
+please untar it in a directory, say BAR, of your choice. This, for
+instance, can be done by executing the following command-line:\
+
+")
+
+#command("tar -zvxf ats2-lang-contrib-x.x.x.tgz")
+
+#para("\
+
+where #filename("ats2-lang-contrib-x.x.x.tgz") refers to the downloaded
+ATS2-contrib package and x.x.x is the version number of the package.
+
+")
+
+#para("\
+
+All the files and directories extracted from the tarball are now in the
+directory #filename("BAR/ATS-Postiats-contrib"). Please set the environment
+variable PATSHOMERELOC to this directory name and then you are ready to use
+ATS2-contrib.
+
+")
+
+#para("\
+
+If you have access to the #emphasis("git") command, then you can also do a
+git-clone to obtain the current release of ATS2-contrib:
+
+#command("git clone git://git.code.sf.net/p/ats2-lang-contrib/code ATS-Postiats-contrib")
+
+")
+
+')#comment("lisub")
+
+#lisub('\
+#strong("Step 2:")
+#para("\
+
+If you want to install ATS2-contrib, you can move the content of the
+directory #filename("BAR/ATS-Postiats-contrib") into ${PATSHOME} and then
+set PATSHOMERELOC to ${PATSHOME}, where ${PATSHOME} refers to the value of
+the environment variable PATSHOME.\
+
+")
+')#comment("lisub")
+
+')#comment("menu")
+
+<!-- ****** ****** -->
+
+#HR(1)
+#para("")
+#para("")
+#para("")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks3("DOWNLOAD")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

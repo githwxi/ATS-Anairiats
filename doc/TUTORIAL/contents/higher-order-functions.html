@@ -1,0 +1,118 @@
+<HTML>
+<BODY text="#000000" bgcolor="#ffffff" link="#0000FF" vlink="#CC00CC" alink="#ff0000">
+
+<H2>Higher-Order Functions</H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The core of ATS is a functional language in which functions are first-class
+values. A higher-order function is a function whose arguments also include
+functions.
+<P>
+Let us use <i>BT</i> to range over base types such as
+<i>char</i>, <i>double</i>, <i>int</i>, <i>string</i>, etc.
+A simple type <i>T</i> is formed according to the following
+inductive definition:
+
+<UL>
+
+<LI>
+<i>BT</i> is a simple type.
+
+<LI>
+<i>(T_1, ..., T_n) -&gt; T_0</i> is a simple type if <i>T_0, T_1, ...,
+T_n</i> are simple types.
+
+</UL>
+
+Let <i>order</i> be a function from simply types to natural numbers
+defined as follows:
+
+<UL>
+
+<LI>
+<i>order(BT) = 0</i>
+
+<LI>
+<i>order((T_1, ..., T_n) -> T_0) = 
+max (order(T_0), 1 + order (T_1), ..., 1 + order(T_n))</i>
+
+</UL>
+
+Given a function <i>f</i> of simple type <i>T</i>, we say that
+<i>f</i> is a <i>n</i>th-order function if <i>order(T) = n</i>.
+For instance, a function of the type
+<i>(int, int) -&gt; int</i> is 1st-order,
+and a function of the type
+<i>int -&gt; (int -&gt; int)</i> is also 1st-order,
+and a function of the type
+<i>((int -&gt; int), int) -&gt; int</i> is 2nd-order.
+In practice, most higher-order functions are 2nd-order.
+<P>
+
+As an example, we implement as follows a 2nd-order function
+<i>find_root</i> that takes a function <i>f</i> from integers to integers
+as its argument and searches for a root of <i>f</i> by enumeration:
+
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#000000">fn</FONT> find_root <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fun</FONT> aux <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> int</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">if</FONT> f <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> 0 <FONT COLOR="#000000">then</FONT> n <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">begin</FONT>
+      <FONT COLOR="#000000">if</FONT> n &lt;= 0 <FONT COLOR="#000000">then</FONT> aux <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">~</FONT>n + 1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> aux <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">~</FONT>n<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">end</FONT>
+<FONT COLOR="#000000">in</FONT>
+  aux <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [fint_root]
+</FONT>
+</FONT></PRE>
+
+The function
+<i>find_root</i> computes <i>f(0)</i>, <i>f(1)</i>, <i>f(-1)</i>,
+<i>f(2)</i>, <i>f(-2)</i>, ... until it finds the first integer
+<i>i</i> satisfying <i>f(i) = 0</i>.
+<P>
+
+As another example, we implement the Newton-Raphson's
+method for finding roots of functions on reals:
+
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#000000">val</FONT> epsilon <FONT COLOR="#000000">=</FONT> 1E-6 <FONT COLOR="#787878">(* precision *)</FONT>
+
+<FONT COLOR="#787878">// Newton-Raphson's method for finding roots
+</FONT><FONT COLOR="#787878">// [f1] is a derivative of [f]
+</FONT><FONT COLOR="#000000">fn</FONT> newton_raphson <FONT COLOR="#000000">(</FONT>
+    f<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> double</FONT>
+  <FONT COLOR="#000000">,</FONT> f1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> double</FONT>
+  <FONT COLOR="#000000">,</FONT> x0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT>
+  <FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#000000">(</FONT>
+      f<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> double</FONT>
+    <FONT COLOR="#000000">,</FONT> f1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double <FONT COLOR="#000000">-&lt;</FONT>cloref1<FONT COLOR="#000000">&gt;</FONT> double</FONT>
+    <FONT COLOR="#000000">,</FONT> x0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT>
+    <FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> y0 <FONT COLOR="#000000">=</FONT> f x0
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">if</FONT> abs <FONT COLOR="#000000">(</FONT>y0 / x0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">&lt;</FONT> epsilon <FONT COLOR="#000000">then</FONT> x0 <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">begin</FONT>
+      <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> y1 <FONT COLOR="#000000">=</FONT> f1 x0 <FONT COLOR="#000000">in</FONT> loop <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">,</FONT> f1<FONT COLOR="#000000">,</FONT> x0 - y0 / y1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [loop]</FONT>
+<FONT COLOR="#000000">in</FONT>
+  loop <FONT COLOR="#000000">(</FONT>f<FONT COLOR="#000000">,</FONT> f1<FONT COLOR="#000000">,</FONT> x0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [newton_raphson]
+</FONT>
+<FONT COLOR="#787878">// square root function
+</FONT><FONT COLOR="#000000">fn</FONT> sqrt <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT> <FONT COLOR="#000000">=</FONT>
+  newton_raphson <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> x * x - c<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> 2.0 * x<FONT COLOR="#000000">,</FONT> 1.0<FONT COLOR="#000000">)</FONT>
+
+<FONT COLOR="#787878">// cubic root function
+</FONT><FONT COLOR="#000000">fn</FONT> cbrt <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">double</FONT> <FONT COLOR="#000000">=</FONT>
+  newton_raphson <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> x * x * x - c<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> 3.0 * x * x<FONT COLOR="#000000">,</FONT> 1.0<FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available
+<a href="higher-order-functions.dats">here</a>.
+
+</BODY>
+</HTML>

@@ -1,0 +1,338 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>ATS/EXAMPLE/INTRO</TITLE>
+</HEAD>
+<BODY>
+
+<HR>
+
+<H1>ATSOPT for ATS/Anariats</H1>
+This directory contains the source files of the compiler (ATSOPT) for
+ats-lang-anairiats-0.2.2.
+
+<MENU>
+<LI>
+<A HREF="ats_lexer.lats">ats_lexer.lats</A>
+<LI>
+<A HREF="ats_grammar.yats">ats_grammar.yats</A>
+<LI>
+<A HREF="libats_lex_lexing_dats.html">libats_lex_lexing.dats</A>
+<LI>
+<A HREF="libats_lex_tables_dats.html">libats_lex_tables.dats</A>
+<LI>
+<A HREF="libc_sats_gmp_sats.html">libc_sats_gmp.sats</A>
+<LI>
+<A HREF="libats_lex_lexing_sats.html">libats_lex_lexing.sats</A>
+<LI>
+<A HREF="libc_dats_unistd_dats.html">libc_dats_unistd.dats</A>
+<LI>
+<A HREF="libc_sats_time_sats.html">libc_sats_time.sats</A>
+<LI>
+<A HREF="ats_array_sats.html">ats_array.sats</A>
+<LI>
+<A HREF="ats_array_dats.html">ats_array.dats</A>
+<LI>
+<A HREF="ats_charlst_sats.html">ats_charlst.sats</A>
+<LI>
+<A HREF="ats_charlst_dats.html">ats_charlst.dats</A>
+<LI>
+<A HREF="ats_comarg_sats.html">ats_comarg.sats</A>
+<LI>
+<A HREF="ats_comarg_dats.html">ats_comarg.dats</A>
+<LI>
+<A HREF="ats_counter_sats.html">ats_counter.sats</A>
+<LI>
+<A HREF="ats_counter_dats.html">ats_counter.dats</A>
+<LI>
+<A HREF="ats_counter.cats">ats_counter.cats</A>
+<LI>
+<A HREF="ats_debug_sats.html">ats_debug.sats</A>
+<LI>
+<A HREF="ats_debug_dats.html">ats_debug.dats</A>
+<LI>
+<A HREF="ats_effect_sats.html">ats_effect.sats</A>
+<LI>
+<A HREF="ats_effect_dats.html">ats_effect.dats</A>
+<LI>
+<A HREF="ats_error_sats.html">ats_error.sats</A>
+<LI>
+<A HREF="ats_error_dats.html">ats_error.dats</A>
+<LI>
+<A HREF="ats_filename_sats.html">ats_filename.sats</A>
+<LI>
+<A HREF="ats_filename_dats.html">ats_filename.dats</A>
+<LI>
+<A HREF="ats_fixity_sats.html">ats_fixity.sats</A>
+<LI>
+<A HREF="ats_fixity_dats.html">ats_fixity.dats</A>
+<LI>
+<A HREF="ats_global_sats.html">ats_global.sats</A>
+<LI>
+<A HREF="ats_global_dats.html">ats_global.dats</A>
+<LI>
+<A HREF="ats_hashtbl_sats.html">ats_hashtbl.sats</A>
+<LI>
+<A HREF="ats_hashtbl_dats.html">ats_hashtbl.dats</A>
+<LI>
+<A HREF="ats_gmp.cats">ats_gmp.cats</A>
+<LI>
+<A HREF="ats_intinf_sats.html">ats_intinf.sats</A>
+<LI>
+<A HREF="ats_intinf_dats.html">ats_intinf.dats</A>
+<LI>
+<A HREF="ats_intinf.cats">ats_intinf.cats</A>
+<LI>
+<A HREF="ats_keyword_sats.html">ats_keyword.sats</A>
+<LI>
+<A HREF="ats_keyword_dats.html">ats_keyword.dats</A>
+<LI>
+<A HREF="ats_label_sats.html">ats_label.sats</A>
+<LI>
+<A HREF="ats_label_dats.html">ats_label.dats</A>
+<LI>
+<A HREF="ats_location_sats.html">ats_location.sats</A>
+<LI>
+<A HREF="ats_location_dats.html">ats_location.dats</A>
+<LI>
+<A HREF="ats_namespace_sats.html">ats_namespace.sats</A>
+<LI>
+<A HREF="ats_namespace_dats.html">ats_namespace.dats</A>
+<LI>
+<A HREF="ats_posmark_sats.html">ats_posmark.sats</A>
+<LI>
+<A HREF="ats_posmark_dats.html">ats_posmark.dats</A>
+<LI>
+<A HREF="ats_stamp_sats.html">ats_stamp.sats</A>
+<LI>
+<A HREF="ats_stamp_dats.html">ats_stamp.dats</A>
+<LI>
+<A HREF="ats_symbol_sats.html">ats_symbol.sats</A>
+<LI>
+<A HREF="ats_symbol_dats.html">ats_symbol.dats</A>
+<LI>
+<A HREF="ats_symenv_sats.html">ats_symenv.sats</A>
+<LI>
+<A HREF="ats_symenv_dats.html">ats_symenv.dats</A>
+<LI>
+<A HREF="ats_symtbl_sats.html">ats_symtbl.sats</A>
+<LI>
+<A HREF="ats_symtbl_dats.html">ats_symtbl.dats</A>
+<LI>
+<A HREF="ats_list_sats.html">ats_list.sats</A>
+<LI>
+<A HREF="ats_list_dats.html">ats_list.dats</A>
+<LI>
+<A HREF="ats_map_lin_sats.html">ats_map_lin.sats</A>
+<LI>
+<A HREF="ats_map_lin_dats.html">ats_map_lin.dats</A>
+<LI>
+<A HREF="ats_reference_sats.html">ats_reference.sats</A>
+<LI>
+<A HREF="ats_reference_dats.html">ats_reference.dats</A>
+<LI>
+<A HREF="ats_set_fun_sats.html">ats_set_fun.sats</A>
+<LI>
+<A HREF="ats_set_fun_dats.html">ats_set_fun.dats</A>
+<LI>
+<A HREF="ats_parser_sats.html">ats_parser.sats</A>
+<LI>
+<A HREF="ats_parser_dats.html">ats_parser.dats</A>
+<LI>
+<A HREF="ats_syntax_sats.html">ats_syntax.sats</A>
+<LI>
+<A HREF="ats_syntax_dats.html">ats_syntax.dats</A>
+<LI>
+<A HREF="ats_syntax_depgen_dats.html">ats_syntax_depgen.dats</A>
+<LI>
+<A HREF="ats_syntax_posmark_dats.html">ats_syntax_posmark.dats</A>
+<LI>
+<A HREF="ats_staexp1_sats.html">ats_staexp1.sats</A>
+<LI>
+<A HREF="ats_staexp1_dats.html">ats_staexp1.dats</A>
+<LI>
+<A HREF="ats_staexp1_print_dats.html">ats_staexp1_print.dats</A>
+<LI>
+<A HREF="ats_dynexp1_sats.html">ats_dynexp1.sats</A>
+<LI>
+<A HREF="ats_dynexp1_dats.html">ats_dynexp1.dats</A>
+<LI>
+<A HREF="ats_dynexp1_print_dats.html">ats_dynexp1_print.dats</A>
+<LI>
+<A HREF="ats_trans1_env_sats.html">ats_trans1_env.sats</A>
+<LI>
+<A HREF="ats_trans1_env_dats.html">ats_trans1_env.dats</A>
+<LI>
+<A HREF="ats_e1xp_eval_sats.html">ats_e1xp_eval.sats</A>
+<LI>
+<A HREF="ats_e1xp_eval_dats.html">ats_e1xp_eval.dats</A>
+<LI>
+<A HREF="ats_trans1_sats.html">ats_trans1.sats</A>
+<LI>
+<A HREF="ats_trans1_sta_dats.html">ats_trans1_sta.dats</A>
+<LI>
+<A HREF="ats_trans1_dyn_dats.html">ats_trans1_dyn.dats</A>
+<LI>
+<A HREF="ats_staexp2_sats.html">ats_staexp2.sats</A>
+<LI>
+<A HREF="ats_staexp2_dats.html">ats_staexp2.dats</A>
+<LI>
+<A HREF="ats_staexp2_print_dats.html">ats_staexp2_print.dats</A>
+<LI>
+<A HREF="ats_staexp2_scst_dats.html">ats_staexp2_scst.dats</A>
+<LI>
+<A HREF="ats_staexp2_svVar_dats.html">ats_staexp2_svVar.dats</A>
+<LI>
+<A HREF="ats_staexp2_dcon_dats.html">ats_staexp2_dcon.dats</A>
+<LI>
+<A HREF="ats_staexp2_util1_dats.html">ats_staexp2_util1.dats</A>
+<LI>
+<A HREF="ats_staexp2_util2_dats.html">ats_staexp2_util2.dats</A>
+<LI>
+<A HREF="ats_staexp2_pprint_sats.html">ats_staexp2_pprint.sats</A>
+<LI>
+<A HREF="ats_staexp2_pprint_dats.html">ats_staexp2_pprint.dats</A>
+<LI>
+<A HREF="ats_dynexp2_sats.html">ats_dynexp2.sats</A>
+<LI>
+<A HREF="ats_dynexp2_dats.html">ats_dynexp2.dats</A>
+<LI>
+<A HREF="ats_dynexp2_dcst_dats.html">ats_dynexp2_dcst.dats</A>
+<LI>
+<A HREF="ats_dynexp2_dmac_dats.html">ats_dynexp2_dmac.dats</A>
+<LI>
+<A HREF="ats_dynexp2_dvar_dats.html">ats_dynexp2_dvar.dats</A>
+<LI>
+<A HREF="ats_dynexp2_print_dats.html">ats_dynexp2_print.dats</A>
+<LI>
+<A HREF="ats_dynexp2_util_dats.html">ats_dynexp2_util.dats</A>
+<LI>
+<A HREF="ats_trans2_env_sats.html">ats_trans2_env.sats</A>
+<LI>
+<A HREF="ats_trans2_env_dats.html">ats_trans2_env.dats</A>
+<LI>
+<A HREF="ats_stadyncst2_sats.html">ats_stadyncst2.sats</A>
+<LI>
+<A HREF="ats_stadyncst2_dats.html">ats_stadyncst2.dats</A>
+<LI>
+<A HREF="ats_trans2_sats.html">ats_trans2.sats</A>
+<LI>
+<A HREF="ats_trans2_sta_dats.html">ats_trans2_sta.dats</A>
+<LI>
+<A HREF="ats_trans2_dyn1_dats.html">ats_trans2_dyn1.dats</A>
+<LI>
+<A HREF="ats_trans2_dyn2_dats.html">ats_trans2_dyn2.dats</A>
+<LI>
+<A HREF="ats_macro2_sats.html">ats_macro2.sats</A>
+<LI>
+<A HREF="ats_macro2_dats.html">ats_macro2.dats</A>
+<LI>
+<A HREF="ats_patcst2_sats.html">ats_patcst2.sats</A>
+<LI>
+<A HREF="ats_patcst2_dats.html">ats_patcst2.dats</A>
+<LI>
+<A HREF="ats_string_parse_sats.html">ats_string_parse.sats</A>
+<LI>
+<A HREF="ats_string_parse_dats.html">ats_string_parse.dats</A>
+<LI>
+<A HREF="ats_printf_c.lats">ats_printf_c.lats</A>
+<LI>
+<A HREF="ats_dynexp3_sats.html">ats_dynexp3.sats</A>
+<LI>
+<A HREF="ats_dynexp3_dats.html">ats_dynexp3.dats</A>
+<LI>
+<A HREF="ats_dynexp3_print_dats.html">ats_dynexp3_print.dats</A>
+<LI>
+<A HREF="ats_trans3_env_sats.html">ats_trans3_env.sats</A>
+<LI>
+<A HREF="ats_trans3_env_dats.html">ats_trans3_env.dats</A>
+<LI>
+<A HREF="ats_trans3_env_eff_dats.html">ats_trans3_env_eff.dats</A>
+<LI>
+<A HREF="ats_trans3_env_loop_dats.html">ats_trans3_env_loop.dats</A>
+<LI>
+<A HREF="ats_trans3_env_met_dats.html">ats_trans3_env_met.dats</A>
+<LI>
+<A HREF="ats_trans3_env_scst_dats.html">ats_trans3_env_scst.dats</A>
+<LI>
+<A HREF="ats_trans3_env_state_dats.html">ats_trans3_env_state.dats</A>
+<LI>
+<A HREF="ats_trans3_env_print_dats.html">ats_trans3_env_print.dats</A>
+<LI>
+<A HREF="ats_staexp2_solve_sats.html">ats_staexp2_solve.sats</A>
+<LI>
+<A HREF="ats_staexp2_solve_dats.html">ats_staexp2_solve.dats</A>
+<LI>
+<A HREF="ats_trans3_sats.html">ats_trans3.sats</A>
+<LI>
+<A HREF="ats_trans3_pat_dats.html">ats_trans3_pat.dats</A>
+<LI>
+<A HREF="ats_trans3_assgn_dats.html">ats_trans3_assgn.dats</A>
+<LI>
+<A HREF="ats_trans3_deref_dats.html">ats_trans3_deref.dats</A>
+<LI>
+<A HREF="ats_trans3_view_dats.html">ats_trans3_view.dats</A>
+<LI>
+<A HREF="ats_trans3_exp_up_dats.html">ats_trans3_exp_up.dats</A>
+<LI>
+<A HREF="ats_trans3_exp_dn_dats.html">ats_trans3_exp_dn.dats</A>
+<LI>
+<A HREF="ats_trans3_loop_dats.html">ats_trans3_loop.dats</A>
+<LI>
+<A HREF="ats_trans3_dec_dats.html">ats_trans3_dec.dats</A>
+<LI>
+<A HREF="ats_constraint_sats.html">ats_constraint.sats</A>
+<LI>
+<A HREF="ats_constraint_dats.html">ats_constraint.dats</A>
+<LI>
+<A HREF="ats_constraint_print_dats.html">ats_constraint_print.dats</A>
+<LI>
+<A HREF="ats_solver_fm_sats.html">ats_solver_fm.sats</A>
+<LI>
+<A HREF="ats_solver_fm_dats.html">ats_solver_fm.dats</A>
+<LI>
+<A HREF="ats_solver_fm.cats">ats_solver_fm.cats</A>
+<LI>
+<A HREF="ats_hiexp_sats.html">ats_hiexp.sats</A>
+<LI>
+<A HREF="ats_hiexp_dats.html">ats_hiexp.dats</A>
+<LI>
+<A HREF="ats_hiexp_print_dats.html">ats_hiexp_print.dats</A>
+<LI>
+<A HREF="ats_hiexp_util_dats.html">ats_hiexp_util.dats</A>
+<LI>
+<A HREF="ats_trans4_sats.html">ats_trans4.sats</A>
+<LI>
+<A HREF="ats_trans4_dats.html">ats_trans4.dats</A>
+<LI>
+<A HREF="ats_ccomp_sats.html">ats_ccomp.sats</A>
+<LI>
+<A HREF="ats_ccomp_dats.html">ats_ccomp.dats</A>
+<LI>
+<A HREF="ats_ccomp_env_sats.html">ats_ccomp_env.sats</A>
+<LI>
+<A HREF="ats_ccomp_env_dats.html">ats_ccomp_env.dats</A>
+<LI>
+<A HREF="ats_ccomp_print_dats.html">ats_ccomp_print.dats</A>
+<LI>
+<A HREF="ats_ccomp_util_dats.html">ats_ccomp_util.dats</A>
+<LI>
+<A HREF="ats_ccomp_trans_dats.html">ats_ccomp_trans.dats</A>
+<LI>
+<A HREF="ats_ccomp_trans_clau_dats.html">ats_ccomp_trans_clau.dats</A>
+<LI>
+<A HREF="ats_ccomp_trans_tailcal_dats.html">ats_ccomp_trans_tailcal.dats</A>
+<LI>
+<A HREF="ats_ccomp_trans_temp_dats.html">ats_ccomp_trans_temp.dats</A>
+<LI>
+<A HREF="ats_ccomp_emit_dats.html">ats_ccomp_emit.dats</A>
+<LI>
+<A HREF="ats_ccomp_main_dats.html">ats_ccomp_main.dats</A>
+<LI>
+<A HREF="ats_main.cats">ats_main.cats</A>
+</MENU>
+
+<HR>
+
+</BODY>
+</HTML>

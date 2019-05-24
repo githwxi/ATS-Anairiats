@@ -1,0 +1,30 @@
+<pre>
+ats-lang-anairiats-0.2.9:
+
+As usual, this release contains a few fixes. A (partial) list of the
+changes since the last release is given as follows:
+
+1. Fixing some macros in ccomp/runtime/ats_exception.h
+2. Removing the field tmpvar_root in tmpvar and related functions.
+3. Adding support for using CMake to build projects written in ATS.
+   Kudos to Hanwen!
+4. $showtype support for debugging is added (2012-11-24)
+5. Adding libats/linmap_skiplist for linear maps based on skip-lists.
+6. ((<exp1>, ..., <exp2>)) -> @(<exp1>, ..., <exp2>)
+7. If the assigned external name of a function is empty, then its
+   internal name should be used in the place where its external name
+   is needed. For example, the following declarations are equivalent:
+   fun foo (x: int): void = "ext#"
+   fun foo (x: int): void = "ext#foo"
+   The following two are equivalent as well:
+   fun bar (x: int): void = "mac#"
+   fun bar (x: int): void = "mac#bar"
+
+ATS2 has been under active development for more than one and one-half
+years, and it is expected to be released by Summer 2013. However,
+ATS will be maintained long after the release of ATS2. In particular, ATS
+will be relied upon to bootstrap ATS2 for quite some time into the
+future. For the users of ATS, please be assured that the transition from
+ATS to ATS2 is anticipated to be a smooth one requiring only minimal
+effort.
+</pre>

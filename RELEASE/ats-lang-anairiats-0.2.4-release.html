@@ -1,0 +1,42 @@
+<pre>
+ats-lang-anairiats-0.2.4:
+
+As usual, this release contains a large number of fixes. A (partial) list
+of the changes since the last release is given as follows:
+
+1. Adding the package contrib/testing to facilitate construction of
+   testing code.
+2. Adding support for value templates.
+3. Adding various examples in doc/EXAMPLE/PCPV to demonstrate a style
+   of program verification that is described as being programmer-centric.
+4. Adding the package contrib/scripting to support scripting in ATS.
+5. Bison is now the default tool for generate [ats_grammar_yats.c].
+6. Adding some functions in prelude/list.
+7. Adding some functions in prelude/lazy_vt.
+8. ATS/Anairiats is kept up-to-date for bootstrapping.
+9. $ATSHOME/contrib/glib/glist: overhauling many function interfaces.
+10. The file ats_fixity.dats is splitted into the following two files:
+    ats_fixity_prec.dats and ats_fixity_fxty.dats.
+11. Adding some functions for parsing various syntax trees.
+12. Renaming various 'get' and 'set' functions according to some adopted
+    naming convention.
+13. Starting to build API in $ATSHOME/contrib/linux for supporting linux
+    kernel programming. This is going to be a long journey!
+14: Renaming: fun__main -> funenv
+    Renaming: fun_tsz__main -> funenv_tsz
+    Renaming: clo_tsz__main -> cloenv_tsz
+    Renaming: __main -> _funenv (for various higher-order functions)
+15: matrix_v (a, m, n, l) is now defined as mtrxt (a, m, n) @ l
+16: stack-allocated closures are now statically allocated (instead of
+    being dynamically allocated via alloca) (svn-version: 2519)
+17: prelude/array and prelude/matrix have been cleaned up considerably
+18: naming change: "#foo" -> "mac#foo" (for external macros)
+19: using names like "sta#foo" to support external static functions
+20: adding contrib/linux to support linux kernel programming (very long term)
+21: adding libats/ngc/deque_arr
+22: basing libats/linqueue_arr and libats/linstack_arr on libats/ngc/deque_arr
+24. ATSstaticdec() and ATSglobaldec() are now employed in emitted C code
+    for indicating whether a function is global or static.
+25. reloading a pervasive .sats file is allowed; doing so is like a no-op.
+
+</pre>

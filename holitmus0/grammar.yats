@@ -1,0 +1,53 @@
+/*
+**
+** HOLITMUS: a proof checker for higher-order logic
+**
+** Originally implemented in OCaml
+**    by Chad Brown (cebrown AT mathgate DOT info)
+** Time: March/September, 2008
+**
+** Translated to ATS
+**    by Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: November, 2008
+**
+*/
+
+/*
+**
+** Grammar for HOLITMUS
+**
+*/
+
+/* ****** ****** */
+
+%{
+
+#include <stdio.h>
+
+typedef ats_ptr_type token_t ;
+typedef ats_ptr_type ident_t ;
+
+typedef union {
+
+token_t token ;
+ident_t ident ;
+
+} YYSTYPE_union ;
+
+%}
+
+/* ****** ****** */
+
+%token TOKEN_eof
+%token <i0de> IDENTIFIER
+
+/* ****** ****** */
+
+%%
+
+ats_void_type
+yylval_token_set (t0kn_t val) { yylval.t0kn = val ; return ; }
+
+/* ****** ****** */
+
+/* end of [grammar.yats] */

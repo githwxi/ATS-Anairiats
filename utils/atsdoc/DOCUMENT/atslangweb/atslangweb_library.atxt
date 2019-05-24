@@ -1,0 +1,356 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBLIBRARY: atext =
+  strcst"<strong>Libraries</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBLIBRARY", _ATSLANGWEBLIBRARY)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_library.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+<!-- ****** ****** -->
+
+%{
+//
+fun myliblink (
+  path: string, fname: string
+) : atext = let
+  val res = sprintf (
+    "<a href=\"LIBRARY/%s/%s.html\">ATSLIB/%s/%s</a>", @(path, fname, path, fname)
+  ) // end of [val]
+in
+  atext_strptr (res)
+end // end of [myliblink]
+//
+fun myliblink2 (
+  path: string, fname: string
+) : atext = let
+  val res = sprintf (
+    "<a href=\"LIBRARY/%s/SATS/DOCUGEN/HTML/%s.html\">ATSLIB/%s/%s</a>", @(path, fname, path, fname)
+  ) // end of [val]
+in
+  atext_strptr (res)
+end // end of [myliblink2]
+//
+%}
+
+<!-- ****** ****** -->
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_library.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks2("LIBRARY")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Libraries</h1>
+
+#para('\
+ATS is feature-rich. It can accommodate low-level C-style
+imperative programming as well as high-level ML-style functional
+programming. As different programming styles often require different kinds
+of library support, it is probably unsurprising that there are several
+varieties of libraries in ATS available to meet certain distinct needs of
+programmers (such as runtime with or without GC).\
+')
+
+#para('\
+In the following presentation, let us use ATSLIB to refer to the root
+directory where ATS libraries are stored, which usually coincides with the
+ATS home directory.\
+')
+
+#menu('\
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_prelude", "ATSLIB/prelude"):
+contains essential library packages for supporting basic programming
+with ATS.\
+")
+
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_libc", "ATSLIB/libc"):
+contains library packages that are mostly like API in ATS for their counterparts
+in libc.\
+")
+
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_libats", "ATSLIB/libats"):
+contains library packages implemented in ATS that often make advanced use
+of the type system of ATS.\
+")
+
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_libats_ML", "ATSLIB/libats/ML"):
+contains library packages for supporting ML-like functional style of programming with
+ATS.\
+")
+
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_libatslex", "ATSLIB/libatslex"):
+contains library packages for supporting atslex.\
+")
+
+#lisub("\
+#ulink("LIBRARY\#ATSLIB_contrib", "ATSLIB/contrib"):
+contains mostly uncategorized collection of library packages contributed
+for the general purpose of supporting programming in ATS. This is also a
+place for testing library packages before they are moved into one of the
+above libraries.\
+")
+
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("ATSLIB_prelude", "ATSLIB/prelude")</h2>
+
+<h4>Primary</h4>
+#menu('\
+#comment("Primary")
+#litxt(#myliblink2("prelude", "integer"))
+#litxt(#myliblink2("prelude", "pointer"))
+#litxt(#myliblink2("prelude", "arith_prf"))
+#litxt(#myliblink2("prelude", "bool"))
+#litxt(#myliblink2("prelude", "char"))
+#litxt(#myliblink2("prelude", "float"))
+#litxt(#myliblink2("prelude", "tuple"))
+#litxt(#myliblink2("prelude", "memory"))
+#litxt(#myliblink2("prelude", "string"))
+#litxt(#myliblink2("prelude", "strptr"))
+#litxt(#myliblink2("prelude", "reference"))
+#litxt(#myliblink2("prelude", "filebas"))
+#litxt(#myliblink2("prelude", "intrange"))
+#litxt(#myliblink2("prelude", "unsafe"))
+#litxt(#myliblink2("prelude", "checkast"))
+')#comment("menu")
+
+<h4>Secondary</h4>
+#menu('\
+#comment("Secondary")
+#litxt(#myliblink2("prelude", "list"))
+#litxt(#myliblink2("prelude", "list_vt"))
+#litxt(#myliblink2("prelude", "option"))
+#litxt(#myliblink2("prelude", "option_vt"))
+#litxt(#myliblink2("prelude", "array"))
+#litxt(#myliblink2("prelude", "array_prf"))
+#litxt(#myliblink2("prelude", "arrayptr"))
+#litxt(#myliblink2("prelude", "arrayref"))
+#litxt(#myliblink2("prelude", "matrix"))
+#litxt(#myliblink2("prelude", "matrixptr"))
+#litxt(#myliblink2("prelude", "matrixref"))
+#litxt(#myliblink2("prelude", "stream"))
+#litxt(#myliblink2("prelude", "stream_vt"))
+
+#litxt(#myliblink2("prelude", "gprint"))
+
+#litxt(#myliblink2("prelude", "giterator"))
+
+#litxt(#myliblink2("prelude", "fcontainer"))
+
+')#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATSLIB_libc", "ATSLIB/libc")</h2>
+
+#menu('\
+#litxt(#myliblink2("libc", "alloca"))
+#litxt(#myliblink2("libc", "dirent"))
+#litxt(#myliblink2("libc", "fnmatch"))
+#litxt(#myliblink2("libc", "malloc"))
+#litxt(#myliblink2("libc", "math"))
+#litxt(#myliblink2("libc", "signal"))
+#litxt(#myliblink2("libc", "stdio"))
+#litxt(#myliblink2("libc", "stdlib"))
+#litxt(#myliblink2("libc", "string"))
+#litxt(#myliblink2("libc", "strings"))
+#litxt(#myliblink2("libc", "unistd"))
+#litxt(#myliblink2("libc/sys", "mman"))
+#litxt(#myliblink2("libc/sys", "stat"))
+#litxt(#myliblink2("libc/sys", "types"))
+#litxt(#myliblink2("libc/sys", "wait"))
+')#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATSLIB_libats", "ATSLIB/libats")</h2>
+
+#menu('\
+#litxt(#myliblink2("libats", "gnode"))
+
+#litxt(#myliblink2("libats", "qlist"))
+#litxt(#myliblink2("libats", "sllist"))
+#litxt(#myliblink2("libats", "dllist"))
+
+#litxt(#myliblink2("libats", "stkarray"))
+#litxt(#myliblink2("libats", "deqarray"))
+#litxt(#myliblink2("libats", "dynarray"))
+
+#litxt(#myliblink2("libats", "refcount"))
+
+#litxt(#myliblink2("libats", "stringbuf"))
+#litxt(#myliblink2("libats", "strobjref"))
+
+#litxt(#myliblink2("libats", "ilist_prf"))
+#litxt(#myliblink2("libats", "gflist"))
+#litxt(#myliblink2("libats", "gflist_vt"))
+#litxt(#myliblink2("libats", "gfarray"))
+
+#litxt(#myliblink2("libats", "gvector"))
+#litxt(#myliblink2("libats", "gmatrix"))
+#litxt(#myliblink2("libats", "gmatrix_row"))
+#litxt(#myliblink2("libats", "gmatrix_col"))
+
+#litxt(#myliblink2("libats", "hashtbl_chain"))
+
+#litxt(#myliblink2("libats", "funmap_list"))
+#litxt(#myliblink2("libats", "funmap_avltree"))
+
+#litxt(#myliblink2("libats", "funset_listord"))
+#litxt(#myliblink2("libats", "funset_avltree"))
+
+#litxt(#myliblink2("libats", "fundeque_fngtree"))
+
+#litxt(#myliblink2("libats", "funralist_nested"))
+
+#litxt(#myliblink2("libats", "linmap_list"))
+#litxt(#myliblink2("libats", "linmap_randbst"))
+#litxt(#myliblink2("libats", "linmap_skiplist"))
+
+#litxt(#myliblink2("libats", "linset_listord"))
+#litxt(#myliblink2("libats", "linset_avltree"))
+
+#litxt(#myliblink2("libats", "linheap_binomial"))
+#litxt(#myliblink2("libats", "linheap_fibonacci"))
+
+#litxt(#myliblink2("libats", "lindeque_dllist"))
+
+#litxt(#myliblink2("libats", "linralist_nested"))
+
+')#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATSLIB_libats_ML", "ATSLIB/libats/ML")</h2>
+
+#menu('\
+#litxt(#myliblink2("libats/ML", "basis"))
+#litxt(#myliblink2("libats/ML", "list0"))
+#litxt(#myliblink2("libats/ML", "option0"))
+#litxt(#myliblink2("libats/ML", "array0"))
+#litxt(#myliblink2("libats/ML", "matrix0"))
+#litxt(#myliblink2("libats/ML", "string"))
+#litxt(#myliblink2("libats/ML", "strarr"))
+#litxt(#myliblink2("libats/ML", "filebas"))
+#litxt(#myliblink2("libats/ML", "stdlib"))
+#litxt(#myliblink2("libats/ML", "funmap"))
+#litxt(#myliblink2("libats/ML", "funset"))
+#litxt(#myliblink2("libats/ML", "hashtblref"))
+#litxt(#myliblink2("libats/ML", "monad_list"))
+#litxt(#myliblink2("libats/ML", "monad_maybe"))
+')#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATSLIB_libatslex", "ATSLIB/libatslex")</h2>
+
+#menu('\
+#litxt(#myliblink2("libatslex", "unicode"))
+')#comment("menu")
+
+#HR(1)
+
+<h2>#uid("ATSLIB_contrib", "ATSLIB/contrib")</h2>
+
+#menu('\
+#litxt(#myliblink2("contrib/pcre", "pcre"))
+#litxt(#myliblink2("contrib/libgmp", "gmp"))
+#litxt(#myliblink2("contrib/zlog", "zlog"))
+#litxt(#myliblink2("contrib/SDL2", "SDL"))
+#litxt(#myliblink2("contrib/cairo", "cairo"))
+#litxt(#myliblink2("contrib/zeromq", "zmq"))
+#litxt(#myliblink2("contrib/libevent", "event"))
+#litxt(#myliblink2("contrib/json-c", "json"))
+#litxt(#myliblink2("contrib/jansson", "jansson"))
+#litxt(#myliblink2("contrib/hiredis", "hiredis"))
+#litxt(#myliblink2("contrib/mysql", "mysql"))
+#litxt(#myliblink2("contrib/openssl", "main"))
+#litxt(#myliblink2("contrib/SMT/Z3", "z3"))
+#litxt(#myliblink2("contrib/SMT/Yices", "yices"))
+#litxt(#myliblink2("contrib/libfloats", "blas"))
+#litxt(#myliblink2("contrib/libfloats", "lavector"))
+#litxt(#myliblink2("contrib/libfloats", "lamatrix"))
+#litxt(#myliblink2("contrib/libats-/hwxi/intinf", "intinf"))
+#litxt(#myliblink2("contrib/libats-/hwxi/cstream", "cstream"))
+')#comment("menu")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks3("LIBRARY")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

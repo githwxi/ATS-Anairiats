@@ -1,0 +1,338 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBEXAMPLE: atext =
+  strcst"<strong>Examples</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBEXAMPLE", _ATSLANGWEBEXAMPLE)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_example.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_example.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("EXAMPLE")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Examples</h1>
+
+#menu('\
+#litxt(#ulink("EXAMPLE\#HWexample", "Hello, world!"))
+#litxt(#ulink("EXAMPLE\#FCOPYexample", "Copying files"))
+#lisub('\
+#ulink("EXAMPLE\#FIBONACCIexample", "Computing Fibonacci numbers:") an example of programming with theorem-proving
+')
+#litxt(#ulink("EXAMPLE\#EFFECTIVATS", "Effective ATS"))
+#litxt(#ulink("EXAMPLE\#FURTHERexamples", "Further Examples"))
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("HWexample", "Hello, world!")</h2>
+
+#para('
+Following is a complete program in ATS for printing out the string
+"Hello, world!" plus a newline:
+')#comment("para")
+
+#ats2xhtmld('\
+implement main0 () = print ("Hello, world!\\\n")
+')
+
+#para('\
+
+Assume that the program is stored in a file named #filename("hello.dats"). By
+executing the following command-line:
+
+')
+
+#command("atscc -o hello hello.dats")
+
+#para('\
+
+we can generate an executable named #filename("hello"), which does what is
+mentioned above if executed. The command #emph("atscc") first compiles the
+ATS program contained in #filename("hello.dats") into some C code and then
+invokes a C compiler (e.g., gcc) to translate the C code into binary object
+code.
+
+')
+
+#HR(1)
+
+<h2>#uid("FCOPYexample", "Copying files")</h2>
+
+#para('\
+
+Following is a simple and complete program in ATS for copying from an
+input channel to an output channel:\
+
+')#comment("para")
+
+#ats2xhtmld('\
+fun fcopy
+(
+  inp: FILEref, out: FILEref
+) : void = let
+  val c = fileref_getc (inp)
+in
+  if c >= 0 then let
+    val () = fileref_putc (out, c) in fcopy (inp, out)
+  end // end of [if]
+end (* end of [fcopy] *)
+')
+
+#para('\
+
+Note that loops in imperative languages such as C and Java are often
+implemented as tail-recursive functions in ATS, which are then compiled
+back into loops in C. For instance, fcopy as is presented above is such a
+tail-recursive function.
+
+')
+
+#para('\
+Also, some detailed explanation about copying files in ATS is available
+#ulink1("#ATSLANGWEBROOTget()/EXAMPLE/EFFECTIVATS/file-copying", "on-line").
+')
+
+
+
+#HR(1)
+
+<h2>#uid("FIBONACCIexample", "Computing Fibonacci numbers")</h2>
+
+#para("\
+
+The paradigm of programming with theorem-proving (PwTP) is a cornerstone of
+ATS, and a simple example to illustrate this programming paradigm is presented
+here.
+
+")
+
+#para("
+A function fib can be specified as follows for computing Fibonacci numbers:
+")
+
+#textpre("
+fib(0)   = 0
+fib(1)   = 1
+fib(n+2) = fib(n) + fib(n+1) for n >= 0
+")
+
+#para("
+Following is a direct implementation of this specified function in ATS:
+")
+
+#ats2xhtmld('\
+fun fib (n: int): int =
+  if n >= 2 then fib (n-2) + fib (n-1) else n
+// end of [fib]
+')
+
+#para("\
+
+Clearly, this is a terribly inefficient implementation of exponential
+time-complexity. An implementation of fib in C is given as follows that is
+of linear time-complexity:
+
+")#comment("para")
+
+#textpre('\
+int fibc (int n) {
+  int tmp, f0 = 0, f1 = 1 ;
+  while (n-- > 0) { tmp = f1 ; f1 = f0 + f1 ; f0 = tmp ; } ; return f0 ;
+} // end of [fibc]
+')
+
+If translated into ATS, the function fibc can essentially be implemented
+as follows:
+#ats2xhtmld('\
+fun fibc (n: int): int = let
+  fun loop (n: int, f0: int, f1: int) =
+    if n > 0 then loop (n-1, f1, f0+f1) else f0
+  // end of [loop]
+in
+  loop (n, 0, 1)
+end // end of [fibc]
+')
+
+There is obviously a logic gap between the defintion of fib and its
+implementation as is embodied in fibc. In ATS, an implementation of fib can
+be given that completely bridges this gap. First, the specification of fib
+needs to be encoded into ATS, which is fulfilled by the declaration of the
+following dataprop:
+
+#ats2xhtmls('\
+dataprop FIB (int, int) =
+  | FIB0 (0, 0) | FIB1 (1, 1)
+  | {n:nat} {r0,r1:int} FIB2 (n+2, r0+r1) of (FIB (n, r0), FIB (n+1, r1))
+// end of [FIB]
+')
+
+#para('\
+
+This declaration introduces a type #staexp("FIB") for proofs, and such a type
+is referred to as a prop in ATS. Intuitively, if a proof can be assgined
+the type #staexp("FIB")(n,r) for some integers n and r, then fib(n) equals r.
+In other words, #staexp("FIB")(n,r) encodes the relation fib(n)=r. There are
+three constructors #dynexp("FIB0"), #dynexp("FIB1") and #dynexp("FIB2")
+associated with FIB, which are given the following types corresponding to
+the three equations in the definition of fib:\
+
+')
+
+#textpre('\
+#dynexp("FIB0") : #staexp("() -> FIB (0, 0)")
+#dynexp("FIB1") : #staexp("() -> FIB (1, 1)")
+#dynexp("FIB2") : #staexp("{n:nat} {r0,r1:int} (FIB (n, r0), FIB (n, r1)) -> FIB (n+2, r0+r1)")
+')
+
+#para('\
+
+Note that {...} is the concrete syntax in ATS for universal quantification.
+For instance, #dynexp("FIB2")(#dynexp("FIB0")(), #dynexp("FIB1")()) is a term of
+the type #staexp("FIB")(2,1), attesting to fib(2)=1.
+
+')
+
+#para('\
+A fully verified implementaion of the fib function in ATS can now be given
+as follows:
+')
+
+#ats2xhtmld('\
+fun fibats
+  {n:nat} (n: int n)
+  : [r:int] (FIB (n, r) | int r) = let
+  fun loop {i:nat | i <= n} {r0,r1:int} (
+    pf0: FIB (i, r0), pf1: FIB (i+1, r1) | ni: int (n-i), r0: int r0, r1: int r1
+  ) : [r:int] (FIB (n, r) | int r) =
+    if ni > 0 then
+      loop {i+1} (pf1, FIB2 (pf0, pf1) | ni - 1, r1, r0 + r1)
+    else (pf0 | r0)
+  // end of [loop]
+in
+  loop {0} (FIB0 (), FIB1 () | n, 0, 1)
+end // end of [fibats]
+')#comment("ats2xhtmld")
+
+#para("\
+Note that fibats is assigned the following type:
+")
+
+#textpre("\
+#dynexp("fibats") : #staexp("{n:nat} int(n) -> [r:int] (FIB(n,r) | int(r))")
+")
+
+#para('\
+
+where [...] is the concrete syntax in ATS for existential quantification
+and the bar symbol (|) is just a separator (like a comma) for separating
+proofs from values. For each integer I, #staexp("int")(I) is a singleton
+type for the only integer whose value equals I. When fibats is applied to an
+integer of value n, it returns a pair consisting of a proof and an integer
+value r such that the proof, which is of the type #staexp("FIB")(n,r),
+asserts fib(n)=r.  Therefore, #dynexp("fibats") is a verified
+implementation of fib as is encoded by #staexp("FIB"). Note that the inner
+function #dynexp("loop") directly corresponds to the while-loop in the body
+of the function fibc (written in C).
+
+')#comment("para")
+
+#para('\
+
+Lastly, it should be emphasized that proofs are completely erased after
+typechecking. In particular, there is no proof construction at run-time.
+
+')#comment("para")
+
+#HR(1)
+
+<h2>#uid("EFFECTIVATS", "Effective ATS")</h2>
+
+Please find #ulink1("#ATSLANGWEBROOTget()/EXAMPLE/EFFECTIVATS", "on-line")
+various programs in ATS plus detailed explanation that are written for the
+purpose of advocating effective programming in ATS.
+
+#HR(1)
+
+<h2>#uid("FURTHERexamples", "Further Examples")</h2>
+
+Please find
+#ulink1("#ATSLANGWEBROOTget()/htdocs-old/EXAMPLE/example.html", "on-line")
+a large variety of programs written in ATS.
+
+#para("")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("EXAMPLE")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

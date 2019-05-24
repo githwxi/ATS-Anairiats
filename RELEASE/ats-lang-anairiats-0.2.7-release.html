@@ -1,0 +1,33 @@
+<pre>
+ats-lang-anairiats-0.2.7:
+
+As usual, this release contains a few fixes. A (partial) list of the changes
+since the last release is given as follows:
+
+1. free_gc_viewt0ype_addr_view -> free_gc_t0ype_addr_view
+   free_gc_viewt0ype_int_addr_view -> free_gc_t0ype_int_addr_view
+2. ptr_free and array_ptr_free: interface change
+3. Adding funheap_binomial and linheap_binomial
+4. Adding libats/SATS/bimatrix.sats. Thanks to Artyom!
+5. The s2exp_syneq function (syn. eq.) now employs eta-expansion
+6. !READ(string) -> string (SHARED is introduced to do the opposite)
+7. Adding libats/lockptr_spin and libats/lockref_spin (spinlocks)
+8. The docbook source for the ATS intro book is now included.
+9. The closures in each infile object are made to be linear and they
+   are freed when the infile object is freed.
+10. The compiler now generates code to prevent an abstract type from
+    being implemented (assumed) more than once.
+11. && and || are now macros (long overdue!)
+12. The libats/ngc/linmap_pavltree package is added. Kudos to Artyom!
+13: Adding libats/funmset_listord (functional multiset implementation)
+14: Fixing a bug involving tailcall optimization (argument movement)
+15: Fixing a minor bug involving p2at_arg_tr.
+16: The interface for pthread creating in ATS is slightly modified.
+
+ATS2 has been under active development for more than a year, and it is
+expected to be released by the end of year 2012. However, ATS will be
+maintained long after the release of ATS2. In particular, ATS will be
+relied upon to bootstrap ATS2 for quite some time into the future. For
+the users of ATS, please be assured that the transition from ATS to ATS2
+is anticipated to be a smooth one requiring only minimal effort.
+</pre>

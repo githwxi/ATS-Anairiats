@@ -1,0 +1,103 @@
+\documentclass[11pt,titlepage]{book}
+\usepackage{charter}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{pstricks}
+\usepackage{draftcopy}
+%\usepackage{/home/fac2/hwxi/mytex/packages/proof}
+%\usepackage{/home/fac2/hwxi/mytex/packages/myproof}
+%\usepackage{/home/fac2/hwxi/mytex/packages/chicago}
+\RequirePackage{ifpdf}
+\ifpdf\RequirePackage[raiselinks=false,colorlinks=true,citecolor=blue,urlcolor=blue,linkcolor=blue,bookmarksopen=true,pdftex]{hyperref}\else
+\RequirePackage[raiselinks=false,colorlinks=true,citecolor=blue,urlcolor=blue,linkcolor=blue,bookmarksopen=true,dvips]{hyperref}\fi
+
+\input{manual_def.tex}
+\oddsidemargin=0pt
+\evensidemargin=0pt
+\topmargin=0cm
+\textwidth=468pt
+\textheight=612pt
+%\headheight=0cm
+%\headsep=.5cm
+%\parindent=0pt
+
+\font\largefont=cmbx12 at 20.736truept
+\font\namefont=cmr10 at 14.4truept
+\font\midfont=cmr10 at 10truept
+\font\smallfont=cmr8 at 8truept
+
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{definition}[lemma]{Definition}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{fact}[lemma]{Fact}
+\newtheorem{example}[lemma]{Example}
+\newtheorem{conjecture}[lemma]{Conjecture}
+
+%%% making an index
+\makeindex
+
+\begin{document}
+%%%%%%%%
+%
+% Title page
+%
+%%%%%%%%
+\begin{titlepage}
+\let\footnotesize\small
+\let\footnoterule\relax
+\setcounter{page}{0}
+\null
+\vfil
+\begin{center}
+{\largefont The ATS Programming Language}%%% title
+\vskip 1em
+{\Large (ATS/Anairiats User's Guide)}
+\vskip 2em
+{\large (Started on the 16th of July, 2008)}
+\vskip 2pt
+{\large (Working Draft of \today)}
+
+\vskip 3em
+{\namefont Hongwei Xi}%%% author
+
+\vskip 3em
+{\large
+%Computer Science Department \\
+Boston University \\
+%Boston, MA 02215 \\
+}
+
+\vskip 2em
+{\large Copyright \copyright 2008--20??}\par
+{\large All rights reserved}\par
+
+\vfil
+\null
+\end{center}
+\end{titlepage}
+
+\begin{titlepage}
+\setcounter{page}{0}
+\input manual_preface.tex
+\end{titlepage}
+
+\tableofcontents
+\listoffigures
+
+%\input manual_introduction.tex
+\input manual_ats_basics.tex
+\input manual_batch_compilation.tex
+\input manual_macros.tex
+\input manual_interaction_with_c.tex
+\input manual_dependent_types.tex
+\input manual_theorem_proving.tex
+\input manual_linear_types.tex
+
+%\bibliographystyle{chicago}
+%\bibliographystyle{harvard}
+\bibliographystyle{apalike}
+\bibliography{xi}
+
+\end{document}

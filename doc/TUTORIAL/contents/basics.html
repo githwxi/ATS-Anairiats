@@ -1,0 +1,598 @@
+<!-- beg of [basics.html] -->
+
+<H2><A id="basics" name="basics">Some Basics on ATS</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+ATS consists of a static component (statics), where types are formed and
+reasoned about, and a dynamic component (dynamics), where programs are
+constructed and evaluated.
+
+<H4>Some Primitive Sorts and Constants</H4>
+
+The statics of ATS is a simply typed language. The types for terms in the
+statics are called <em>sorts</em> (so as to avoid potential confusion with
+the types for terms in the dynamics) and the terms in it are called
+<em>static terms</em>.  We use <i>sigma</i> (or <i>$srt</i>) for sorts and
+<i>s</i> (or <i>$strm</i>) for static terms.  The primitive sorts in ATS
+include
+<i>bool</i>,
+<i>char</i>,
+<i>int</i>,
+<i>prop</i>,
+<i>type</i>,
+<i>view</i> and
+<i>viewtype</i>.
+<P>
+There are also some primitive constants <i>c</i> in the statics, each of which
+is assigned a constant sort (or c-sort, for short) of the following form:
+
+<CENTER>
+<i>(sigma_1,...,sigma_n) => sigma</i>
+</CENTER>
+<P>
+
+Intuitively, given static terms <i>s_1,...,s_n</i> of sorts
+<i>sigma_1,...,sigma_n</i>, respectively, <i>c(s_1,...,s_n)</i> is a static
+term of sort <i>sigma</i> if <i>c</i> is assigned the c-sort
+<i>(sigma_1,...,sigma_n) => sigma</i>. For instance, each boolean value is
+given the sort <i>() => bool</i> and each integer is given the c-sort <i>()
+=> int</i>. In the following table, we list some of the commonly used
+constants in the statics of ATS:
+
+<CENTER>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+
+<TR>
+  <TD ALIGN=LEFT></TD>
+  <TD ALIGN=CENTER></TD>
+  <TD ALIGN=LEFT></TD>
+</TR>
+
+<TR>
+  <TD><i>~</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int) => int</i></TD>
+</TR>
+
+<TR>
+  <TD><i>+</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => int</i></TD>
+</TR>
+
+<TR>
+  <TD><i>-</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => int</i></TD>
+</TR>
+
+<TR>
+  <TD><i>*</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => int</i></TD>
+</TR>
+
+<TR>
+  <TD><i>/</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => int</i></TD>
+</TR>
+
+<TR>
+  <TD><i><</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i><=</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>></i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>>=</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>==</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i><></i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int, int) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>~</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(bool) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>&&</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(bool, bool) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>||</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(bool, bool) => bool</i></TD>
+</TR>
+
+<TR>
+  <TD><i>bool</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>() => type</i></TD>
+</TR>
+
+<TR>
+  <TD><i>bool</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(bool) => type</i></TD>
+</TR>
+
+<TR>
+  <TD><i>int</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>() => type</i></TD>
+</TR>
+
+<TR>
+  <TD><i>int</i><TD>
+  <TD><i>&nbsp; : &nbsp;</i><TD>
+  <TD><i>(int) => type</i></TD>
+</TR>
+
+</TABLE>
+</CENTER>
+<P>
+Note that many symbols are overloaded in ATS. For instance,
+<i>~</i> is for negation on integers as well as on booleans;
+<i>bool</i> and <i>int</i> are both sorts and static constants.
+In ATS, a type refers to a static term <i>s</i> of sort <i>type</i>. For
+instance, <i>bool</i> and <i>bool(true)</i> are types, and <i>int</i> and
+<i>int(2+3)</i> are types, too.
+
+<H4>Subset Sorts</H4>
+A subset sort is essentially a sort constrained by a predicate. For
+instance, we can define a subset sort <i>nat</i> as follows:
+
+<pre>
+sortdef nat = {a:int | a >= 0}
+</pre>
+
+It is important to note that a subset sort is <em>not</em> regarded as a
+(regular) sort. The sole purpose of introducing subset sorts is to provide
+a form of syntactic sugar (to be used together with quantifiers), which is
+to be explained shortly.  Following are some commonly used subset sorts:
+
+<pre>
+sortdef two = {a:nat | a < 2}
+sortdef sgn = {a:int | -1 <= a && a <= 1}
+sortdef sgn = {a:int | a == -1 || a == 0 || a == 1} // another definition
+sortdef pos = {a:int | a > 0}
+sortdef neg = {a:int | a < 0}
+</pre>
+
+where <i>&&</i> and <i>||</i>
+stand for conjunction and disjunction, respectively.
+Note that we may also use semicolon <i>;</i> for conjunction. For instance,
+the subset sort <i>sgn</i> can be defined as follows:
+
+<pre>
+sortdef sgn = {a:int | -1 <= a; a <= 1}
+</pre>
+
+<H4>Some Primitive Types and Values</H4>
+
+We use the name <em>dynamic term</em> for a term in the dynamics of ATS and
+a value is a dynamic term in a special form (which is to be made clear
+later). We have primitive types
+<i>bool</i>, <i>char</i>, <i>int</i> and <i>string</i> for booleans,
+characters, integers and strings, respectively.  Also, we have types
+<i>float</i> and <i>double</i> for floating point numbers with single and
+double precision, respectively.
+<P>
+The syntax for literal characters, literal integers, literal floats and
+literal strings is the same as that specified in the ANSI C.
+<P>
+
+The use of dependent types in ATS is ubiquitous.  Given a boolean <i>b</i>,
+we can form a type <i>bool(b)</i> and the only value that can be assigned
+this type is the boolean value <i>b</i>.  In other words, <i>bool(b)</i> is
+a singleton type.  Similarly, we can form a type <i>int(i)</i> for each
+integer <i>i</i> and the only value that can be assigned this type is the
+integer value <i>i</i>.  The dependent types <i>Bool</i> and <i>Int</i>,
+which are for boolean values and integer values, respectively, can be
+defined as follows in ATS:
+
+<pre>
+typedef Bool = [a:bool] bool(a)
+typedef Int = [a:int] int(a)
+</pre>
+
+where we use <i>[...]</i> for existential quantification.  Given an integer
+<i>i</i>, we can form a type <i>string(i)</i> for strings of length
+<i>i</i>. The type <i>String</i> for strings is defined as follows:
+
+<pre>
+typedef String = [a:nat] string (a)
+</pre>
+
+<H4>Guarded and Asserting Types</H4>
+Given a proposition <i>B</i>, that is, a static term of sort
+<i>bool</i> and a type <i>T</i>, we use the name <em>guarded type</em> for
+a type of the form <i>B =) T</i> and the name <em>asserting type</em> for a
+type of the form <i>B /\ T</i>.  Intuitively, in order for a value of type
+<i>B =) T</i> to be used, which is most likely a function, the guard <i>B</i>
+needs to be discharged first. On the other hand, if an expression of type
+<i>B /\ T</i> evaluates to a value <i>v</i>, then we know that the
+assertion <i>B</i> holds (at the point where <i>v</i> is obtained) and
+<i>v</i> is of type <i>T</i>.
+<P>
+
+<H4>Elements of Programming</H4>
+
+We use <i>$exp</i> and <i>$typ</i> as meta-variables ranging over
+expressions (dynamic terms) and types in ATS.
+<P>
+
+<MENU>
+<LI><I>Naming and the Environment</I><P>
+A critical aspect in programming is to be able to bind names to (complex)
+computational objects. For instance, we can bind names to values through
+the following syntax:
+
+<pre>
+val radius = 1.0
+val pi = 3.1415926
+val area = pi * radius * radius
+</pre>
+
+We can also bind a name to a function value:
+
+<pre>
+val square = lam (x: double): double => x * x
+val area = pi * square (radius)
+</pre>
+
+<LI><I>Tuples</I><P>
+
+Given expressions <i>$exp_1,..., $exp_n</i>, we can form a tuple:
+
+<pre>
+<i>'($exp_1,...,$exp_n)</i>
+</pre>
+
+of length <i>n</i> such that the <i>i</i>th
+component of the tuple is <i>$exp_i</i> for <i>1 <= i <= n</i>. The use of
+the quote symbol <i>'</i> is to indicate that the tuple is boxed. For
+instance, a pair <i>zero_and_one</i> is formed through the following
+syntax:
+
+<pre>
+val zero_and_one: '(int, int) = '(0, 1)
+</pre>
+
+We can extract the components of a tuple by pattern matching. For instance,
+the following syntax binds <i>x</i> and <i>y</i> to <i>0</i> and <i>1</i>:
+
+<pre>
+val '(x, y) = zero_and_one
+</pre>
+
+If values <i>$exp_1,...,$exp_n</i> are assigned types <i>$typ_1,...,$typ_n</i>,
+respectively, then the tuple
+
+<pre>
+<i>'($exp_1,...,$exp_n)</i>
+</pre>
+
+can be assigned the type
+
+<pre>
+<i>'($typ_1,...,$typ_n)</i>
+</pre>
+
+There is another kind of tuple in ATS, which is referred to as a flat or an
+unboxed tuple. A tuple of this kind is like a struct in C. For instance, a
+flat tuple <i>two_and_three</i> is constructed as follows:
+
+<pre>
+val two_and_three: @(int, int) = @(2, 3)
+</pre>
+
+and its components can be selected through pattern matching as follows:
+
+<pre>
+val @(x, y) = two_and_three
+</pre>
+
+If values <i>$exp_1,...,$exp_n</i> are assigned types <i>$typ_1,...,$typ_n</i>,
+respectively, then the tuple
+
+<pre>
+<i>@($exp_1,...,$exp_n)</i>
+</pre>
+
+can be assigned the type
+
+<pre>
+<i>@($typ_1,...,$typ_n)</i>.
+</pre>
+
+Note that the use of the symbol <i>@</i> is optional.
+<P>
+
+<LI><I>Records</I><P>
+
+A label <i>$lab</i> is an alphanumeric identifier or an integer.
+Given <i>n</i> labels <i>$lab_1, ..., $lab_n</i>
+and <i>n</i> expressions <i>$exp_1, ..., $exp_n</i>,
+we can form a boxed record:
+
+<pre>
+<i>'{ $lab_1=$exp_1,...,$lab_n=$exp_n }</i>
+</pre>
+
+If the types of <i>$exp_1, ..., $exp_n</i> are <i>$typ_1, ..., $typ_n</i>,
+then this record can be assgined the following type:
+
+<pre>
+<i>'{ $lab_1=$typ_1,...,$lab_n=$typ_n }</i>
+</pre>
+
+The use of the quote symbol <i>'</i> is to indicate that the record is
+boxed. 
+<P>
+
+The symbol
+<i>'</i> needs to be changed to <i>@</i> (or simply dropped) in order to
+form flat or unboxed records.
+<P>
+
+<LI><I>Conditionals</I><P>
+
+The syntax for forming a conditional is either
+
+<pre>
+<u>if</u> $exp_1 <u>then</u> $exp_2 <u>else</u> $exp3
+</pre>
+
+or
+
+<pre>
+<u>if</u> $exp_1 <u>then</u> $exp_2
+</pre>
+
+In either case, <i>$exp_1</i> needs to be a boolean. In the
+former case, the conditional is of type <i>$typ</i> if
+both <i>$exp_2</i> and <i>$exp_3</i> are of type
+<i>$typ</i>. In the latter case, the conditional is of type
+<i>void</i> if <i>$exp_2</i> is of type <i>void</i>.
+<P>
+
+<LI><I>Type Annotations</I><P>
+The syntax for supplying a type annotation is
+
+<pre>
+$exp : $typ
+</pre>
+
+For instance, we may write <i>(1+1: Int)</i> to indicate that the
+expression <i>1+1</i> can be assigned the type <i>Int</i>. The need for
+type annotations is indispensable when advanced programming features in
+ATS are involved.
+<P>
+
+<LI><I>Function Values</I><P>
+
+We use <i>$var</i> a meta-variable ranging over (dynamic) variables in
+ATS. A function argument <i>$funarg</i> may be of the form <i>$var</i>
+(unannotated) or <i>$var: $typ</i> (annotated), and a function argument
+sequence <i>$funargseq</i> is of the form:
+
+<pre>
+<i>$funarg_1,...,$funarg_n</i>
+</pre>
+
+where <i>n</i> may equal <i>0</i>.
+<P>
+
+A non-recursive function can be constructed based on the following
+syntactic form:
+
+<pre>
+<u>lam</u> ($funargseq_1) ... ($funargseq_n) {: $typ} <u>=></u> $exp
+</pre>
+
+where we use <i>{...}</i> to indicate optional syntax. For instance,
+the following function adds two floating numbers of double precision:
+
+<pre>
+lam (x: double, y: double): double => x + y
+</pre>
+
+The type of this function is <i>(double, double) -> double</i>, that is,
+it takes two doubles and returns a double.
+
+The curried version of this function is written as follows:
+<pre>
+lam (x: double) (y: double): double => x + y
+</pre>
+
+The type of this function is <i>double -> (double -> double)</i>, that is,
+it takes a double and returns a function that takes a double and returns
+a double.
+<P>
+
+A recursive function can be constructed based on the following
+syntactic form:
+
+<pre>
+<u>fix</u> $var ($funargseq_n) ... ($funargseq_n) {: $typ} <u>=></u> $exp
+</pre>
+
+As an example, the following function, which is of the type
+<i>Nat -> Nat</i>, computes the Fibonacci numbers:
+
+<pre>
+fix fib (x: Nat): Nat => if x >= 2 then fib (x-1) + fib (x-2) else x
+</pre>
+
+<LI><I>Function Declarations</I><P>
+
+The following form of syntax declares a function named "foo":
+
+<pre>
+<u>fun</u> foo ($funargseq_1) ... ($funargseq_n) {: $typ} <u>=</u> $exp
+</pre>
+
+In the case where the defined function is not recursive, the keyword
+<u>fun</u> may be replaced with the keyword <u>fn</u>. For instance,
+we can declare a function as follows to compute Fibonacci numbers:
+
+<pre>
+fun fib (x: Nat): Nat = if x >= 2 then fib (x-1) + fib (x-2) else x
+</pre>
+
+Alternatively, we may write equivalent code as follows:
+
+<pre>
+val fib = fix fib (x: Nat): Nat => if x >= 2 then fib (x-1) + fib (x-2) else x
+</pre>
+
+or as follows:
+
+<pre>
+val rec fib: Nat -> Nat = lam x => if x >= 2 then fib (x-1) + fib (x-2) else x
+</pre>
+
+If we need to declare two functions "foo" and "bar" mutually recursively,
+we can use the following form of syntax:
+
+<pre>
+<u>fun</u> foo ($funargseq_1_1) ... ($funargseq_1_n1) {: $typ_1} <u>=</u> $exp_1
+<u>and</u> bar ($funargseq_2_1) ... ($funargseq_2_n2) {: $typ_2} <u>=</u> $exp_2
+</pre>
+
+This form can be further generalized to declare 
+<i>n</i> mutual recursive functions for <i>n >= 2 </i>.
+
+As an example, the follow code implements two mutually recursive functions:
+
+<pre>
+fun is_even (x: int): bool = if x > 0 then is_odd  (x-1) else true
+and is_odd  (x: int): bool = if x > 0 then is_even (x-1) else false
+</pre>
+
+<LI><I>Local Bindings</I><P>
+A common way to introduce local bindings is through the use of the keyword
+<u>let</u>. As an example, the following code defines a function that
+computes the roots of a quadratic equation in terms of the efficients
+of the equation:
+
+<pre>
+// computing roots for [Axx + Bx + C]
+fn foo (A: double, B: double, C: double): @(double, double) = let
+  val Delta = B * B - 4.0 * A * C
+  val () = if Delta < 0.0 then (prerr "no real roots!\n"; exit {void} 1)
+  val Delta_sqrt = sqrt (Delta)
+  val root1 = (~B + Delta_sqrt) / (2.0 * A)
+  val root2 = (~B - Delta_sqrt) / (2.0 * A)
+in
+  @(root1, root2) // this a flat tuple
+end // end of [foo]
+</pre>
+
+Note that the variables <i>Delta</i>, <i>Delta_sqrt</i>, <i>root1</i> and
+<i>root2</i> are introduced for use only inside the <u>let</u>-expression.
+Another form of local binding is introduced through the keyword
+<u>where</u> as is shown below:
+
+<pre>
+val fact10 = fact 10 where {
+  fun fact (x: int): int = if x > 0 then x * fact (x-1) else 1
+} // end of [fact10]
+</pre>
+
+This code is just an equivalent form of the following code:
+
+<PRE>
+val fact10 = let
+  fun fact (x: int): int = if x > 0 then x * fact (x-1) else 1
+in
+  fact 10
+end // end of [fact10]
+</PRE>
+
+<LI><I>Sequencing</I><P>
+
+Given expressions <i>$exp_1, ..., $exp_n, $exp_{n+1}</i>, where
+<i>n</i> is some natural number, we can sequence them to form the
+expression <i>($exp_1; ...; $exp_n; $exp_{n+1})</i>; this expression is
+essentially equivalent to the following one in terms of both static and
+dynamic semantics:
+<PRE>
+let val () = $exp_1 ... val () = $exp_n in $exp_{n+1} end
+</PRE>
+So it is clear that the expressions <i>$exp_1, ..., $exp_n</i> are required
+to be of the void type; the type of the sequence expression is the type of
+its last component <i>$exp_{n+1}</i>. If <i>$exp_{n+1}</i> is omitted, the
+default is the expression <i>()</i>, which represents the void value, that
+is, the only value of the void type.
+
+</MENU>
+
+<H4>Comments</H4>
+There are currently three forms of comments in ATS/Anairiats.
+<UL>
+
+<LI>
+
+A line comment starts with a double slash "//" and ends with a newline
+character.
+
+<LI>
+A rest-of-file comment starts with a quadruple slash "////" and ends at the
+end of the file in which this comment occurs. This style is often useful
+for debugging or testing.
+
+<LI>
+An enclosed comment starts with the symbol "(*" and ends with "*)". Such
+comments can be embedded in one another.
+
+</UL>
+
+As in C, it is also possible to comment out a piece of code in ATS as
+follows:
+
+<pre>
+#if 0 #then // [#then] is optional
+
+(all the code here is commented out)
+
+#endif
+</pre>
+
+The only requirement is that the code that is commented out must represent
+a list of syntactically correct declarations in ATS.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <A HREF="basics.dats">here</A>.
+
+<!-- end of [basics.html] -->

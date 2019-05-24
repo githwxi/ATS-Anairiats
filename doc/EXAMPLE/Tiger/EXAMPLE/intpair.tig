@@ -1,0 +1,10 @@
+let
+  type intpair = { left: int, right: int }
+  var x: intpair := nil
+in
+  /* segfault */
+  x.left := 1; x.right := 2;
+  print ("x.left + x.right = ");
+  print_int (x.left + x.right);
+  print ("\n")
+end /* end of [let] */

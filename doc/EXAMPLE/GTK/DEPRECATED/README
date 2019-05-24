@@ -1,0 +1,15 @@
+FYI.
+
+This directory contains some examples in ATS involving GTK programing.
+Please use the provided Makefile to compile these examples.
+
+The code was written in 2007 and has since be deprecated. Though it
+was probably not a successful trial of constructing an API for GTK in
+ATS, the experience gathered from doing it greatly helped the current
+design of API for GTK in ATS.
+
+Cheers!
+
+###### end of [README] ######
+
+

@@ -1,0 +1,219 @@
+\chapter{Programming with Theorem Proving}
+
+The paradigm of programming with theorem proving is rich and broad, and it
+is probably the most innovative feature in ATS. It will become clear later
+that this feature plays an indispensable role in ATS to support safe
+manipulation of resources. In this chapter, we mainly give an introduction
+to programming with theorem proving by presenting a few examples,
+explaining some motivations behind this programming paradigm as well as
+demonstrating a means to achieve it in ATS.
+
+\begin{figure}[thp]
+\input{DATS/list_concat_function.dats}
+\caption{An implementation of list concatenation that does not typecheck}
+\label{figure:list_concat_function}
+\end{figure}
+\section{Nonlinear Constraint Avoidance}
+A function template {\it concat} is implemented in
+Figure~\ref{figure:list_concat_function}. Given a list ${\it xss}$ of
+length $m$ in which each element is of type $\tlist(T,n)$, ${\it
+  concat}\langle{T}\rangle({\it xss})$ constructs a list of type
+$\tlist(T,m*n)$. When the first pattern matching clause in the code for
+${\it concat}$ is typechecked, a constraint is generated that is
+essentially like the following one:
+\[\begin{array}{l}
+\forall{m:\snat}.\forall{m_1:\snat}.\forall{n:\snat}. m=m_1+1\limplies n+(m_1*n) = m*n \\
+\end{array}\]
+This contraint may look simple, but it is rejected by the ATS constraint
+solver as it contains nonlinear terms (e.g., $m_1*n$ and $m*n$).
+In order to overcome the limitation, theorem-proving can be employed.
+
+\begin{figure}[thp]
+\begin{verbatim}
+dataprop MUL (int, int, int) =
+  | {n:int} MULbas (0, n, 0)
+  | {m,n,p:int | m >= 0} MULind (m+1, n, p+n) of MUL (m, n, p)
+  | {m,n,p:int | m > 0} MULneg (~m, n, ~p) of MUL (m, n, p)
+\end{verbatim}
+\caption{A dataprop for encoding integer multiplication}
+\label{figure:dataprop_for_integer_multiplication}
+\end{figure}
+A dataprop declaration is given
+in~\ref{figure:dataprop_for_integer_multiplication}. A dataprop is like a
+datatype, but it can only be assigned to proof values (or proofs for
+short).  In ATS, after a program passes typechecking, a procedure called
+{\em proof erasure} can be performed to erase all the parts in the program
+that are related to proofs. In particular, there is no proof construction
+at run-time. The constructors ${\it MULbas}$, ${\it MULind}$ and ${\it
+MULneg}$ associated with ${\it MUL}$ essentially correspond to the
+following equations in a definition of integer multiplication (based on
+integer addition):
+\[\begin{array}{lll}
+0 * n = 0 ~~~&
+(m+1) * n = m * n + n~~\mbox{for $m>=0$}~~~&
+(-m) * n = -(m * n)~~\mbox{for $m>0$} \\\
+\end{array}\]
+Given integers $m,n,p$, if ${\it MUL}(m,n,p)$ is inhabited, that is,
+if it can be assigned to some proof value, then $m*n$ equals $p$.
+
+\begin{figure}[thp]
+\input{DATS/list_concat_function_proof.dats}
+\caption{An implementation of list concatenation that does typecheck}
+\label{figure:list_concat_function_proof}
+\end{figure}
+In Figure~\ref{figure:list_concat_function_proof}, another implementation
+of the function template {\it concat} is given that avoids the generation
+of nonlinear constraints. Given a type $T$, ${\it concat}\langle{T}\rangle$
+is assigned the following type in this implementation:
+\[\begin{array}{l}
+\forall{m:\snat}.\forall{n:\snat}.~
+\tlist(\tlist(T,n),m)\timp\exists{p:\snat}.~({\it MUL}(m,n,p)\mid\tlist(T,p)) \\
+\end{array}\]
+Given a list ${\it xss}$ of type $\tlist(\tlist(T,n),m)$, ${\it concat}(v)$
+returns a pair $({\it pf}\mid{\it res})$ such that ${\it pf}$ is a proof of
+type ${\it MUL}(m,n,p)$ for some $p$ and ${\it res}$ is a list of type
+$\tlist(T,p)$. In other words, ${\it pf}$ acts a witness to $p=m*n$. After
+proof erasure is performed, the implementation in
+Figure~\ref{figure:list_concat_function_proof} is essentially translated
+into the one in Figure~\ref{figure:list_concat_function}.
+
+\begin{figure}
+\input{DATS/factorial_function_proof.dats}
+\caption{A fully verified implemenation of the factorial function}
+\label{figure:factorial_function_proof}
+\end{figure}
+In Figure~\ref{figure:factorial_function_proof}, a dataprop
+${\it FACT}$ is declared to encode the following definition of the factorial
+function:
+\[\begin{array}{ll}
+fact (0) = 1 ~~~& fact (n+1) = fact (n) * (n+1)~~\mbox{for $n>0$} \\
+\end{array}\]
+Given integers $n$ and $r$, if ${\it FACT}(n,r)$ is inhabited, then
+$fact(n)$ equals $r$.
+
+\section{Proof Functions}
+The following simple example depicts a typical scenario where
+proof functions need to be constructed:
+\begin{verbatim}
+extern fun f {n:nat} (n: int n): bool
+// the following function implementation does not typecheck
+fun g {i:int} (i: int i) = f (i * i) // a nonlinear constraint is generated
+\end{verbatim}
+The function $f$ is assigned a type that indicates $f$ is from natural
+numbers to booleans. Clearly, the constraint $\forall{i:\sint}.~i*i\geq 0$
+is generated when the function $g$ is typechecked. This constraint is
+rejected immediately as it is nonlinear. In order to avoid nonlinear
+constraints, the following implementation of $g$ makes use of a proof
+function ${\it lemma\_i\_mul\_i\_gte\_0}$:
+\begin{verbatim}
+extern prfun lemma_i_mul_i_gte_0
+  {i,ii:int} (pf: MUL (i, i, ii)): [ii>=0] void
+// end of [lemma_i_mul_i_gte_0]
+
+fun g {i:int} (i: int i) = let
+  val (pf | ii) = i imul2 i; prval () = lemma_i_mul_i_gte_0 (pf)
+in
+  f (ii)
+end // end of [g]
+\end{verbatim}
+The type assigned to ${\it lemma\_i\_mul\_i\_gte\_0}$ indicates that ${\it
+lemma\_i\_mul\_i\_gte\_0}$ proves $i*i\geq 0$ for every integer $i$.
+
+\begin{figure}[thp]
+\input{DATS/lemma_i_mul_i_gte_0_function.dats}
+\caption{An implementation of a proof function showing $i*i\geq 0$ for every integer $i$}
+\label{figure:lemma_i_mul_i_gte_0_function}
+\end{figure}
+An implementation of ${\it lemma\_i\_mul\_i\_gte\_0}$ is given in
+Figure~\ref{figure:lemma_i_mul_i_gte_0_function}, where the auxiliary
+proof functions ${\it aux1}$, ${\it aux2}$ and ${\it aux3}$ are given
+the following types:
+\[\begin{array}{rcl}
+{\it aux1} & : &
+\forall{m:\snat}.\forall{n:\sint}.\forall{p:\sint}.~{\it MUL}(m,n,p)\timp{\it MUL(m,n-1,p-m)} \\
+{\it aux2} & : &
+\forall{m:\snat}.\forall{n:\sint}.\forall{p:\sint}.~{\it MUL}(m,n,p)\timp{\it MUL(m,-n,-p)} \\
+{\it aux3} & : &
+\forall{n:\snat}.\forall{p:\sint}.~{\it MUL}(n,n,p)\timp (p\geq0)\Band\tvoid \\
+\end{array}\]
+In other words, the following is established by these proof functions:
+\[\begin{array}{rcl}
+{\it aux1} & {\rm proves} & \forall{m:\snat}.\forall{n:\sint}.~m*(n-1)=m*n - m \\
+{\it aux2} & {\rm proves} & \forall{m:\snat}.\forall{n:\sint}.~m*(-n)=-(m*n) \\
+{\it aux3} & {\rm proves} & \forall{n:\snat}.n*n\geq 0 \\
+\end{array}\]
+
+\begin{figure}
+%%%\begin{verbatim}
+\input{DATS/lemma_for_matrix_subscripting.dats}
+%%%\end{verbatim}
+\caption{A proof function needed in the implementation of matrix subscripting}
+\label{figure:lemma_for_matrix_subscripting}
+\end{figure}
+\noindent{\bf Matrix Implementation}\kern6pt
+A realistic example involving proof construction can be found in
+the following file:
+\begin{center}
+{\it \$ATSHOME/prelude/DATS/matrix.dats}
+\end{center}
+where matrices are implemented in ATS. A 2-dimension matrix of dimension
+$m\times n$ in ATS is represented a 1-dimension array of size $m\cdot n$ in
+the row-major format. Given natural numbers $i$ and $j$ satisfying $i<m$
+and $j<n$, the element in the matrix indexed by $(i,j)$ is the element in
+the array indexed by $i\cdot n+j$. This means that the following theorem is
+needed in order to implement matrix subscripting (without resorting to
+run-time array bounds checking):
+\[\begin{array}{l}
+\forall m:\snat.\forall n:\snat.\forall i:\snat.\forall j:\snat.~
+(i<m\land j<n)\limplies (i\cdot n + j < m\cdot n)
+\end{array}\]
+As linear constraints are handled automatically in ATS,
+this theorem is equivalent to the following one,
+\[\begin{array}{l}
+\forall m:\snat.\forall n:\snat.\forall i:\snat.~
+(i<m)\limplies (i\cdot n + n \leq m\cdot n)
+\end{array}\]
+which is encoded and proven in Figure~\ref{figure:lemma_for_matrix_subscripting}.
+
+\begin{figure}[thp]
+\input{DATS/intlst_datasort_example.dats}
+\caption{A simple example involving datasort declaration}
+\label{figure:intlst_datasort_example}
+\end{figure}
+\section{Datasorts}
+So far, the type indexes appearing in the presented examples are all of
+some built-in sorts (e.g., $\sbool$, $\sint$). In ATS, it is also possible
+for the programmer to introduce sorts by datasort declaration. As an
+example, a datasort {\it intlst} is first declared in
+Figure~\ref{figure:intlst_datasort_example}, and each index of this sort
+represents a sequence of integers. Subsequently, a dataprop {\it
+int\_intlst\_lte} is declared, which captures the relation stating that a
+given integer is less than or equal to each integer in a given integer
+sequence.
+
+The first proof function {\it int\_intlst\_lte\_lemma} in
+Figure~\ref{figure:intlst_datasort_example} proves that an integer $i$ is
+less than or equal to $x$ for each integer $x$ in a given integer sequence
+if $i\leq j$ and $j\leq x$ for each integer $x$ in the sequence. Note that
+the termination metric for this proof function is $\langle xs\rangle$,
+where $xs$ ranges over static terms of the sort {\it intlst} that are
+compared according to the substructural ordering: A term is strictly less
+than another term if the former is a proper subterm of the latter.
+
+The next proof function {\it intlst\_lower\_bound\_lemma} in
+Figure~\ref{figure:intlst_datasort_example} proves that for each integer
+sequence, there is a lower bound $x_{lb}$ for the sequence, that is, $x\leq
+x_{lb}$ holds for each $x$ in the sequence. Please notice the use of {\it
+sif} and {\it scase} in this example. In constrast to {\it if}, {\it sif}
+is used to construct a static conditional expression where the condition is
+a static expression of the sort $\sbool$. In an analogous manner, ${\it
+scase}$ is used to construct a static case-expression where the expression
+being matched against is static. Each pattern used for matching in a static
+case-expression must be simple, that is, it must be of the form of a
+constructor being applied to variables.
+
+%% \begin{verbatim}
+%% dataparasort tm = lm of (tm -> tm) | app (tm, tm) // higher-order abstract syntax
+%% \end{verbatim}
+
+%%% end of \chapter{Programming with Theorem Proving} %%%

@@ -1,0 +1,11 @@
+let
+    function fact (x: int): int =
+      let
+         var res := 1
+      in
+         for i := 1 to x do res := i * res;
+         res
+      end
+in
+    print ("fact (10) = "); print_int (fact (10)); print ("\n")
+end

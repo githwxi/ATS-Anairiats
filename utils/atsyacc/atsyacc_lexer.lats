@@ -1,0 +1,599 @@
+(***********************************************************************)
+(*                                                                     *)
+(*                         Applied Type System                         *)
+(*                                                                     *)
+(*                              Hongwei Xi                             *)
+(*                                                                     *)
+(***********************************************************************)
+
+(*
+** ATS - Unleashing the Power of Types!
+**
+** Copyright (C) 2002-2009 Hongwei Xi, Boston University
+**
+** All rights reserved
+**
+** ATS is free software;  you can  redistribute it and/or modify it under
+** the terms of the GNU LESSER GENERAL PUBLIC LICENSE as published by the
+** Free Software Foundation; either version 2.1, or (at your option)  any
+** later version.
+** 
+** ATS is distributed in the hope that it will be useful, but WITHOUT ANY
+** WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
+** FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
+** for more details.
+** 
+** You  should  have  received  a  copy of the GNU General Public License
+** along  with  ATS;  see  the  file  COPYING.  If not, write to the Free
+** Software Foundation, 51  Franklin  Street,  Fifth  Floor,  Boston,  MA
+** 02110-1301, USA.
+*)
+
+(* ****** ****** *)
+
+// February 2009
+// Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+
+(* ****** ****** *)
+
+%{ // preamble
+
+viewtypedef charlst_vt (n:int) = list_vt (char, n)
+viewtypedef charlst_vt = [n:nat] charlst_vt (n)
+
+fun charlst_free (cs: charlst_vt): void = case+ cs of
+  | ~list_vt_cons (_, cs) => charlst_free cs | ~list_vt_nil () => ()
+// end of [charlst_free]
+
+(* ****** ****** *)
+
+#define NUL '\000'
+
+fn string_make_charlst_rev_int
+  {n:nat} (cs: charlst_vt n, n: int n): string n = let
+  val n1 = size1_of_int1 (n + 1)
+  val (pf_buf_gc, pf_buf | p_buf) = malloc_gc (n1)
+  val () = loop (pf_buf | p_buf, cs) where {
+    fun loop {n:nat} {l:addr} (
+      pf_buf: !b0ytes (n+1) @ l >> strbuf (n+1, n) @ l
+    | p_buf: ptr l, cs: charlst_vt n
+    ) : void = let
+      prval () = eqsize_byte_char ()
+      prval (pf1, pf2) = array_v_uncons {byte?} (pf_buf)
+      prval pf1 = char_v_of_b0yte_v (pf1)
+    in
+      case+ cs of
+      | ~list_vt_cons (c, cs) => let
+          val c = char1_of_char (c)
+          val () = assert (c <> NUL)
+          val () = !p_buf := c
+          val () = loop (pf2 | p_buf + sizeof<byte>, cs)
+          prval () = pf_buf := strbuf_v_cons (pf1, pf2)
+        in
+          // empty
+        end // end of [list_vt_cons]
+      | ~list_vt_nil () => let
+          val () = !p_buf := NUL
+          prval () = pf_buf := strbuf_v_null (pf1, pf2)
+        in
+          // empty
+        end // end of [list_vt_nil]
+    end
+  } // end of [val]
+in
+  string1_of_strbuf @(pf_buf_gc, pf_buf | p_buf)
+end // end of [string_make_charlst_rev_int]
+
+(* ****** ****** *)
+
+staload "libats/lex/lexing.sats"
+
+typedef pos = position_t
+viewtypedef poslst = List_vt (pos)
+
+fun poslst_free (ps: poslst): void = case+ ps of
+  | ~list_vt_cons (_, ps) => poslst_free ps | ~list_vt_nil () => ()
+// end of [poslst_free]
+
+(* ****** ****** *)
+
+staload Loc = "location.sats"
+
+staload Tok = "token.sats"; typedef token = $Tok.token
+
+(* ****** ****** *)
+
+staload _(*anonymous*) = "prelude/DATS/list_vt.dats"
+staload _(*anonymous*) = "prelude/DATS/reference.dats"
+
+(* ****** ****** *)
+
+extern
+fun TOKEN (): token
+
+fn TOKEN_lexing_error (): token = lexing_error ()
+
+//
+
+extern
+fun PTBRACKSTR (p: pos, cs: charlst_vt): token
+
+fn PTBRACKSTR_lexing_error
+  (p: pos, cs: charlst_vt): token = let
+  val () = charlst_free (cs) in lexing_error ()
+end // end of [PTBRACKSTR_lexing_error]
+
+//
+
+extern
+fun COMMENT_line (): void
+
+fn COMMENT_line_lexing_error (): void = lexing_error ()
+
+//
+
+extern
+fun COMMENT_block (p: pos, ps: poslst): void
+
+fn COMMENT_block_lexing_error
+  (p: pos, ps: poslst): void = let
+  val () = poslst_free (ps) in lexing_error ()
+end // end of [COMENT_block_lexing_error]
+
+//
+
+extern
+fun COMMENT_CLIKE_block (p: pos, ps: poslst): void
+
+fn COMMENT_CLIKE_block_lexing_error
+  (p: pos, ps: poslst): void = let
+  val () = poslst_free (ps) in lexing_error ()
+end // end of [COMENT_CLIKE_block_lexing_error]
+
+//
+
+extern
+fun EXTCODE (p: pos, ps: poslst, cs: charlst_vt): token
+
+fn EXTCODE_lexing_error
+  (p: pos, ps: poslst, cs: charlst_vt): token = let
+  val () = poslst_free ps; val () = charlst_free cs
+in
+  lexing_error ()
+end // end of [EXTCODE_lexing_error]
+
+//
+
+extern
+fun PREAMBLE (p: pos, cs: charlst_vt): token
+
+fn PREAMBLE_lexing_error
+  (p: pos, cs: charlst_vt): token = let
+  val () = charlst_free cs in lexing_error ()
+end // end of [PREAMBLE_lexing_error]
+
+//
+
+extern
+fun POSTAMBLE (p: pos, cs: charlst_vt): token
+
+fn POSTAMBLE_lexing_error
+  (p: pos, cs: charlst_vt): token = let
+  val () = charlst_free cs in lexing_error ()
+end // end of [POSTAMBLE_lexing_error]
+
+//
+
+extern
+fun FINISHOFF (): token
+
+fn FINISHOFF_lexing_error () = lexing_error ()
+
+(* ****** ****** *)
+
+extern
+fun atsyacc_lexer_token_get (): token = "atsyacc_lexer_token_get"
+
+local
+ 
+val theStateRef = ref_make_elt<int> (0)
+
+in
+
+fn the_state_get (): int = !theStateRef
+fn the_state_set (i: int): void = !theStateRef := i
+
+fn the_state_inc (): void = let
+  val n = !theStateRef in !theStateRef := n+1
+end // end of [the_state_inc]
+
+end // end of [local]
+
+(* ****** ****** *)
+
+fn token_eof_get (): token = let
+  val fstpos = lexing_fstpos_get ()
+  val lstpos = lexing_lstpos_get ()
+  val loc = $Loc.location_make (fstpos, lstpos)
+in
+  $Tok.token_eof_make (loc)
+end // end of [token_eof_get]
+
+fn token_ident_get (): token = let
+  val name = lexeme_string ()
+  val fstpos = lexing_fstpos_get ()
+  val lstpos = lexing_lstpos_get ()
+  val loc = $Loc.location_make (fstpos, lstpos)
+in
+  $Tok.token_ident_make (loc, name)
+end // end of [token_ident_get]
+
+fn token_keychar_get (): token = let
+  val name = lexeme_get (0)
+  val fstpos = lexing_fstpos_get ()
+  val lstpos = lexing_lstpos_get ()
+  val loc = $Loc.location_make (fstpos, lstpos)
+in
+  $Tok.token_keychar_make (loc, name)
+end // end of [token_keychar_get]
+
+fn token_keyword_get (): token = let
+  val name = lexeme_string ()
+  val fstpos = lexing_fstpos_get ()
+  val lstpos = lexing_lstpos_get ()
+  val loc = $Loc.location_make (fstpos, lstpos)
+in
+  $Tok.token_keyword_make (loc, name)
+end // end of [token_keyword_get]
+
+fn token_percperc_get (): token = let
+  val () = the_state_inc ()
+  val fstpos = lexing_fstpos_get ()
+  val lstpos = lexing_lstpos_get ()
+  val loc = $Loc.location_make (fstpos, lstpos)
+in
+  $Tok.token_percperc_make (loc)
+end // end of [token_percperc_get]
+
+fn token_ptbrackstr_beg (): token = let
+  val p0 = lexing_fstpos_get ()
+in
+  PTBRACKSTR (p0, list_vt_nil ())
+end // end of [token_ptbrackstr_beg]
+
+fn token_error_gen (): token = let
+  val fstpos = lexing_fstpos_get ()
+in
+  prerr_string "The char at [";
+  prerr_position fstpos;
+  prerr_string "] is unrecognized!\n";
+  $raise LexingErrorException ()
+end // end of [token_error_gen]
+
+(* ****** ****** *)
+
+fn ptbrackstr_char
+  (p0: pos, cs: charlst_vt): token = let
+  fn err
+    (p0: pos, cs: charlst_vt): token = let
+    val () = charlst_free (cs)
+  in
+    prerr_string "The left bracket at [";
+    prerr_position p0;
+    prerr_string "] is unclosed!\n";
+    $raise LexingErrorException ()
+  end // end of [errmsg]
+  val c = lexeme_get (0)
+in
+  case+ c of
+  | '>' => let
+      val p1 = lexing_lstpos_get ()
+      val loc = $Loc.location_make (p0, p1)
+      val ncs = list_vt_length<char> (cs)
+      val str = string_make_charlst_rev_int (cs, ncs)
+    in
+      $Tok.token_ptbrackstr_make (loc, str)
+    end // end of ['>']
+  | '\n' => err (p0, cs)
+  | '<'  => err (p0, cs)
+  | _ => PTBRACKSTR (p0, list_vt_cons (c, cs))
+end // end of [ptbrackstr_char]
+
+fn ptbrackstr_unclosed
+  (p0: pos, cs: charlst_vt): token = let
+  val () = charlst_free (cs)
+in
+  prerr_string "The left bracket at [";
+  prerr_position p0;
+  prerr_string "] is unclosed!\n";
+  $raise LexingErrorException ()
+end // end of [ptbrackstr_unclosed]
+
+(* ****** ****** *)
+
+fn comment_line_beg (): void = COMMENT_line ()
+
+fn comment_line_end (): void = ()
+
+fn comment_line_cont (): void = COMMENT_line ()
+
+(* ****** ****** *)
+
+fn comment_block_beg (): void = let
+  val fstpos = lexing_fstpos_get () in
+  COMMENT_block (fstpos, list_vt_nil ())
+end // end of [comment_block_beg]
+
+fn comment_block_open
+  (p: pos, ps: poslst): void = let
+  val fstpos = lexing_fstpos_get () in
+  COMMENT_block (fstpos, list_vt_cons (p, ps))
+end // end of [coment_block_open]
+
+fn comment_block_close
+  (_: pos, ps: poslst): void = case+ ps of
+  | ~list_vt_cons (p, ps) => COMMENT_block (p, ps)
+  | ~list_vt_nil () => ()
+// end of [coment_block_close]
+
+fn comment_block_cont
+  (p: pos, ps: poslst): void = COMMENT_block (p, ps)
+// end of [comment_block_cont]
+
+fn comment_block_unclosed
+  (p: pos, ps: poslst): void = let
+  val () = poslst_free (ps) in
+  prerr_string "The comment starting at [";
+  prerr_position p;
+  prerr_string "] is unclosed!\n";
+  $raise LexingErrorException ()
+end // end of [comment_block_unclosed]
+
+(* ****** ****** *)
+
+fn comment_clike_block_beg (): void = let
+  val fstpos = lexing_fstpos_get () in
+  COMMENT_CLIKE_block (fstpos, list_vt_nil ())
+end // end of [comment_block_clike_beg]
+
+fn comment_clike_block_open
+  (p: pos, ps: poslst): void = let
+  val fstpos = lexing_fstpos_get () in
+  COMMENT_CLIKE_block (fstpos, list_vt_cons (p, ps))
+end // end of [coment_clike_block_open]
+
+fn comment_clike_block_close
+  (_: pos, ps: poslst): void = case+ ps of
+  | ~list_vt_cons (p, ps) => COMMENT_CLIKE_block (p, ps)
+  | ~list_vt_nil () => ()
+// end of [coment_clike_block_close]
+
+fn comment_clike_block_cont
+  (p: pos, ps: poslst): void = COMMENT_CLIKE_block (p, ps)
+// end of [comment_clike_block_cont]
+
+fn comment_clike_block_unclosed
+  (p: pos, ps: poslst): void = let
+  val () = poslst_free (ps) in
+  prerr_string "The comment starting at [";
+  prerr_position p;
+  prerr_string "] is unclosed!\n";
+  $raise LexingErrorException ()
+end // end of [comment_clike_block_unclosed]
+
+(* ****** ****** *)
+
+fn extcode_beg (): token = let
+  val fstpos = lexing_fstpos_get ()
+in
+  EXTCODE (fstpos, list_vt_nil (), list_vt_nil ())
+end // end of [extcode_beg]
+
+fn extcode_open
+  (p: pos, ps: poslst, cs: charlst_vt): token = let
+  val c = lexeme_get (0)
+  val fstpos = lexing_fstpos_get ()
+in
+  EXTCODE (
+    fstpos, list_vt_cons (p, ps), list_vt_cons (c, cs)
+  ) // end of [EXTCODE]
+end // end of [extcode_open]
+
+fn extcode_close
+  (p0: pos, ps: poslst, cs: charlst_vt): token = let
+  val c = lexeme_get (0)
+in
+  case+ ps of
+  | ~list_vt_cons (p, ps) => begin
+      EXTCODE (p, ps, list_vt_cons (c, cs))
+    end // end of [list_vt_cons]
+  | ~list_vt_nil () => let
+      val p1 = lexing_lstpos_get ()
+      val loc = $Loc.location_make (p0, p1)
+      val ncs = list_vt_length<char> (cs)
+      val code = string_make_charlst_rev_int (cs, ncs)
+    in
+      $Tok.token_extcode_make (loc, code)
+    end // end of [list_vt_nil]
+end // end of [extcode_open]
+
+fn extcode_char
+  (p: pos, ps: poslst, cs: charlst_vt): token = let
+  val c = lexeme_get (0)
+in
+  EXTCODE (p, ps, list_vt_cons (c, cs))
+end // end of [extcode_char]
+
+fn extcode_unclosed
+  (p: pos, ps: poslst, cs: charlst_vt): token = let
+  val () = poslst_free (ps); val () = charlst_free (cs)
+in
+  prerr_string "The external code starting at [";
+  prerr_position p;
+  prerr_string "] is unclosed!\n";
+  $raise LexingErrorException ()
+end // end of [extcode_unclosed]
+
+(* ****** ****** *)
+
+fn preamble_beg () = let
+  val fstpos = lexing_fstpos_get () in
+  PREAMBLE (fstpos, list_vt_nil ())
+end // end of [preamble_beg]
+
+fn preamble_close
+  (p0: pos, cs: charlst_vt) = let
+  val p1 = lexing_lstpos_get ()
+  val loc = $Loc.location_make (p0, p1)
+  val ncs = list_vt_length<char> (cs)
+  val code = string_make_charlst_rev_int (cs, ncs)
+in
+  $Tok.token_preamble_make (loc, code)  
+end // end of [preamble_beg]
+
+fn preamble_char
+  (p: pos, cs: charlst_vt): token = let
+  val c = lexeme_get (0)
+in
+  PREAMBLE (p, list_vt_cons (c, cs))
+end // end of [extcode_char]
+
+fn preamble_unclosed
+  (p: pos, cs: charlst_vt): token = let
+  val () = charlst_free (cs) in
+  prerr_string "The preamble starting at [";
+  prerr_position p;
+  prerr_string "] is unclosed!\n";
+  $raise LexingErrorException ()
+end // end of [preamble_unclosed]
+
+(* ****** ****** *)
+
+fn postamble_beg () = let
+  val fstpos = lexing_fstpos_get () in
+  POSTAMBLE (fstpos, list_vt_nil ())
+end // end of [postamble_beg]
+
+fn postamble_end
+  (p0: pos, cs: charlst_vt): token = let
+  val p1 = lexing_fstpos_get ()
+  val loc = $Loc.location_make (p0, p1)
+  val ncs = list_vt_length<char> (cs)
+  val code = string_make_charlst_rev_int (cs, ncs)
+  val () = the_state_set (~1) // finished
+in
+  $Tok.token_postamble_make (loc, code)  
+end // end of [postamble_end]
+
+fn postamble_char
+  (p: pos, cs: charlst_vt): token = let
+  val c = lexeme_get (0)
+in
+  POSTAMBLE (p, list_vt_cons (c, cs))
+end // end of [extcode_char]
+
+(* ****** ****** *)
+
+implement atsyacc_lexer_token_get () = let
+  val n = the_state_get ()
+in
+  if n >= 0 then case+ n of
+    | _ when n < 2 => TOKEN () | _ => postamble_beg ()
+  else FINISHOFF ()
+end // end of [atsyacc_lexer_token_get]
+
+(* ****** ****** *)
+
+%} // end of preamble
+
+(* ****** ****** *)
+
+// definitions for constant regular expressions
+
+blanks = [ '\f' '\r' '\n' '\t' ' ' ] +
+
+alpha = [ 'A'-'Z' 'a'-'z' ]
+alnum = [ '0'-'9' 'A'-'Z' 'a'-'z' ]
+
+keychar = ( '|' | ':' | ';' )
+keyword = '%' $alpha $alnum*
+
+identfst = [ 'A'-'Z' 'a'-'z' '_' ]
+identrst = [ '0'-'9' 'A'-'Z' 'a'-'z' '_' '\'' ]
+
+identifier = $identfst $identrst*
+
+cmntbeg = '\(' '*'
+cmntend = '*' '\)'
+
+cmntbeg_clike = '/' '*'
+cmntend_clike = '*' '/'
+
+%%
+
+TOKEN () =
+  | $blanks			{ TOKEN () }
+  | "%%"                        { token_percperc_get () }
+  | "//"                        { comment_line_beg (); TOKEN () }
+  | $cmntbeg                    { comment_block_beg (); TOKEN () }
+  | $cmntbeg_clike              { comment_clike_block_beg (); TOKEN () }
+  | $identifier                 { token_ident_get () }
+  | $keychar                    { token_keychar_get () }
+  | $keyword                    { token_keyword_get () }
+  | '<'                         { token_ptbrackstr_beg () }
+  | '\{'                        { extcode_beg () }
+  | "%{"                        { preamble_beg () }
+  | [^]                         { token_error_gen () }
+  | $EOF                        { token_eof_get () }
+
+PTBRACKSTR (p, cs) =
+  | [^]                         { ptbrackstr_char (p, cs) }
+  | $EOF                        { ptbrackstr_unclosed (p, cs) }
+
+COMMENT_line () =
+  | '\n'                        { comment_line_end () }
+  | [^ '\n']*                   { comment_line_cont () }
+  | $EOF                        { comment_line_end () }
+
+COMMENT_block (p, ps) =
+  | $cmntbeg                    { comment_block_open (p, ps) }
+  | $cmntend                    { comment_block_close (p, ps) }
+  | '\('                        { comment_block_cont (p, ps) }
+  | '\)'                        { comment_block_cont (p, ps) }
+  | '*'                         { comment_block_cont (p, ps) }
+  | [^ '\(' '*' '\)' ]*         { comment_block_cont (p, ps) }
+  | $EOF                        { comment_block_unclosed (p, ps) }
+
+COMMENT_CLIKE_block (p, ps) =
+  | $cmntbeg_clike              { comment_clike_block_open (p, ps) }
+  | $cmntend_clike              { comment_clike_block_close (p, ps) }
+  | '/'                         { comment_clike_block_cont (p, ps) }
+  | '*'                         { comment_clike_block_cont (p, ps) }
+  | [^ '/' '*' ]*               { comment_clike_block_cont (p, ps) }
+  | $EOF                        { comment_clike_block_unclosed (p, ps) }
+
+EXTCODE (p, ps, cs) =
+  | '\{'                        { extcode_open (p, ps, cs) }
+  | '\}'                        { extcode_close (p, ps, cs) }
+  | [^]                         { extcode_char (p, ps, cs) }
+  | $EOF                        { extcode_unclosed (p, ps, cs) }
+
+PREAMBLE (p, cs) =
+  | "%}"                        { preamble_close (p, cs) }
+  | [^]                         { preamble_char (p, cs) }
+  | $EOF                        { preamble_unclosed (p, cs) }
+
+POSTAMBLE (p, cs) =
+  | [^]                         { postamble_char (p, cs) }
+  | $EOF                        { postamble_end (p, cs) }
+
+FINISHOFF () =
+  | $EOF                        { token_eof_get () }
+
+%%
+
+// postamble
+
+(* ****** ****** *)
+
+(* end of [atsyacc.lats] *)

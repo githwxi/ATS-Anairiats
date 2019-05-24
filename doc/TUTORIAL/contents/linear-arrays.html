@@ -1,0 +1,174 @@
+<!-- beg of [linear-arrays.html] -->
+
+<H2><A id="linear-arrays" name="linear arrays">Linear Arrays</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Given a viewtype <i>VT</i> and integer <i>I</i>, the special static term
+<i>@[VT][I]</i> is a viewtype for an array of elements of the type <i>VT</i>
+(and thus the size of <i>@[VT][I]</i> is <i>I</i> times the size of
+<i>VT</i>). If <i>VT</i> happens to be a type (instead of viewtype), then
+<i>@[VT][I]</i> is also a type. If a linear proof of the view <i>(@[VT][I])
+@ L</i> is available, then we say that a linear array of size <i>I</i> is
+stored at the location <i>L</i> in which each element is of the type
+<i>VT</i>. A view of the form <i>@[VT][I] @ L</i> is often referred to
+as an array view.
+<P>
+
+The interfaces for various functions on linear arrays can be found in the
+file <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/array.sats">prelude/SATS/array.sats</A>.
+In particular, we have the following functions for manipulating array views:
+
+<pre>
+viewdef array_v (a:viewt@ype, n:int, l: addr) = @[a][n] @ l
+
+praxi array_v_nil :
+  {a:viewt@ype} {l:addr} () -&lt;prf&gt; array_v (a, 0, l)
+
+praxi array_v_unnil :
+  {a:viewt@ype} {l:addr} array_v (a, 0, l) -&lt;prf&gt; void
+
+praxi array_v_cons : {a:viewt@ype} {n:nat} {l:addr}
+  (a @ l, array_v (a, n, l+sizeof a)) -&lt;prf&gt; array_v (a, n+1, l)
+
+praxi array_v_uncons : {a:viewt@ype} {n:int | n > 0} {l:addr}
+  array_v (a, n, l) -&lt;prf&gt; (a @ l, array_v (a, n-1, l+sizeof a))
+</pre>
+
+<H4>Linear Array Creation</H4>
+The following function template <i>array_ptr_alloc</i> can be called to
+allocate memory for storing an array of elements:
+
+<pre>
+fun{a:viewt@ype}
+  array_ptr_alloc {n:nat} (asz: int n):<>
+    [l:addr | l <> null] (free_gc_v (a, n, l), array_v (a?, n, l) | ptr l)
+</pre>
+
+The view constructor <i>free_gc_v</i> is abstract, and a proof of the view
+<i>free_gc_v (a, n, l)</i> can be thought of as a certificate that must be
+provided when the allocated array is to be freed. The array view
+<i>array_v (a?, n, l)</i> is for an uninitialized array of size
+<i>n</i> in which each element should be of the type <i>a</i> if
+initialized.
+
+<H4>Linear Array Initialization</H4>
+
+After an uninitialized array is created, it needs to be initialized for
+use. There are various functions for initializing linear arrays in <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/array.sats">prelude/SATS/array.sats</A>.
+As an example, we implement as follows a function that initializes an array
+with a list of elements:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT>
+  array_ptr_initialize_list <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">@[</FONT>a?<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">)</FONT> &gt;&gt; <FONT COLOR="#000000">@[</FONT>a<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">]</FONT></FONT><FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:&lt;&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">view@ A</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">&amp;</FONT>A<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">where</FONT> <FONT COLOR="#000000">{</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT> nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT>n<FONT COLOR="#000000">&gt;.</FONT></FONT> <FONT COLOR="#000000">(</FONT> <FONT COLOR="#787878">// [loop] is tail-recursive!
+</FONT>      <FONT COLOR="#009000">pf_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>array_v <FONT COLOR="#000000">(</FONT>a?<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT> &gt;&gt; array_v <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT></FONT></FONT> <FONT COLOR="#000000">|</FONT> p_arr<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l</FONT><FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT>
+    <FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">:&lt;&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+    <FONT COLOR="#000000">|</FONT> list_cons <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT>pf1_at<FONT COLOR="#000000">,</FONT> pf2_arr<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_uncons <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a?<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">)</FONT></FONT>
+        <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>p_arr := x
+        <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf2_arr</FONT> <FONT COLOR="#000000">|</FONT> p_arr + sizeof&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT><FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">in</FONT>
+        pf_arr := array_v_cons <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>pf1_at<FONT COLOR="#000000">,</FONT> pf2_arr<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [list_cons]
+</FONT>    <FONT COLOR="#000000">|</FONT> list_nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> array_v_unnil <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a?<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>pf_arr<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">in</FONT> pf_arr := array_v_nil <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>a<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [list_nil]
+</FONT>  <FONT COLOR="#787878">// end of [loop]
+</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// end of [array_ptr_initialize_list]  
+</FONT></FONT></PRE>
+
+Note that the first argument of the function
+<i>array_ptr_initialize_list</i> is passed as a reference
+(call-by-reference).  We use the expression <i>view@ A</i> for some
+particular left-value in which a proof of the view associated with the
+variable <i>A</i> is stored, and the expression <i>&A</i> for the address
+of the variable <i>A</i>.
+
+<H4>Linear Array Subscription</H4>
+
+Let <i>A</i> be an array of the type <i>@[T][I]</i> for some type (but not
+viewtype) <i>T</i> and integer <i>I</i>. For each natural number less than
+<i>I</i>, the expression <i>A.[i]</i>, which can be used as a left-value,
+refers to the <i>i</i>th elemement of the array (where counting starts from
+<i>0</i>). A function template <i>array_ptr_swap</i> is implemented as
+follows for swapping two elements in a given array:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> array_ptr_swap
+  <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">;</FONT> j <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">@[</FONT>a<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT>
+  <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> tmp <FONT COLOR="#000000">=</FONT> A<FONT COLOR="#000000">.</FONT><FONT COLOR="#000000">[</FONT><FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">in</FONT> A<FONT COLOR="#000000">.</FONT><FONT COLOR="#000000">[</FONT><FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> := A<FONT COLOR="#000000">.</FONT><FONT COLOR="#000000">[</FONT><FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">;</FONT> A<FONT COLOR="#000000">.</FONT><FONT COLOR="#000000">[</FONT><FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> := tmp <FONT COLOR="#000000">end</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// endof [array_ptr_swap]
+</FONT></FONT></PRE>
+
+The following two function templates are also available:
+
+<pre>
+fun{a:t@ype} array_ptr_get_elt_at
+  {n:nat} (A: &(@[a][n]), i: natLt n):<> a
+
+fun{a:t@ype} array_ptr_set_elt_at
+  {n:nat} (A: &(@[a][n]), i: natLt n, x:a):<> void
+
+overload [] with array_ptr_get_elt_at
+overload [] with array_ptr_set_elt_at
+</pre>
+
+Because of the overloading of <i>[]</i> with both
+<i>array_ptr_get_elt_at</i> and <i>array_ptr_set_elt_at</i>, the function
+<i>array_ptr_swap</i> can also be implemented as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> array_ptr_swap
+  <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">;</FONT> j <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">@[</FONT>a<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT>
+  <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> tmp <FONT COLOR="#000000">=</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">in</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> := A[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">;</FONT> A[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> := tmp <FONT COLOR="#000000">end</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// endof [array_ptr_swap]
+</FONT></FONT></PRE>
+
+The use of <i>[i]</i> for <i>.[i]</i> possibly makes the code look more conventional.
+<P>
+
+For accessing an array of linear elements, the following function template
+<i>array_ptr_takeout</i> can be used:
+
+<PRE>
+fun{a:viewt@ype}
+  array_ptr_takeout {n,i:nat | i < n} {l0:addr} (
+    pf: array_v (a, n, l0) | base: ptr l0, offset: int i
+  ) :<> [l:addr] (
+      a @ l
+    , a @ l -&lt;lin,prf&gt; array_v (a, n, l0)
+    | ptr l
+    )
+// end of [array_ptr_takeout]
+</PRE>
+
+<H4>Linear Array Destruction</H4>
+The following function is for freeing the memory occupied by a linear
+array:
+
+<pre>
+fun array_ptr_free {a:viewt@ype} {n:int} {l:addr}
+  (pf_gc: free_gc_v (a, n, l), pf_arr: array_v (a?, n, l) | _: ptr l):<> void
+</pre>
+
+Note that in order to free an array of <i>I</i> elements allocated at an
+address <i>L</i>, a proof of the view <i>free_gc_v (VT, I, L)</i> must be
+provided, where the viewtype <i>VT</i> is employed for specifying the size
+of each element in the array.
+
+<H4>An Example</H4>
+
+Linear arrays are used extensively in this implementation of FFT: <A
+HREF="http://www.ats-lang.org/EXAMPLE/MISC/fft.dats">fft.dats</A>
+
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="linear-arrays.dats">here</a>.
+
+<!-- end of [linear-arrays.html] -->

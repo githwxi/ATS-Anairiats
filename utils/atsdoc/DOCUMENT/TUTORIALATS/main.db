@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!--
+<!ENTITY ae "&#228;">
+<!ENTITY oe "&#246;">
+<!ENTITY ae "&auml;">
+<!ENTITY oe "&ouml;">
+-->
+<!ENTITY ae "ae">
+<!ENTITY oe "oe">
+<!ENTITY bookinfo SYSTEM "bookinfo.db">
+<!ENTITY preface SYSTEM "preface.db">
+<!ENTITY chap_syncolor SYSTEM "chap_syncolor_atxt.db">
+<!ENTITY chap_filename SYSTEM "chap_filename_atxt.db">
+<!ENTITY chap_fileincl SYSTEM "chap_fileincl_atxt.db">
+<!ENTITY chap_fixity SYSTEM "chap_fixity_atxt.db">
+<!ENTITY chap_mainats SYSTEM "chap_mainats_atxt.db">
+<!ENTITY chap_tailrec SYSTEM "chap_tailrec_atxt.db">
+<!ENTITY chap_mutailrec SYSTEM "chap_mutailrec_atxt.db">
+<!ENTITY chap_termetric SYSTEM "chap_termetric_atxt.db">
+<!ENTITY chap_hofun SYSTEM "chap_hofun_atxt.db">
+<!ENTITY chap_polytemp SYSTEM "chap_polytemp_atxt.db">
+<!ENTITY chap_printf SYSTEM "chap_printf_atxt.db">
+<!ENTITY chap_funlist SYSTEM "chap_funlist_atxt.db">
+<!ENTITY chap_array SYSTEM "chap_array_atxt.db">
+<!ENTITY chap_reference SYSTEM "chap_reference_atxt.db">
+<!ENTITY chap_callbyref SYSTEM "chap_callbyref_atxt.db">
+<!ENTITY chap_lazyeval SYSTEM "chap_lazyeval_atxt.db">
+<!ENTITY chap_castfn SYSTEM "chap_castfn_atxt.db">
+<!ENTITY chap_stkalloc SYSTEM "chap_stkalloc_atxt.db">
+]>
+<book id="proginats" lang="en">
+&bookinfo;
+
+<!--
+<dedication>
+<para>
+To my wife Jinning and daughter Zoe.
+</para>
+</dedication>
+-->
+
+&preface;
+<toc></toc>
+<!-- We are done with the preliminaries, now we can start with the body of the document -->
+
+<part id="basic_tutorial_topics">
+<title>Basic Tutorial Topics</title>
+&chap_syncolor;
+&chap_filename;
+&chap_fileincl;
+&chap_fixity;
+&chap_mainats;
+&chap_tailrec;
+&chap_mutailrec;
+&chap_termetric;
+&chap_hofun;
+&chap_polytemp;
+&chap_printf;
+&chap_funlist;
+&chap_array;
+&chap_reference;
+&chap_callbyref;
+&chap_lazyeval;
+</part><!--"basic_tutorial_topics"-->
+
+<part id="advanced_tutorial_topics">
+<title>Advanced Tutorial Topics</title>
+&chap_castfn;
+&chap_stkalloc;
+</part><!--"advanced_tutorial_topics"-->
+
+</book>

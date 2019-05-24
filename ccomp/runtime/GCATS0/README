@@ -1,0 +1,11 @@
+/*
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: Summer 2007
+*/
+
+This is the first GC for ATS I wrote, following Rick Lavoie's previous
+implementation of a GC for ATS. I mostly did the implementation during the
+summer of 2007. There is no support for multithreading in this GC.
+
+###### end of [README] ######
+

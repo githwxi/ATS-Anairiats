@@ -1,0 +1,276 @@
+/*
+**
+** The eight-queens problem
+** 
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: June 21, 2009
+**
+** The original version was written when the author was
+** at U. of Cincinnati around 2000.
+**
+*/
+
+let
+  val abs =
+    lam (x:int): int => if x >= 0 then x else ~x
+  // end of [abs]
+
+  val dots_pr = fix f (n:int): unit =>
+    if n > 0 then let val _ = print (". ") in f (n-1) end
+  // end of [dots_pr]
+
+  val row_pr = lam (n:int): unit => let
+    val _ = dots_pr (n-1)
+    val _ = print ("Q ")
+    val _ = dots_pr (8-n)
+  in  
+    print ("\n")
+  end // end of [val]
+
+  val board_pr = lam
+    (bd: (int, (int, (int, (int, (int, (int, (int, int)))))))): unit => let
+/*
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val bd = bd.1
+    val _ = row_pr (bd.0)
+    val _ = row_pr (bd.1)
+*/
+    val _ = row_pr (bd.1.1.1.1.1.1.1)
+    val _ = row_pr (bd.1.1.1.1.1.1.0)
+    val _ = row_pr (bd.1.1.1.1.1.0)
+    val _ = row_pr (bd.1.1.1.1.0)
+    val _ = row_pr (bd.1.1.1.0)
+    val _ = row_pr (bd.1.1.0)
+    val _ = row_pr (bd.1.0)
+    val _ = row_pr (bd.0)
+  in
+    ()
+  end // end of [board_pr]
+
+  val test2 = lam (x: (int, int)): bool =>
+    let val x1 = x.0 and x2 = x.1 in
+      if x1 = x2 then false else abs (x1-x2) <> 1
+    end
+  // end of [val test2]
+
+  val test_2 = lam (xyn: (int, ((int, int), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else
+        (if x = y2 then false else abs (x-y2) <> n+2)
+    )
+  end // end of [test_2]
+
+  val test3 = lam (x: (int, (int, int))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_2 (x1, (x2, 0)) then test2 (x2) else false
+  end // end of [test3]
+
+  val test_3 = lam (xyn: (int, ((int, (int, int)), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else test_2 (x, (y2, n+1))
+    )
+  end
+
+  val test4 = lam (x: (int, (int, (int, int)))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_3 (x1, (x2, 0)) then test3 (x2) else false
+  end // end of [test4]
+
+  val test_4 = lam (xyn: (int, ((int, (int, (int, int))), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else test_3 (x, (y2, n+1))
+    )
+  end // end of [test_4]
+
+  val test5 = lam (x: (int, (int, (int, (int, int))))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_4 (x1, (x2, 0)) then test4 (x2) else false
+  end // end of [test5]
+
+  val test_5 = lam
+    (xyn: (int, ((int, (int, (int, (int, int)))), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else test_4 (x, (y2, n+1))
+    )
+  end // end of [test_5]
+
+  val test6 = lam (x: (int, (int, (int, (int, (int, int)))))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_5 (x1, (x2, 0)) then test5 (x2) else false
+  end // end of [test6]
+
+  val test_6 = lam
+    (xyn: (int, ((int, (int, (int, (int, (int, int))))), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else test_5 (x, (y2, n+1))
+    )
+  end // end of [test_6]
+
+  val test7 = lam
+    (x: (int, (int, (int, (int, (int, (int, int))))))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_6 (x1, (x2, 0)) then test6 (x2) else false
+  end // end of [test7]
+
+  val test_7 = lam
+    (xyn: (int, ((int, (int, (int, (int, (int, (int, int)))))), int))): bool => let
+    val x = xyn.0
+    val yn = xyn.1
+    val y = yn.0
+    val n = yn.1
+    val y1 = y.0
+    val y2 = y.1
+  in
+    if x = y1 then false else (
+      if abs(x-y1) = n+1 then false else test_6 (x, (y2, n+1))
+    )
+  end // end of [test_7]
+
+  val test8 = lam
+    (x: (int, (int, (int, (int, (int, (int, (int, int)))))))): bool => let
+    val x1 = x.0
+    val x2 = x.1
+  in
+    if test_7 (x1, (x2, 0)) then test7 (x2) else false
+  end // end of [test8]
+
+  val
+  rec inc1: int -> unit =
+    lam (x: int) => if x < 8 then inc2 (0, x+1) else ()
+  // end of [inc1]
+
+  and inc2: (int, int) -> unit = lam
+    (xy: (int, int)) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test2 (x+1, y) then inc3 (0, (x+1, y)) else inc2 (x+1, y)
+    else inc1 (y)
+  end // end of [inc2]
+
+  and inc3: (int, (int, int)) -> unit = lam
+    (xy: (int, (int, int))) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test3 (x+1, y) then inc4 (0, (x+1, y)) else inc3 (x+1, y)
+    else inc2 (y)
+  end // end of [inc3]
+
+  and inc4: (int, (int, (int, int))) -> unit = lam
+    (xy: (int, (int, (int, int)))) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test4 (x+1, y) then inc5 (0, (x+1, y)) else inc4 (x+1, y)
+    else inc3 (y)
+  end // end of [inc4]
+
+  and inc5: (int, (int, (int, (int, int)))) -> unit = lam
+    (xy: (int, (int, (int, (int, int))))) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test5 (x+1, y) then inc6 (0, (x+1, y)) else inc5 (x+1, y)
+    else inc4 (y)
+  end // end of [inc5]
+
+  and inc6: (int, (int, (int, (int, (int, int))))) -> unit = lam
+    (xy: (int, (int, (int, (int, (int, int)))))) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test6 (x+1, y) then inc7 (0, (x+1, y)) else inc6 (x+1, y)
+    else inc5 (y)
+  end // end of [inc6]
+
+  and inc7: (int, (int, (int, (int, (int, (int, int)))))) -> unit = lam
+    (xy: (int, (int, (int, (int, (int, (int, int))))))) => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test7 (x+1, y) then inc8 (0, (x+1, y)) else inc7 (x+1, y)
+    else inc6 (y)
+  end // end of [inc7]
+
+  and inc8: (int, (int, (int, (int, (int, (int, (int, int))))))) -> unit = lam
+    (xy: (int, (int, (int, (int, (int, (int, (int, int))))))))  => let
+    val x = xy.0
+    val y = xy.1
+  in
+    if (x < 8) then
+      if test8 (x+1, y) then let
+	val _ = board_pr (x+1, y) val _ = print ("\n")
+      in
+        inc8 (x+1, y)
+      end else inc8 (x+1, y)
+    else inc7 (y)
+  end // end of [inc8]
+in
+  inc1 (0)
+end // end of [queens]
+
+/* ****** ****** */
+
+/* end of [queens.stfpl] */

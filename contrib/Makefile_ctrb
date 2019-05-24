@@ -1,0 +1,53 @@
+#
+# for checkout various contributed packages
+#
+
+######
+
+all::
+
+######
+
+GIT=git
+SVN=svn
+HG=hg
+
+######
+#
+# API for jansson
+#
+# Author: Chris Double (chris DOT double AT double DOT co DOT nz)
+# Time: October, 2011
+#
+jansson: ; $(GIT) clone http://github.com/doublec/ats-jansson $@
+#
+######
+#
+# API for libevent-2.0
+#
+# Author: Chris Double (chris DOT double AT double DOT co DOT nz)
+# Time: October, 2011
+#
+libevent: ; $(GIT) clone http://github.com/doublec/ats-libevent $@
+#
+######
+#
+# API for libzmq
+#
+# Author: Chris Double (chris DOT double AT double DOT co DOT nz)
+# Time: October, 2011
+#
+libzmq: ; $(GIT) clone http://github.com/doublec/ats-libzmq $@
+#
+######
+#
+# OpenGL ES 2.0 bindings
+#
+# Author: Artyom Shalkhakov (artyom DOT shalkhakov AT gmail DOT com)
+# Time: December, 2011
+#
+GLES2: ; $(HG) clone https://code.google.com/p/ats-opengles2-bind $@
+#
+######
+
+###### end of [Makefile_ctrb]

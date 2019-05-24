@@ -1,0 +1,54 @@
+\chapter{Introduction}
+$\ATS$ is a typed programming language and the type system of $\ATS$ is an
+{\em applied type system} rooted in the framework {\em Applied Type System}
+($\AATS$), which also gives the programming language its name.
+
+A primary motivation for developing $\AATS$ stems from an earlier attempt
+to make (a form of) dependent types available for supporting practical
+programming. While there is already a framework Pure Type System
+($\PTS$)~\cite{barendregt92} that offers a simple and general approach to
+designing and formalizing type systems, it is well understood that there
+often exist some acute problems (especially in the presence of dependent
+types) making it difficult for $\PTS$ to accommodate many common realistic
+programming features.  In particular, we have learned that some great
+efforts are required in order to maintain a style of pure reasoning as is
+advocated in $\PTS$ when programming features such as general
+recursion~\cite{constable87}, recursive types~\cite{mendler87},
+effects~\cite{HMST95}, exceptions~\cite{HN88} and input/output are present.
+
+To address such limitations of $\PTS$, $\AATS$ is developed to allow for
+designing and formalizing type systems that can readily support common
+realistic programming features.  The key salient feature of $\AATS$ lies in
+a complete separation of statics, in which types are formed and
+reasoned about, from dynamics, in which programs are constructed and
+evaluated. This separation, with its origin in a previous study on a
+restricted form of dependent types developed in Dependent ML
+(DML)~\cite{XP99,XiThesis}, makes it feasible to support dependent types in
+the presence of effects such as references and exceptions. Also, with the
+introduction of two new (and thus unfamiliar) forms of types: {\em guarded
+types} and {\em asserting types}, $\ATS$ is able to capture program
+invariants in a more flexible and more effective manner than $\PTS$.
+
+Currently, there are already a variety of programming paradigms that are
+supported in $\ATS$ in a typeful manner, including:
+\begin{itemize}
+\item call-by-value functional programming, and
+\item object-oriented programming with multiple inheritance, and
+\item imperative programming with explicit pointers, and
+\item meta-programming, and
+\item modular programming.
+\end{itemize}
+Also, a form of (interactive) theorem proving is available in $\ATS$, with
+which we can readily advocate a programming style that combines programming
+with theorem proving. Furthermore, we may use $\ATS$ as a logical framework
+to encode various deduction systems and their properties.
+
+In the following chapters, we are to demonstrate that $\ATS$ is a rich and
+unique language with a highly expressive type system that makes typeful
+programming both {\em real} and {\em fun}.  We sincerely hope that you will
+find it a joyful experience to program in $\ATS$, especially after seeing
+some of wonders the type system of $\ATS$ can do for you. Furthermore, we
+expect that before long you will also be able to share with other
+programmers some of your joyful experience.
+
+Now please buckle up and enjoy the ride!

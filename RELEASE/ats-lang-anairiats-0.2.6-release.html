@@ -1,0 +1,34 @@
+<pre>
+ats-lang-anairiats-0.2.6:
+
+As usual, this release contains many fixes. A (partial) list of the changes
+since the last release is given as follows:
+
+1. Adding contrib/JNI for interfacing ATS and Java.
+2. Adding the --xrefprelude flag to make cross-referencing work again.
+3. The keyword [sta] can now also be written as [stacst].
+4. If a name refers to several static constants, then the latest declared
+   non-functional one is chosen (if there is one).
+5. The tutorial (doc/TUTORIAL) is no longer put into the release package.
+6. Allowing #FILENAME and #LOCATION to be used as e0xp. For instance, the
+   following line is now legal:
+   #print (#FILENAME)
+7. Fixing a bug related to xref that caused illegal xhtml files to be
+   generated (cases of A elements being embedded inside another A element).
+   Thanks, David!
+8. Introducing ISALIGNED to handle alignment.
+9. Introducing NULLABLE to handle ptr_zero and ptr_zero_tsz.
+10. Adding libats/funmap_rbtree (functional maps based on red-black trees)
+11. Adding contrib/gtkglext (based on gtkglext-1.0)
+12. Adding contrib/atspslide for doing slide presentation and other things.
+13: Adding libc/gdbm/gdbm (API for gdbm in ATS).
+14: Adding libc/gdbm/ndbm (API for gdbm-ndbm in ATS).
+15: Adding libats/ngc/DATS/dlist.dats. Thanks to Artyom!
+16: [atslib] can now process flags for each individual file. See .libfiles.
+17: pervasive changes: free_gc_v (T, ...) => free_gc_v (T?, ...)
+
+In this release, there are some changes to the interfaces of various
+library functions, which may require some minor modifications (mostly type
+annotations) to application programs using these functions. Sorry about
+this!
+</pre>

@@ -1,0 +1,143 @@
+\chapter{Macros}
+
+There are two kinds of macros in ATS. One kind is C-like and the other one
+is LISP-like, though they are much simpler as well as weaker than their
+counterparts in C and LISP, respectively.
+
+\section{C-like Macros}
+
+We use some examples to illustrate certain typical uses of C-like macros in
+ATS.
+
+The following two declarations bind the identifiers $N_1$ and $N_2$ to {\em
+the abstract syntax trees} (rather than strings) that represent $1024$ and
+$N_1 + N_1$, respectively:
+\begin{verbatim}
+#define N1 1024; #define N2 N1 + N1
+\end{verbatim}
+
+Suppose we have the following value declaration appearing in the scope of
+the above macro delarations:
+\begin{verbatim}
+val x = N1 * N2
+\end{verbatim}
+
+Then $N_1 * N_2$ first expands into $1024 * (N_1 + N_1)$, which further
+expands into $1024 * (1024 + 1024)$. Note that if this example is done in
+C, then $N_1 * N_2$ expands into $1024 * 1024 + 1024$, which is different
+from what we have in ATS.  Also note that it makes no diffierence if we
+reverse the order of the previous macro definitions:
+\begin{verbatim}
+#define N2 N1 + N1; #define N1 1024
+\end{verbatim}
+If we declare a marco as follows:
+\begin{verbatim}
+#define LOOP (LOOP + 1)
+\end{verbatim}
+then an infinite loop is entered (or more precisely, some macro expansion
+depth is to be reached) when the identifier ${\it LOOP}$ is expanded.
+
+\section{LISP-like Macros}
+There are two forms of LISP-like macros in ATS: short form and long form.
+These (untyped) macros are highly flexible and expressive, and they
+{\em can} certainly be used in convoluted manners that should probably be
+avoided in the first place. Some commonly used macro definitions can be
+found in the following file:
+\begin{center}
+{\it \$ATSHOME/prelude/macrodef.sats}
+\end{center}
+In order to use LISP-like macros in ATS effectively, the programmer may
+want to find some examples in LISP involving backquote-comma-notation.
+
+\subsection{Macros in Long Form}
+As a macro in short form can simply be considered a special kind of macro
+in long form, we first give some explanantion on the latter.  A macro
+definition in long form is introduced via the use of the keyword
+{\it macrodef}. For instance, the following syntax introduces a macro name
+${\it one}$ that refers to some code, that is, abstract syntax tree (AST)
+representing the integer number $1$.
+\begin{verbatim}
+macrodef one = `(1)
+\end{verbatim}
+
+The special syntax \verb'`(...)', where no space is allowed between the
+backquote symbol and the left parenthsis symbol, means to form an abstract
+syntax tree representing what is written inside the parentheses.  This is
+often referred to as backquote-notation. Intuitively, one may think that a
+backquote-notation exerts an effect that {\it freezes} everything inside it.
+
+Let us now define another macro as follows:
+\begin{verbatim}
+macrodef one_plus_one = `(1 + 1)
+\end{verbatim}
+The defined macro name ${\it one\_plus\_one}$ refers to some code (i.e.,
+AST) representing $1 + 1$. At this point, it is important to stress that
+the code representing $1 + 1$ is different from the code representing
+<i>2</i>.  The macro name ${\it one\_plus\_one}$ can also be defined as
+follows:
+\begin{verbatim}
+macrodef one_plus_one = `(,(one) + ,(one))
+\end{verbatim}
+
+The syntax \verb',(...)', where no space is allowed between the comma
+symbol and the left parenthesis symbol, indicates the need to expand (or
+evaluate) whatever is written inside the parentheses. This is often
+referred to as comma-notation. A comma-notation is only allowed inside a
+backquote-notation. Intuitively, a comma-notation cancels out the {\it
+freezing} effect of the enclosing backquote-notation.
+
+In addition to macro names, we can also define macro functions. For
+instance, the following syntax introduces a macro function
+${\it square\_mac}$:
+\begin{verbatim}
+macrodef square_mac (x) = `(,(x) * ,(x)) // [x] should refers to some code
+\end{verbatim}
+
+Here are some examples that make use of ${\it square\_mac}$:
+\begin{verbatim}
+fun square_fun (i: int): int = ,(square_mac `(i))
+fun area_of_circle_fun (r: double): doubld = 3.1416 * ,(square_mac `(r))
+\end{verbatim}
+
+\subsection{Macros in Short Form}
+The previous macro function ${\it square\_mac}$ can also be defined as
+follows:
+\begin{verbatim}
+macdef square_mac (x) = ,(x) * ,(x) // [x] should refers to some code
+\end{verbatim}
+
+The keyword ${\it macdef}$ introduces a macro definition in short form.
+The previous examples that make use of ${\it square\_mac}$ can now be
+written as follows:
+\begin{verbatim}
+fun square_fun (i: int): int = square_mac (i)
+fun area_of_circle_fun (r: double): doubld = 3.1416 * square_mac (r)
+\end{verbatim}
+
+In terms of syntax, a macro function in short form is just like an ordinary
+function.  In general, if a unary macro function ${\it fmac}$ in short
+form is defined as as follows:
+\begin{verbatim}
+macdef fmac (x) = fmac_body
+\end{verbatim}
+where ${\it fmac\_body}$ refers to some dynamic expression, then one may
+essentially think that a macro definition in long form is defined as
+follows:
+\begin{verbatim}
+macrodef fmac_long (x) = `(fmac_body) // please note the backquote
+\end{verbatim}
+and each occurrence of ${\it fmac}({\it arg})$ is automatically rewritten
+into $,({\it fmac\_long}(`({\it arg})))$, where ${\it arg}$ refers to a
+dynamic expression. Note that macro functions in short form with multiple
+arguments are handled in precisely the same fashion.
+
+The primary purpose for introducing macros in short form is to provide a
+form of syntax that seems more accessible. While macros in long form can be
+defined recursively (as is to be explained later), macros in short form
+cannot.
+
+\subsection{Recursive Macro Definitions}
+
+%%% end of \chapter{Macros}
+
+

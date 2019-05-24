@@ -1,0 +1,507 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS</TITLE>
+<META name="description" content="Home Page for ATS">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="ATS.css" TYPE="text/css">
+  <style type="text/css">
+    span.comment {color:#787878;font-style:italic}
+    span.extern  {color:#A52A2A}
+    span.keyword {color:#000000;font-weight:bold}
+    span.neuexp  {color:#800080}
+    span.staexp  {color:#0000FF}
+    span.dynexp  {color:#E80000}
+    span.prfexp  {color:#009000}
+    span.stacstdec  {text-decoration:none}
+    span.stacstuse  {color:#0000CF;text-decoration:underline}
+    span.dyncstdec  {text-decoration:none}
+    span.dyncstimp  {color:#B80000;text-decoration:underline}
+    span.dyncstuse  {color:#B80000;text-decoration:underline}
+  </style>
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><B CLASS="here">Home</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="TUTORIAL/tutorial.html">Tutorial</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="EXAMPLE/example.html">Examples</A>&nbsp;(<A HREF="EXAMPLE/example_new.html">new</A>)</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="IMPLEMENT/implement.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="CHANGELOG/changelog.html">ChangeLog</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<!--
+<H1>ATS -- unleashing the potential of types!</H1>
+-->
+<H1>The ATS Programming Language</H1>
+<H3>Unleashing the Potential of Types!</H3>
+<!--
+<H3>A programming language with a soul in its type system</H3>
+<H3>A language to make typeful programming real and fun</H3>
+<H3>A language to support practical programming with theorem proving</H3>
+-->
+</CENTER>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+<MENU>
+<LI> <A href="#what_is_ats">What is ATS?</A>
+
+<LI> <A href="#what_is_ats_good_for">What is ATS good for?</A>
+
+<LI> <A href="#acknowledgments">Acknowledgments</A>
+
+<LI> <A href="#download_and_installation">Download and Installation</A>:
+The current <B>stable</B> release is <a href="http://sourceforge.net/projects/ats-lang/download">ats-lang-anairiats-0.2.7</a> (2.4MB)
+
+<LI> <A href="#simple_ats_programs">Some Simple ATS Programs</A>
+</MENU>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+<MENU>
+<LI><H3><A id="what_is_ats" name="what_is_ats">What
+is <EM>ATS</EM>?</A></H3>  ATS is a programming language that unifies
+specification and implementation. It is equipped with an expressive type
+system rooted in the framework <EM>Applied Type System</EM>, which gives
+the language its name.  In particular, both dependent types and linear
+types are available in ATS.  The current implementation of ATS
+(ATS/Anairiats) is written in ATS itself. It can be as efficient as C/C++
+(see <A HREF="http://shootout.alioth.debian.org/">The Computer Language
+Benchmarks Game</A> for concrete evidence) and supports a variety of
+programming paradigms that include:
+<P>
+<UL>
+
+<LI><B>Functional programming</B>.
+While ATS is primarily a language based on eager (aka. call-by-value)
+evaluation, it also supports lazy (aka. call-by-need) evaluation. The
+availability of linear types in ATS can often make functional programs in
+ATS not only run with surprisingly high efficiency (when compared to C) but
+also run with surprisingly small (memory) footprint (when compared to C as
+well).
+<P>
+
+<!--
+<LI>Object-oriented programming
+<P>
+-->
+
+<LI><B>Imperative programming</B>.  The novel and unique approach to
+imperative programming in ATS is firmly rooted in the paradigm of
+<EM>programming with theorem proving</EM>. While features considered
+dangerous in other languages (e.g., explicit pointer arithmetic and
+explicit memory allocation/deallocation) are allowed in ATS, the type
+system of ATS is still able to guarantee that no run-time errors can occur
+that may lead to memory corruption.
+<P>
+
+<LI><B>Concurrent programming</B>. ATS, equipped with a multicore-safe
+implementation of garbage collection, can support multithreaded programming
+through the use of pthreads. There is also high-level support in ATS for
+parallel let-binding, which provides a simple and effective means to
+constructing programs that can take advantage of multicore architectures.
+<P>
+
+<LI><B>Modular programming</B>. The module system of ATS is largely
+infuenced by that of Modula-3, which is both simple and general as well as
+effective in supporting large scale programming.
+<P>
+
+<!--
+<LI>Meta programming (available)
+<LI>Assembly programming (planned)
+-->
+</UL>
+<P>
+In addition, ATS contains a component ATS/LF that supports a form of
+(interactive) theorem proving, where proofs are constructed as total
+functions.  With this component, ATS advocates
+a <EM>programmer-centric</EM> approach to program verification that
+combines programming with theorem proving. Furthermore, this component may
+be used as a logical framework to encode various deduction systems and
+their (meta-)properties.
+<P>
+
+<LI><H3><A id="what_is_ats_good_for" name="what_is_ats">What is
+<EM>ATS</EM> good for?</A></H3>
+<MENU>
+<LI>
+ATS can enforce great precision in practical programming.
+
+<LI>
+ATS allows the programmer to write efficient functional programs by
+taking advantage of native unboxed data representation.
+
+<LI>
+ATS allows the programmer to reduce the memory footprint of a program
+by making use of linear types.
+
+<LI>
+ATS allows the programmer to enhance the safety (and efficiency) of a
+program by making use of theorem proving.
+
+<LI>
+ATS allows the programmer to write safe low-level code that runs in OS
+kernels.
+
+<LI>
+ATS can help teach type theory, allowing students to see
+first-handedly how advanced types such as dependent types and linear types
+can be effectively employed in practical programming.
+</MENU>
+<P>
+
+<LI><H3><A id="acknowledgments"
+name="acknowledgments">Acknowledgments</A></H3> The development of ATS has
+been funded in part by <a href="http://www.nsf.gov">National Science
+Foundation</a> under the grants no. CCR-0081316/CCR-0224244,
+no. CCR-0092703/0229480, no. CNS-0202067 and no. CCF-0702665. As always,
+<em>any opinions, findings, and conclusions or recommendations expressed
+here are those of the author(s) and do not necessarily reflect the views of
+the National Science Foundation.</em>
+<P>
+Many people worked on ATS in the past. The names of some of these people
+are included in the following list:
+<P>
+Chiyan Chen, Sa Cui, Matthew Danish, Kevin Donnelly, Rick Lavoie, Likai
+Liu, Michel Machado, Zhiqiang Ren, Rui Shi, Hongwei Xi, Dengping Zhu
+<P>
+
+<!--
+<LI><H3>Mailing List</H3> Here is the current <A
+href="http://types.bu.edu/mailman/listinfo/ats">mailing-list</A> for ATS
+users.
+
+<LI><H3>Mailing List</H3>
+The mailing-list for ATS users is available <A
+HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">
+here</A>.
+<P>
+-->
+
+<LI><H3><A id="download_and_installation">Download and
+Installation</A></H3> ATS is <A href="http://www.opensource.org">Open
+Source</A> and <A href="http://www.gnu.org/philosophy/free-sw.html">Free
+Software</A>, and it is freely available under the GNU GENERAL PUBLIC
+LICENSE version 3 (<A href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3
+</A>) as is published by the Free Software Foundation.  The current
+implementation of ATS is given the name ATS/Anairiats or simply Anairiats.
+<P>
+
+<H4>Requirements</H4>
+In order to install ATS, the following requirements need
+to be met:
+
+<MENU>
+<LI>Operating System requirement: ATS is supported under the following
+operating systems:
+<UL>
+<LI>Linux
+<LI>Windows with Cygwin
+<LI>MacOS X (currently no GC support for multithreading)
+<LI>SunOS (currently no GC support for multithreading)
+<LI>BSD Unix (currently no GC support for multithreading)
+</UL>
+
+<LI>Programming Language requirement: GNU C Compiler (GCC).
+</MENU>
+<P>
+We plan to port ATS to other platforms in the future. If you have succeeded
+in porting ATS to a platform not listed here, please drop us a note.
+<P>
+The GMP library (libgmp.a), which is in general included in a GNU/Linux
+distribution, is currently <em>optional</em> and it may be required for
+installing a release of ATS in the future.  Please see <a
+href="http://gmplib.org">http://gmplib.org</a> for more details on GMP.
+<P>
+
+<H4>Installation from a precompiled package</H4>
+
+<MENU>
+This installation method currently only supports the following platforms:
+<P>
+<UL>
+<LI>Linux on i386 (x86-32)
+<LI>Linux on AMD64 (x86-64)
+<LI>SunOS on UltraSparc
+</UL>
+<P>
+Please first download a compressed tarball containing a precompiled release of
+ATS from the following site that suits your platform:<P> <CENTER> <a
+href="http://sourceforge.net/projects/ats-lang/download">http://sourceforge.net/projects/ats-lang/download</a>
+</CENTER>
+<P>
+Let "x.x.x" be the version number of the downloaded ATS package.
+<P>
+
+(<B>METHOD 1</B>) You can untar the tarball in the root directory "/" and
+then set the shell environment variables ATSHOME and ATSHOMERELOC to
+"/usr/share/atshome" and "ATS-x.x.x", respectively. This method most likely
+requires root access.
+<P>
+(<B>METHOD 2</B>) You can untar the tarball in the directory "/tmp", and
+then move the directory "/tmp/usr/share/atshome" into a directory of your
+choice, say, "FOO", and then set the environment variables ATSHOME and
+ATSHOMERELOC to "FOO/atshome" and "ATS-x.x.x", repectively. In
+addition, you need to put "$ATSHOME/bin" on your execution path or create
+symbolic links to the executables $ATSHOME/bin/atscc and
+$ATSHOME/bin/atsopt in a directory that is already on your execution path.
+<P>
+</MENU>
+
+<H4>Installation through source code compilation</H4>
+
+<MENU>
+<LI><H4>Step 1:</H4>
+After downloading a compressed tarball containing a release of
+ATS from the following site:<P>
+<CENTER>
+<a href="http://sourceforge.net/projects/ats-lang/download">http://sourceforge.net/projects/ats-lang/download</a>
+</CENTER>
+<P>
+please untar it in a directory, say "FOO", of your choice. This, for
+instance, can be done by executing the following command line:
+
+<pre>tar -zvxf ATS.tar.gz </pre>
+
+All the files and directories extracted from the tarball are now in the
+directory "FOO/ATS".
+
+<LI><H4>Step 2:</H4>
+Please execute the following command
+
+<pre>./configure --prefix=DESTDIR</pre>
+
+where DESTDIR is the name of the directory where ATS is to be installed.
+
+If the argument [--prefix=DESTDIR] is missing, then the default directory
+for installing ATS is "/usr/local".
+
+You can now go into the directory "FOO/ATS" and execute
+
+<pre>make all</pre>
+
+This generates executables "atscc" and "atsopt" in the directory
+"FOO/ATS/bin", which are the commands you need for compiling ATS programs,
+and a library file "libats.a" in the directory "FOO/ATS/CCOMP/lib", which
+you need for linking.
+
+<LI><H4>Step 3:</H4>
+Please set the environment variable ATSHOME to "FOO/ATS" and then set the
+environment variable ATSHOMERELOC to "ATS-x.x.x", where x.x.x is the version
+number of the compiled ATS package.
+
+<LI><H4>Step 4:</H4>
+
+Optionally, you may install ATS by executing the following
+command line:
+
+<pre>make install</pre>
+
+and then set ATSHOME to $DESTDIR/share/ats-anairiats-x.x.x, which is the
+name of the directory where ATS is installed. The environment variable
+ATSHOMERELOC is still set to "ATS-x.x.x".
+
+<P>
+
+<!--
+Lastly, please make sure that the environment variable ATSHOME is set to
+the name of the directory in which ATS is installed, and the environment
+variable ATSHOMERELOC is set to ATS-x.x.x, where x.x.x is the verison
+number of ATS package. This should probably be done by a shell script.
+Note that the values of ATSHOME and ATSHOMERELOC can be found in the files
+"FOO/ATS/.ATSHOME" and "FOO/ATS/.ATSHOMERELOC", respectively.
+<P>
+-->
+
+</MENU>
+
+<H4>Installation through bootstrapping</H4> This installation method is
+probably the best if you would like to keep abreast of the development of ATS.
+Please find more details <A HREF="IMPLEMENTATION/implementation.html">here</A>.
+
+<!-- end of [#download_and_installation] -->
+
+<LI><H3><A id="simple_ats_programs" name="simple_ats_programs">Some Simple ATS Programs</A></H3>
+Let us now construct and compile some simple ATS programs.
+
+<H4>Hello, world!</H4> In a file named
+<a href="EXAMPLE/INTRO/HelloWorld.dats">HelloWorld.dats</a>,
+we write the following lines of code
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// compilation command:
+</FONT><FONT COLOR="#787878">//   atscc -o HelloWorld HelloWorld.dats
+</FONT>
+<FONT COLOR="#000000">implement</FONT> main <FONT COLOR="#000000">()</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT>
+  print <FONT COLOR="#000000">(</FONT>"Hello, world!"<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> print_newline <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+By executing the following command line, we produce an excutable file named
+"HelloWorld":
+
+<PRE>atscc -o HelloWorld HelloWorld.dats</PRE>
+
+What happens here is that <i>atscc</i> first compiles
+
+<a href="EXAMPLE/INTRO/HelloWorld.dats">HelloWorld.dats</a>
+
+into
+
+<a href="EXAMPLE/INTRO/HelloWorld_dats.c">HelloWorld_dats.c</a>,
+
+which is then compiled by gcc to produce "HelloWorld".  By running
+"HelloWorld", we can see the following line on the standard output:
+
+<PRE>Hello, world!</PRE> 
+
+<H4>Computing Fibonacci Numbers</H4>
+
+We now present a simple example to illustrate the idea of programming with
+theorem-proving.
+<P>
+
+We can specify a function fib as follows for computing Fibonacci numbers:
+<PRE>
+fib(0)   = 0
+fib(1)   = 1
+fib(n+2) = fib(n) + fib(n+1) for n >= 0
+</PRE>
+
+A direct implementation of this specification in ATS can be done as
+follows:
+<PRE><FONT COLOR="#E80000"><span class="keyword">fun</span> fib <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span>
+  <span class="keyword">if</span> n <span class="keyword">=</span> 0 <span class="keyword">then</span> 0 <span class="keyword">else</span> <span class="keyword">if</span> n <span class="keyword">=</span> 1 <span class="keyword">then</span> 1 <span class="keyword">else</span> fib <span class="keyword">(</span>n-2<span class="keyword">)</span> + fib<span class="keyword">(</span>n-1<span class="keyword">)</span>
+<span class="comment">// end of [fib]
+</span></FONT></PRE>
+Clearly, this is a terribly inefficient implementation of exponential
+time-complexity. An implementation of fib in C is given as follows
+that is of linear time-complexity:
+
+<PRE>
+int fibc (int n) {
+  int tmp, f0 = 0, f1 = 1 ;
+  while (n-- > 0) { tmp = f1 ; f1 = f0 + f1 ; f0 = tmp ; } ; return f0 ;
+} // end of [fibc]
+</PRE>
+
+There is obviously a logic gap between the defintion of fib and its
+implementation fibc in C. In ATS, we can give an implementation of fib that
+completely bridges this gap. First, we need a way to encode the definition
+of fib into ATS, which is fulfilled by the declaration of the following
+dataprop:
+
+<PRE><FONT COLOR="#E80000"><span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><a name="115"><span class="stacstdec">FIB <span class="keyword">(</span>int<span class="keyword">,</span>int<span class="keyword">)</span></span></a></span> <span class="keyword">=</span>
+  <span class="keyword">|</span> FIB0 <span class="staexp"><span class="keyword">(</span>0<span class="keyword">,</span>0<span class="keyword">)</span></span> <span class="keyword">|</span> FIB1 <span class="staexp"><span class="keyword">(</span>1<span class="keyword">,</span>1<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r0<span class="keyword">,</span>r1<span class="keyword">:</span>int</span><span class="keyword">}</span> FIB2 <span class="staexp"><span class="keyword">(</span>n+2<span class="keyword">,</span>r0+r1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>FIB <span class="keyword">(</span>n<span class="keyword">,</span>r0<span class="keyword">)</span><span class="keyword">,</span> FIB <span class="keyword">(</span>n+1<span class="keyword">,</span>r1<span class="keyword">)</span><span class="keyword">)</span></span></span>
+<span class="comment">// end of [FIB]
+</span></FONT></PRE>
+
+This declaration introduces a type FIB for proofs. Such a type is
+referred to as a prop in ATS. Intuitively, if a proof can be assgined the
+type FIB(n,r) for some integers n and r, then fib(n) equals r.
+In other words, FIB(n,r) encodes the relation fib(n)=r. There are
+three constructors FIB0, FIB1 and FIB2 associated with
+FIB, which are given the following types corresponding to the three
+equations in the definition of fib:
+<PRE>
+FIB0 : () -> FIB (0, 0)
+FIB1 : () -> FIB (1, 1)
+FIB2 : {n:nat} {r0,r1:int} (FIB (n, r0), FIB (n, r1) -> FIB (n+2, r0+r1)
+</PRE>
+Note that {...} is the concrete syntax in ATS for universal quantification.
+For instance, FIB2(FIB0(), FIB1()) is a term of the type FIB(2,1), attesting
+to fib(2)=1.
+<P>
+
+We now implement a function in ATS as follows for computing Fibonacci
+numbers:
+
+<PRE><FONT COLOR="#E80000"><span class="keyword">fun</span> fibats <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">)</span>
+  <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>int<span class="keyword">]</span> <span class="keyword">(</span>FIB <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span> <span class="keyword">|</span> int r<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fun</span> loop <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i &lt;= n<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r0<span class="keyword">,</span>r1<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n-i<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>
+    <span class="prfexp">pf0<span class="keyword">:</span> <span class="staexp">FIB <span class="keyword">(</span>i<span class="keyword">,</span> r0<span class="keyword">)</span></span></span><span class="keyword">,</span> <span class="prfexp">pf1<span class="keyword">:</span> <span class="staexp">FIB <span class="keyword">(</span>i+1<span class="keyword">,</span> r1<span class="keyword">)</span></span></span> <span class="keyword">|</span> r0<span class="keyword">:</span> <span class="staexp">int <span class="keyword">(</span>r0<span class="keyword">)</span></span><span class="keyword">,</span> r1<span class="keyword">:</span> <span class="staexp">int <span class="keyword">(</span>r1<span class="keyword">)</span></span><span class="keyword">,</span> ni<span class="keyword">:</span> <span class="staexp">int<span class="keyword">(</span>n-i<span class="keyword">)</span></span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>int<span class="keyword">]</span> <span class="keyword">(</span>FIB <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span> <span class="keyword">|</span> int <span class="keyword">(</span>r<span class="keyword">)</span><span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">if</span> ni <span class="keyword">&gt;</span> 0 <span class="keyword">then</span>
+    loop <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>i+1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="prfexp">pf1</span><span class="keyword">,</span> <span class="prfexp">FIB2 <span class="keyword">(</span>pf0<span class="keyword">,</span> pf1<span class="keyword">)</span></span> <span class="keyword">|</span> r1<span class="keyword">,</span> r0+r1<span class="keyword">,</span> ni-1<span class="keyword">)</span>
+  <span class="keyword">else</span> <span class="keyword">(</span><span class="prfexp">pf0</span> <span class="keyword">|</span> r0<span class="keyword">)</span>
+<span class="keyword">in</span>
+  loop <span class="keyword">(</span><span class="prfexp">FIB0<span class="keyword">(</span><span class="keyword">)</span></span><span class="keyword">,</span> <span class="prfexp">FIB1<span class="keyword">(</span><span class="keyword">)</span></span> <span class="keyword">|</span> 0<span class="keyword">,</span> 1<span class="keyword">,</span> n<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [fibats]
+</span></FONT></PRE>
+
+Note that fibats is assigned the following type:
+
+<PRE>
+fibats : {n:nat} int(n) -> [r:int] (FIB(n,r) | int(r))
+</PRE>
+
+where [...] is the concrete syntax in ATS for existential quantification
+and the bar symbol (|) is just a separator (like a comma) for separating
+proofs from values. For each integer I, int(I) is a singleton type for the
+only integer whose value is I. When fibats is applied to an integer of
+value n, it returns a pair consisting of a proof and an integer value r
+such that the proof, which is of the type FIB(n,r), asserts fib(n)=r.
+Therefore, fibats is a verified implementation of fib. Note that the loop
+function directly corresponds to the while-loop in the body of fibc.
+<P>
+
+Lastly, we emphasize that proofs are completely erased after
+typechecking. In particular, there is no proof construction at run-time.
+
+<H4>List Quicksort</H4> This one is for program verification enthusiasts:
+An implementation of list quicksort is
+given <a href="EXAMPLE/MISC/quicksort_list_dats.html">here</a> that
+guarantees solely based on its type that the implmentation is terminating
+and the output list it returns is always a <EM>sorted permutation</EM> of
+its input list.  This is considered a milestone example in the development
+of ATS.
+
+<H4>A GTK/cairo Clock</H4> A clock implementation based on <a
+href="http://www.gtk.org">GTK+</a> and <a
+href="http://www.cairographics.org">cairo</a> is available <a
+href="EXAMPLE/GTK/gtkcairoclock_dats.html">here</a>, which demonstrates
+some simple and effective use of linear types in ATS for tracking
+resources statically, that is, at compile-time.
+
+<H4>More Examples</H4> Please find more, more advanced and larger, examples
+<a href="EXAMPLE/example.html">here</a>.
+<P>
+
+<LI><H3><A HREF="RESOURCE/resource.html">Resources for Programming in
+ATS</A></H3> Please follow the link to find the User's Guide on
+ATS/Anairiats, an Emacs mode for ATS, a variety of contributed code, and
+more.
+<P>
+
+</MENU>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

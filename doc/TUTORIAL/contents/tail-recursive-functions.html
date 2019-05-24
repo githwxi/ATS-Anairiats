@@ -1,0 +1,157 @@
+<!-- beg of [tail-recusive-functions.html] -->
+
+<H2><A id="tailrecfun" name="tailrecfun">Tail-Recursive Functions</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Probably the single most important optimization performed by the
+ATS/Anairiats compiler is the translation of tail-recursive function calls
+into direct (local) jumps.
+
+<H4>Tail-Recursion</H4>
+
+When applied to an integer <i>n</i>, the following defined function
+<i>sum1</i> sums up integers from <i>1</i> to <i>n</i>.
+
+<PRE><span class="dynexp"><span class="comment">// [sum1] is recursive but not tail-recursive
+</span><span class="keyword">fun</span> sum1 <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">if</span> n <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> n + sum1 <span class="keyword">(</span>n-1<span class="keyword">)</span> <span class="keyword">else</span> 0</span></PRE>
+
+This function is recursive but not tail-recursive. The stack space it
+consumes is proportional to the value of its argument. Essentially,
+the ATS compiler translates the definition of
+<i>sum1</i> into the following C code:
+
+<pre>
+int sum1 (int n) {
+  if (n > 1) return n + sum1 (n-1) ; else return 1 ;
+}
+</pre>
+
+When applied to an integer <i>n</i>,
+the following defined function <i>sum2</i> also sums up
+integers from <i>1</i> to <i>n</i>.
+
+<PRE><span class="dynexp><span class="keyword">fn</span> sum2 <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span> <span class="comment">// sum2 is non-recursive
+</span>  <span class="comment">// [loop] is tail-recursive
+</span>  <span class="keyword">fun</span> loop <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">,</span> res<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span>
+    <span class="keyword">if</span> n <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> loop <span class="keyword">(</span>n-1<span class="keyword">,</span> res+n<span class="keyword">)</span> <span class="keyword">else</span> res
+  <span class="comment">// end of [loop]
+</span><span class="keyword">in</span>
+  loop <span class="keyword">(</span>n<span class="keyword">,</span> 0<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [sum2]
+</span></span></PRE>
+
+The inner function <i>loop</i> in the definition of <i>sum2</i> is
+tail-recursive.  The stack space consumed by <i>loop</i> is a constant
+independent of th value of the argument of <i>sum2</i>.  Essentially, the
+ATS compiler translates the definition of <i>sum2</i> into the following C
+code:
+
+<pre>
+int sum2_loop (int n, int res) {
+  loop:
+  if (n > 1) {
+    res = res + n ; n = n - 1; goto loop; 
+  } else {
+    // do nothing
+  }
+  return res ;
+}
+
+int sum2 (int n) { return sum2_loop (n, 0) ; }
+</pre>
+
+<H4>Mutual Tail-Recursion</H4>
+
+Sometimes, mutually tail-recursive functions are encountered.  For
+instance, in the following example, the functions <i>even</i> and
+<i>odd</i> are mutually tail-recursive.
+
+<PRE><span class="dynexp"><span class="comment">// [fn*] indicates the need to combine two or more functions
+</span><span class="comment">// so as to translate tail-recursive calls into direct jumps
+</span><span class="keyword">fn*</span> even <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">bool</span> <span class="keyword">=</span> <span class="keyword">if</span> n <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> odd <span class="keyword">(</span>n-1<span class="keyword">)</span> <span class="keyword">else</span> true
+<span class="keyword">and</span> odd <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">bool</span> <span class="keyword">=</span> <span class="keyword">if</span> n <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> even <span class="keyword">(</span>n-1<span class="keyword">)</span> <span class="keyword">else</span> false</span></PRE>
+
+The keyword <i>fn*</i> is used to indicate to the ATS compiler
+that the functions <i>even</i> and
+<i>odd</i> need to be combined together so as to turn (mutually)
+tail-recursive function calls into direct jumps. Essentially, the ATS
+compiler emits the following C code after compiling this example:
+
+<pre>
+bool even_odd (int tag, int n) {
+
+bool res ;
+
+switch (tag) {
+  0: goto even ;
+  1: goto odd ;
+  default : exit (1) ;
+}
+
+even: if (n > 0) { n = n - 1; goto odd; } else { res = true; goto done; }
+
+odd: if (n > 0) { n = n - 1; goto even; } else { res = false; goto done; }
+
+done: return res ;
+
+} /* end of [even_odd] */
+
+bool even (int n) { return even_odd (0, n) ; }
+bool odd (int n) { return even_odd (1, n) ; }
+</pre>
+
+Note that mutually recursive functions can be combined in such a manner
+only if <u>they all have the same return type</u>. In the above case, both
+<i>even</i> and <i>odd</i> have the same return type <i>bool</i>.
+<P>
+
+When translating C code involving embedded loops, we often encounter mutual
+tail-recursion. For instance, the following C code prints out ordered pairs
+of digits:
+
+<pre>
+int main (int argc, char *argv[]) {
+  int i, j ;
+
+  for (i = 0; i <= 9; i += 1) {
+    for (j = i; j <= 9; j += 1) {
+      if (i < j) printf (", ") ; printf ("(%i, %i)", i, j) ;
+    } /* for */
+    printf ("\n") ;
+  } /* for */
+
+  return 0 ;
+}
+</pre>
+
+A straightforward translation of the C code into ATS (in functional style)
+is given as follows:
+
+<PRE><span class="dynexp"><span class="keyword">implement</span> main <span class="keyword">(</span>argc<span class="keyword">,</span> argv<span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fn*</span> loop1 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span>
+    <span class="keyword">if</span> i &lt;= 9 <span class="keyword">then</span> loop2 <span class="keyword">(</span>i<span class="keyword">,</span> i<span class="keyword">)</span> <span class="keyword">else</span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="comment">// end of [loop1]
+</span>
+  <span class="keyword">and</span> loop2 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">,</span>j<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">,</span> j<span class="keyword">:</span> <span class="staexp">int j</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span>
+    <span class="keyword">if</span> j &lt;= 9 <span class="keyword">then</span> <span class="keyword">begin</span>
+      <span class="keyword">if</span> i <span class="keyword">&lt;</span> j <span class="keyword">then</span> <span class="keyword">begin</span>
+        print ", "<span class="keyword">;</span> printf <span class="keyword">(</span>"(%i, %i)"<span class="keyword">,</span> <span class="keyword">@(</span>i<span class="keyword">,</span> j<span class="keyword">)</span><span class="keyword">)</span><span class="keyword">;</span> loop2 <span class="keyword">(</span>i<span class="keyword">,</span> j+1<span class="keyword">)</span>
+      <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span>
+      print_newline <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">;</span> loop1 <span class="keyword">(</span>i+1<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>  <span class="comment">// end of [loop2]
+</span><span class="keyword">in</span>
+  loop1 0
+<span class="keyword">end</span> <span class="comment">// end of [main]
+</span></span></PRE>
+
+where the mutually tail-recursive funtions <i>loop1</i> and <i>loop2</i>
+correspond to the outer and inner loops in the C code, respectively.
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="tail-recursive-functions.dats">here</a>.
+
+<!-- end of [tail-recusive-functions.html] -->

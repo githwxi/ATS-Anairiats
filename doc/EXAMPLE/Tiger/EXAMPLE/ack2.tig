@@ -1,0 +1,18 @@
+let
+
+function ack (m: int, n: int): int = let
+  var m: int := m
+  var n: int := n
+in
+   while (1) do  (
+     if m > 0 then
+       (if n > 0 then (n := ack (m, n-1)) else (n := 1); m := m - 1)
+     else break
+   ) ; n + 1
+end /* end of [ack] */
+
+in
+
+  print ("ack (3, 12) = "); print_int (ack (3, 12)); print ("\n")
+
+end /* end of [let] */

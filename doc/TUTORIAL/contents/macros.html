@@ -1,0 +1,170 @@
+<!-- beg of [macros.html] -->
+
+<H2><A id="macros" name="macros">Macros</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+There are two kinds of macros in ATS. One kind is C-like and the other kind
+is LISP-like, though they are much simpler as well as weaker than their
+counterparts in C and LISP, respectively.
+
+<H4>C-like Macros</H4>
+
+We use some examples to illustrate certain typical uses of C-like macros in
+ATS.
+<P>
+
+The following two declarations bind the identifiers <i>N1</i> and <i>N2</i> to
+<u>the abstract syntax trees</u> (not strings) representing <i>1024</i> and
+<i>N1 + N1</i>, respectively:
+
+<pre>
+#define N1 1024
+#define N2 N1 + N1
+</pre>
+
+Suppose we have the following value declaration appearing in the scope of
+the above macro delarations:
+
+<pre>
+val x = N1 * N2
+</pre>
+
+Then <i>N1 * N2</i> first expands into <i>1024 * (N1 + N1)</i>, which
+further expands into <i>1024 * (1024 + 1024)</i>. Note that if this example
+is done in C, then <i>N1 * N2</i> expands into <i>1024 * 1024 + 1024</i>,
+which is different from what we have here.  Also note that it makes no
+difference if we reverse the order of the previous macro definitions:
+
+<pre>
+#define N2 N1 + N1
+#define N1 1024
+</pre>
+
+If we declare a marco as follows:
+
+<pre>
+#define LOOP (LOOP + 1)
+</pre>
+
+then an infinite loop is entered (or more precisely, some macro expansion
+depth is to be reached) when the identifier <i>LOOP</i> is expanded.
+<P>
+
+<H4>LISP-like Macros</H4>
+
+There are two forms of LISP-like macros in ATS: short form and long form.
+These (untyped) macros are highly flexible and expressive, and they
+<i>can</i> certainly be used in convoluted manners that should probably be
+avoided in the first place. Some commonly used macro definitions can be
+found in <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/macrodef.sats">prelude/macrodef.sats</A>.
+In order to use LISP-like macros in ATS effectively, the programmer may
+want to find some examples in LISP involving backquote-comma-notation.
+<P>
+
+<B>Macros in Long Form</B>&nbsp;&nbsp; As a macro in short form can simply
+be considered a special kind of macro in long form, we first give some
+explanantion on the latter.  A macro definition in long form is introduced
+via the use of the keyword <i>macrodef</i>. For instance, the following
+syntax introduces a macro name <i>one</i> that refers to some code, that
+is, abstract syntax tree (AST) representing the integer number <i>1</i>.
+
+<pre>
+macrodef one = `(1)
+</pre>
+
+The special syntax `(...), where no space is allowed between the backquote
+"`" and the left parenthsis "(", means to form an abstract syntax tree
+representing what is written inside the parentheses.  This is often
+referred to as backquote-notation. Intuitively, one may think that a
+backquote-notation exerts an effect that "freezes" everything inside it.
+Let us now define another macro as follows:
+
+<pre>
+macrodef one_plus_one = `(1 + 1)
+</pre>
+
+The defined macro name <i>one_plus_one</i> refers to some code (i.e., AST)
+representing <i>1 + 1</i>. At this point, it is important to stress that
+the code representing <i>1 + 1</i> is different from the code representing
+<i>2</i>.  The macro name <i>one_plus_one</i> can also be defined as
+follows:
+
+<pre>
+macrodef one_plus_one = `(,(one) + ,(one))
+</pre>
+
+The syntax ,(...), where no space is allowed between the comma
+"," and the left parenthesis "(", indicates the need to expand (or
+evaluate) whatever is written inside the parentheses. This is often
+referred to as comma-notation. A comma-notation is only allowed inside a
+backquote-notation. Intuitively, a comma-notation cancels out the
+"freezing" effect of the enclosing backquote-notation.
+<P>
+
+In addition to macro names, we can also define macro functions. For
+instance, the following syntax introduces a macro function
+<i>square_mac</i>:
+
+<pre>
+macrodef square_mac (x) = `(,(x) * ,(x)) // [x] should refer to some code
+</pre>
+
+Here are some examples that make use of <i>square_mac</i>:
+
+<pre>
+fun square_fun (i: int): int = ,(square_mac `(i))
+fun area_of_circle_fun (r: double): doubld = 3.1416 * ,(square_mac `(r))
+</pre>
+
+<B>Macros in Short Form</B>&nbsp;&nbsp;
+The previous macro function <i>square_mac</i> can also be defined as follows:
+
+<pre>
+macdef square_mac (x) = ,(x) * ,(x) // [x] should refer to some code
+</pre>
+
+The keyword <i>macdef</i> introduces a macro definition in short form.
+The previous examples that make use of <i>square_mac</i> can now be written
+as follows:
+
+<pre>
+fun square_fun (i: int): int = square_mac (i)
+fun area_of_circle_fun (r: double): doubld = 3.1416 * square_mac (r)
+</pre>
+
+In terms of syntax, a macro function in short form is just like an ordinary
+function.  In general, if a unary macro function <i>fmac</i> in short
+form is defined as as follows:
+
+<pre>
+macdef fmac (x) = $exp_def
+</pre>
+
+then one may essentially think that a macro definition in long form is
+defined as follows:
+
+<pre>
+macrodef fmac_long (x) = `($exp_def) // please note the backquote
+</pre>
+
+and each occurrence of <i>fmac($exp_arg)</i> is automatically rewritten
+into <i>,(fmac_long(`($exp_arg)))</i>. Note that macro functions in short
+form with multiple arguments are handled in precisely the same fashion.
+
+The primary purpose for introducing macros in short form is to provide a
+form of syntax that seems more accessible. While macros in long form can be
+defined recursively (as is to be explained later), macros in short form
+cannot.
+
+<P>
+
+<B>Recursive Macro Definitions</B>&nbsp;&nbsp; (to be written later)
+
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <A HREF="macros.dats">here</A>.
+
+<!-- end of [macros.html] -->

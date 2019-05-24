@@ -1,0 +1,22 @@
+let
+
+function fib (x: int): int = let
+  var tmp := 0
+  var res0 := 0
+  var res1 := 1
+  var i := 2
+in
+  while (1) do (
+    if i > x then break;
+    i := i + 1; tmp := res0 + res1; res0 := res1; res1 := tmp
+  ) ;
+  res1
+end /* end of [fib] */
+
+var fib12: int := fib (10) + fib (11)
+
+in /* in of [let] */
+
+print ("fib (12) = "); print_int (fib12); print ("\n")
+
+end /* end of [let] */

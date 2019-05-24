@@ -1,0 +1,331 @@
+ats_counter.cmi : ats_symbol.cmi
+ats_env1.cmi : ats_syntax.cmo ats_symenv.cmi ats_symbol.cmi ats_staexp1.cmo \
+    ats_fixity.cmi
+ats_error.cmi : ats_location.cmo
+ats_filename.cmi :
+ats_fixity.cmi : ats_location.cmo
+ats_grammar.cmi : ats_syntax.cmo
+ats_keywords.cmi : ats_grammar.cmi
+ats_label.cmi : ats_symbol.cmi
+ats_parser.cmi : ats_syntax.cmo
+ats_patcst2.cmi : ats_staexp2.cmo ats_location.cmo ats_label.cmi \
+    ats_dynexp2.cmo
+ats_stadynenv2.cmi : ats_symenv.cmi ats_symbol.cmi ats_staexp2.cmo \
+    ats_dynexp2.cmo
+ats_staenv2.cmi : ats_syntax.cmo ats_symenv.cmi ats_staexp2.cmo \
+    ats_filename.cmi
+ats_staexp2_solve.cmi : ats_syntax.cmo ats_staexp2.cmo ats_location.cmo
+ats_symbol.cmi :
+ats_symenv.cmi : ats_symbol.cmi
+ats_trans2.cmi : ats_staexp2.cmo ats_staexp1.cmo ats_location.cmo \
+    ats_dynexp2.cmo ats_dynexp1.cmo
+ats_arg.cmo :
+ats_arg.cmx :
+ats_ccomp.cmo : ats_trans4.cmo ats_syntax.cmo ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo ats_location.cmo \
+    ats_label.cmi ats_hiexp_util.cmo ats_hiexp.cmo ats_error.cmi \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo
+ats_ccomp.cmx : ats_trans4.cmx ats_syntax.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx ats_location.cmx \
+    ats_label.cmx ats_hiexp_util.cmx ats_hiexp.cmx ats_error.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx
+ats_ccomp_cprint.cmo : ats_trans4.cmo ats_syntax.cmo ats_symbol.cmi \
+    ats_staexp2_util.cmo ats_staexp2.cmo ats_misc.cmo ats_label.cmi \
+    ats_hiexp_util.cmo ats_hiexp.cmo ats_filename.cmi ats_effect.cmo \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo ats_counter.cmi ats_ccomp_util.cmo \
+    ats_ccomp.cmo
+ats_ccomp_cprint.cmx : ats_trans4.cmx ats_syntax.cmx ats_symbol.cmx \
+    ats_staexp2_util.cmx ats_staexp2.cmx ats_misc.cmx ats_label.cmx \
+    ats_hiexp_util.cmx ats_hiexp.cmx ats_filename.cmx ats_effect.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx ats_counter.cmx ats_ccomp_util.cmx \
+    ats_ccomp.cmx
+ats_ccomp_main.cmo : ats_trans4.cmo ats_trans1.cmo ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo ats_hiexp_util.cmo \
+    ats_hiexp.cmo ats_dynexp2.cmo ats_dyncst2.cmo ats_ccomp_util.cmo \
+    ats_ccomp_trans.cmo ats_ccomp_cprint.cmo ats_ccomp.cmo
+ats_ccomp_main.cmx : ats_trans4.cmx ats_trans1.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx ats_hiexp_util.cmx \
+    ats_hiexp.cmx ats_dynexp2.cmx ats_dyncst2.cmx ats_ccomp_util.cmx \
+    ats_ccomp_trans.cmx ats_ccomp_cprint.cmx ats_ccomp.cmx
+ats_ccomp_trans.cmo : ats_trans4.cmo ats_syntax.cmo ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo ats_location.cmo \
+    ats_label.cmi ats_hiexp_util.cmo ats_hiexp.cmo ats_error.cmi \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo ats_dyncst2.cmo ats_ccomp_util.cmo \
+    ats_ccomp.cmo
+ats_ccomp_trans.cmx : ats_trans4.cmx ats_syntax.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx ats_location.cmx \
+    ats_label.cmx ats_hiexp_util.cmx ats_hiexp.cmx ats_error.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx ats_dyncst2.cmx ats_ccomp_util.cmx \
+    ats_ccomp.cmx
+ats_ccomp_util.cmo : ats_trans4.cmo ats_syntax.cmo ats_symbol.cmi \
+    ats_staexp2_util.cmo ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo \
+    ats_label.cmi ats_hiexp_util.cmo ats_hiexp.cmo ats_filename.cmi \
+    ats_effect.cmo ats_dynexp2_util.cmo ats_dynexp2.cmo ats_counter.cmi \
+    ats_ccomp.cmo
+ats_ccomp_util.cmx : ats_trans4.cmx ats_syntax.cmx ats_symbol.cmx \
+    ats_staexp2_util.cmx ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx \
+    ats_label.cmx ats_hiexp_util.cmx ats_hiexp.cmx ats_filename.cmx \
+    ats_effect.cmx ats_dynexp2_util.cmx ats_dynexp2.cmx ats_counter.cmx \
+    ats_ccomp.cmx
+ats_constraint.cmo : ats_svar_bind.cmo ats_staexp2_util.cmo ats_staexp2.cmo \
+    ats_staenv3.cmo ats_stacst2.cmo ats_solver_fm.cmo ats_patcst2.cmi \
+    ats_misc.cmo ats_location.cmo ats_error.cmi
+ats_constraint.cmx : ats_svar_bind.cmx ats_staexp2_util.cmx ats_staexp2.cmx \
+    ats_staenv3.cmx ats_stacst2.cmx ats_solver_fm.cmx ats_patcst2.cmx \
+    ats_misc.cmx ats_location.cmx ats_error.cmx
+ats_counter.cmo : ats_symbol.cmi ats_counter.cmi
+ats_counter.cmx : ats_symbol.cmx ats_counter.cmi
+ats_dyncst2.cmo : ats_staexp2_util.cmo ats_staexp2.cmo ats_stadynenv2.cmi \
+    ats_stacst2.cmo ats_name_space.cmo ats_misc.cmo ats_location.cmo \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo
+ats_dyncst2.cmx : ats_staexp2_util.cmx ats_staexp2.cmx ats_stadynenv2.cmx \
+    ats_stacst2.cmx ats_name_space.cmx ats_misc.cmx ats_location.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx
+ats_dynenv3.cmo : ats_svar_stamp.cmo ats_staexp2_util.cmo \
+    ats_staexp2_solve.cmi ats_staexp2.cmo ats_staenv3.cmo ats_stacst2.cmo \
+    ats_misc.cmo ats_location.cmo ats_label.cmi ats_error.cmi \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo ats_dyncst2.cmo
+ats_dynenv3.cmx : ats_svar_stamp.cmx ats_staexp2_util.cmx \
+    ats_staexp2_solve.cmx ats_staexp2.cmx ats_staenv3.cmx ats_stacst2.cmx \
+    ats_misc.cmx ats_location.cmx ats_label.cmx ats_error.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx ats_dyncst2.cmx
+ats_dynexp1.cmo : ats_syntax.cmo ats_staexp1.cmo ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_filename.cmi ats_env1.cmi \
+    ats_effect.cmo
+ats_dynexp1.cmx : ats_syntax.cmx ats_staexp1.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_filename.cmx ats_env1.cmx \
+    ats_effect.cmx
+ats_dynexp2.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_misc.cmo ats_location.cmo ats_label.cmi \
+    ats_filename.cmi ats_effect.cmo ats_counter.cmi
+ats_dynexp2.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_misc.cmx ats_location.cmx ats_label.cmx \
+    ats_filename.cmx ats_effect.cmx ats_counter.cmx
+ats_dynexp2_util.cmo : ats_syntax.cmo ats_staexp2_util.cmo ats_staexp2.cmo \
+    ats_stacst2.cmo ats_misc.cmo ats_location.cmo ats_error.cmi \
+    ats_dynexp2.cmo
+ats_dynexp2_util.cmx : ats_syntax.cmx ats_staexp2_util.cmx ats_staexp2.cmx \
+    ats_stacst2.cmx ats_misc.cmx ats_location.cmx ats_error.cmx \
+    ats_dynexp2.cmx
+ats_dynexp3.cmo : ats_syntax.cmo ats_staexp2_util.cmo ats_staexp2.cmo \
+    ats_stacst2.cmo ats_patcst2.cmi ats_misc.cmo ats_location.cmo \
+    ats_label.cmi ats_filename.cmi ats_effect.cmo ats_dynexp2_util.cmo \
+    ats_dynexp2.cmo ats_dyncst2.cmo
+ats_dynexp3.cmx : ats_syntax.cmx ats_staexp2_util.cmx ats_staexp2.cmx \
+    ats_stacst2.cmx ats_patcst2.cmx ats_misc.cmx ats_location.cmx \
+    ats_label.cmx ats_filename.cmx ats_effect.cmx ats_dynexp2_util.cmx \
+    ats_dynexp2.cmx ats_dyncst2.cmx
+ats_effect.cmo : ats_syntax.cmo ats_symbol.cmi ats_misc.cmo ats_location.cmo \
+    ats_error.cmi
+ats_effect.cmx : ats_syntax.cmx ats_symbol.cmx ats_misc.cmx ats_location.cmx \
+    ats_error.cmx
+ats_env1.cmo : ats_syntax.cmo ats_symenv.cmi ats_symbol.cmi ats_staexp1.cmo \
+    ats_misc.cmo ats_fixity.cmi ats_env1.cmi
+ats_env1.cmx : ats_syntax.cmx ats_symenv.cmx ats_symbol.cmx ats_staexp1.cmx \
+    ats_misc.cmx ats_fixity.cmx ats_env1.cmi
+ats_errmsg1.cmo : ats_syntax.cmo ats_location.cmo ats_error.cmi
+ats_errmsg1.cmx : ats_syntax.cmx ats_location.cmx ats_error.cmx
+ats_errmsg2.cmo : ats_syntax.cmo ats_staexp2.cmo ats_staexp1.cmo \
+    ats_location.cmo ats_error.cmi ats_dynexp1.cmo
+ats_errmsg2.cmx : ats_syntax.cmx ats_staexp2.cmx ats_staexp1.cmx \
+    ats_location.cmx ats_error.cmx ats_dynexp1.cmx
+ats_errmsg3.cmo : ats_syntax.cmo ats_staexp2_util.cmo ats_staexp2.cmo \
+    ats_location.cmo ats_label.cmi ats_error.cmi ats_dynexp2.cmo \
+    ats_counter.cmi
+ats_errmsg3.cmx : ats_syntax.cmx ats_staexp2_util.cmx ats_staexp2.cmx \
+    ats_location.cmx ats_label.cmx ats_error.cmx ats_dynexp2.cmx \
+    ats_counter.cmx
+ats_error.cmo : ats_location.cmo ats_error.cmi
+ats_error.cmx : ats_location.cmx ats_error.cmi
+ats_filename.cmo : ats_misc.cmo ats_filename.cmi
+ats_filename.cmx : ats_misc.cmx ats_filename.cmi
+ats_fixity.cmo : ats_symbol.cmi ats_misc.cmo ats_location.cmo ats_error.cmi \
+    ats_fixity.cmi
+ats_fixity.cmx : ats_symbol.cmx ats_misc.cmx ats_location.cmx ats_error.cmx \
+    ats_fixity.cmi
+ats_grammar.cmo : ats_syntax.cmo ats_symbol.cmi ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_fixity.cmi ats_filename.cmi \
+    ats_grammar.cmi
+ats_grammar.cmx : ats_syntax.cmx ats_symbol.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_fixity.cmx ats_filename.cmx \
+    ats_grammar.cmi
+ats_hiexp.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo ats_location.cmo \
+    ats_label.cmi ats_filename.cmi ats_effect.cmo ats_dynexp2.cmo \
+    ats_dyncst2.cmo ats_counter.cmi
+ats_hiexp.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx ats_location.cmx \
+    ats_label.cmx ats_filename.cmx ats_effect.cmx ats_dynexp2.cmx \
+    ats_dyncst2.cmx ats_counter.cmx
+ats_hiexp_util.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_misc.cmo ats_label.cmi ats_hiexp.cmo \
+    ats_effect.cmo ats_dynexp2_util.cmo ats_dynexp2.cmo ats_counter.cmi
+ats_hiexp_util.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_misc.cmx ats_label.cmx ats_hiexp.cmx \
+    ats_effect.cmx ats_dynexp2_util.cmx ats_dynexp2.cmx ats_counter.cmx
+ats_keywords.cmo : ats_grammar.cmi ats_keywords.cmi
+ats_keywords.cmx : ats_grammar.cmx ats_keywords.cmi
+ats_label.cmo : ats_symbol.cmi ats_misc.cmo ats_label.cmi
+ats_label.cmx : ats_symbol.cmx ats_misc.cmx ats_label.cmi
+ats_lexer.cmo : ats_misc.cmo ats_location.cmo ats_keywords.cmi \
+    ats_grammar.cmi
+ats_lexer.cmx : ats_misc.cmx ats_location.cmx ats_keywords.cmx \
+    ats_grammar.cmx
+ats_location.cmo : ats_misc.cmo ats_filename.cmi
+ats_location.cmx : ats_misc.cmx ats_filename.cmx
+ats_macro.cmo : ats_syntax.cmo ats_symenv.cmi ats_symbol.cmi ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_error.cmi ats_dynexp2.cmo \
+    ats_counter.cmi
+ats_macro.cmx : ats_syntax.cmx ats_symenv.cmx ats_symbol.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_error.cmx ats_dynexp2.cmx \
+    ats_counter.cmx
+ats_main_cc.cmo : ats_trans4.cmo ats_trans3.cmo ats_trans2.cmi \
+    ats_trans1.cmo ats_string_parser.cmo ats_staenv3.cmo ats_stadynenv2.cmi \
+    ats_parser.cmi ats_misc.cmo ats_filename.cmi ats_error.cmi ats_env1.cmi \
+    ats_counter.cmi ats_constraint.cmo ats_ccomp_main.cmo ats_arg.cmo
+ats_main_cc.cmx : ats_trans4.cmx ats_trans3.cmx ats_trans2.cmx \
+    ats_trans1.cmx ats_string_parser.cmx ats_staenv3.cmx ats_stadynenv2.cmx \
+    ats_parser.cmx ats_misc.cmx ats_filename.cmx ats_error.cmx ats_env1.cmx \
+    ats_counter.cmx ats_constraint.cmx ats_ccomp_main.cmx ats_arg.cmx
+ats_metric.cmo : ats_staexp2_util.cmo ats_staexp2.cmo ats_location.cmo \
+    ats_dynexp2.cmo
+ats_metric.cmx : ats_staexp2_util.cmx ats_staexp2.cmx ats_location.cmx \
+    ats_dynexp2.cmx
+ats_misc.cmo :
+ats_misc.cmx :
+ats_name_space.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp2.cmo \
+    ats_staenv2.cmi ats_stadynenv2.cmi ats_error.cmi ats_dynexp2.cmo
+ats_name_space.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp2.cmx \
+    ats_staenv2.cmx ats_stadynenv2.cmx ats_error.cmx ats_dynexp2.cmx
+ats_parser.cmo : ats_syntax.cmo ats_misc.cmo ats_location.cmo ats_lexer.cmo \
+    ats_grammar.cmi ats_filename.cmi ats_error.cmi ats_parser.cmi
+ats_parser.cmx : ats_syntax.cmx ats_misc.cmx ats_location.cmx ats_lexer.cmx \
+    ats_grammar.cmx ats_filename.cmx ats_error.cmx ats_parser.cmi
+ats_patcst2.cmo : ats_staexp2_util.cmo ats_staexp2.cmo ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_error.cmi ats_dynexp2.cmo \
+    ats_dyncst2.cmo ats_patcst2.cmi
+ats_patcst2.cmx : ats_staexp2_util.cmx ats_staexp2.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_error.cmx ats_dynexp2.cmx \
+    ats_dyncst2.cmx ats_patcst2.cmi
+ats_printf_ats.cmo : ats_misc.cmo
+ats_printf_ats.cmx : ats_misc.cmx
+ats_printf_c.cmo :
+ats_printf_c.cmx :
+ats_solver_fm.cmo : ats_misc.cmo
+ats_solver_fm.cmx : ats_misc.cmx
+ats_stacst2.cmo : ats_symbol.cmi ats_staexp2.cmo ats_staenv2.cmi \
+    ats_misc.cmo ats_location.cmo ats_label.cmi ats_error.cmi
+ats_stacst2.cmx : ats_symbol.cmx ats_staexp2.cmx ats_staenv2.cmx \
+    ats_misc.cmx ats_location.cmx ats_label.cmx ats_error.cmx
+ats_stadynenv2.cmo : ats_syntax.cmo ats_symenv.cmi ats_symbol.cmi \
+    ats_staexp2_util.cmo ats_staexp2.cmo ats_staenv2.cmi ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_error.cmi ats_dynexp2.cmo \
+    ats_stadynenv2.cmi
+ats_stadynenv2.cmx : ats_syntax.cmx ats_symenv.cmx ats_symbol.cmx \
+    ats_staexp2_util.cmx ats_staexp2.cmx ats_staenv2.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_error.cmx ats_dynexp2.cmx \
+    ats_stadynenv2.cmi
+ats_staenv2.cmo : ats_syntax.cmo ats_symenv.cmi ats_symbol.cmi \
+    ats_staexp2.cmo ats_location.cmo ats_label.cmi ats_filename.cmi \
+    ats_error.cmi ats_staenv2.cmi
+ats_staenv2.cmx : ats_syntax.cmx ats_symenv.cmx ats_symbol.cmx \
+    ats_staexp2.cmx ats_location.cmx ats_label.cmx ats_filename.cmx \
+    ats_error.cmx ats_staenv2.cmi
+ats_staenv3.cmo : ats_svar_stamp.cmo ats_svar_bind.cmo ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_stacst2.cmo ats_patcst2.cmi ats_misc.cmo \
+    ats_metric.cmo ats_location.cmo ats_error.cmi ats_effect.cmo
+ats_staenv3.cmx : ats_svar_stamp.cmx ats_svar_bind.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_stacst2.cmx ats_patcst2.cmx ats_misc.cmx \
+    ats_metric.cmx ats_location.cmx ats_error.cmx ats_effect.cmx
+ats_staexp1.cmo : ats_syntax.cmo ats_symbol.cmi ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_error.cmi ats_effect.cmo
+ats_staexp1.cmx : ats_syntax.cmx ats_symbol.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_error.cmx ats_effect.cmx
+ats_staexp2.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp1.cmo ats_misc.cmo \
+    ats_location.cmo ats_label.cmi ats_filename.cmi ats_error.cmi \
+    ats_effect.cmo ats_counter.cmi
+ats_staexp2.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp1.cmx ats_misc.cmx \
+    ats_location.cmx ats_label.cmx ats_filename.cmx ats_error.cmx \
+    ats_effect.cmx ats_counter.cmx
+ats_staexp2_solve.cmo : ats_staexp2_util.cmo ats_staexp2.cmo ats_staenv3.cmo \
+    ats_stacst2.cmo ats_misc.cmo ats_location.cmo ats_error.cmi \
+    ats_errmsg3.cmo ats_counter.cmi ats_staexp2_solve.cmi
+ats_staexp2_solve.cmx : ats_staexp2_util.cmx ats_staexp2.cmx ats_staenv3.cmx \
+    ats_stacst2.cmx ats_misc.cmx ats_location.cmx ats_error.cmx \
+    ats_errmsg3.cmx ats_counter.cmx ats_staexp2_solve.cmi
+ats_staexp2_util.cmo : ats_syntax.cmo ats_symbol.cmi ats_svar_stamp.cmo \
+    ats_svar_bind.cmo ats_staexp2.cmo ats_stacst2.cmo ats_printf_c.cmo \
+    ats_misc.cmo ats_location.cmo ats_label.cmi ats_error.cmi ats_effect.cmo \
+    ats_counter.cmi
+ats_staexp2_util.cmx : ats_syntax.cmx ats_symbol.cmx ats_svar_stamp.cmx \
+    ats_svar_bind.cmx ats_staexp2.cmx ats_stacst2.cmx ats_printf_c.cmx \
+    ats_misc.cmx ats_location.cmx ats_label.cmx ats_error.cmx ats_effect.cmx \
+    ats_counter.cmx
+ats_string_parser.cmo : ats_syntax.cmo ats_symbol.cmi ats_printf_ats.cmo
+ats_string_parser.cmx : ats_syntax.cmx ats_symbol.cmx ats_printf_ats.cmx
+ats_svar_bind.cmo : ats_staexp2.cmo ats_location.cmo ats_error.cmi
+ats_svar_bind.cmx : ats_staexp2.cmx ats_location.cmx ats_error.cmx
+ats_svar_stamp.cmo : ats_staexp2.cmo ats_location.cmo ats_error.cmi
+ats_svar_stamp.cmx : ats_staexp2.cmx ats_location.cmx ats_error.cmx
+ats_symbol.cmo : ats_misc.cmo ats_symbol.cmi
+ats_symbol.cmx : ats_misc.cmx ats_symbol.cmi
+ats_symenv.cmo : ats_symbol.cmi ats_misc.cmo ats_symenv.cmi
+ats_symenv.cmx : ats_symbol.cmx ats_misc.cmx ats_symenv.cmi
+ats_syntax.cmo : ats_symbol.cmi ats_misc.cmo ats_location.cmo ats_label.cmi \
+    ats_fixity.cmi ats_filename.cmi ats_error.cmi
+ats_syntax.cmx : ats_symbol.cmx ats_misc.cmx ats_location.cmx ats_label.cmx \
+    ats_fixity.cmx ats_filename.cmx ats_error.cmx
+ats_trans1.cmo : ats_syntax.cmo ats_symbol.cmi ats_string_parser.cmo \
+    ats_staexp1.cmo ats_parser.cmi ats_misc.cmo ats_location.cmo \
+    ats_fixity.cmi ats_filename.cmi ats_error.cmi ats_errmsg1.cmo \
+    ats_env1.cmi ats_effect.cmo ats_dynexp1.cmo
+ats_trans1.cmx : ats_syntax.cmx ats_symbol.cmx ats_string_parser.cmx \
+    ats_staexp1.cmx ats_parser.cmx ats_misc.cmx ats_location.cmx \
+    ats_fixity.cmx ats_filename.cmx ats_error.cmx ats_errmsg1.cmx \
+    ats_env1.cmx ats_effect.cmx ats_dynexp1.cmx
+ats_trans2.cmo : ats_syntax.cmo ats_symbol.cmi ats_staexp2_util.cmo \
+    ats_staexp2.cmo ats_staexp1.cmo ats_staenv2.cmi ats_stadynenv2.cmi \
+    ats_stacst2.cmo ats_name_space.cmo ats_misc.cmo ats_location.cmo \
+    ats_label.cmi ats_filename.cmi ats_error.cmi ats_errmsg2.cmo ats_env1.cmi \
+    ats_effect.cmo ats_dynexp2_util.cmo ats_dynexp2.cmo ats_dynexp1.cmo \
+    ats_dyncst2.cmo ats_trans2.cmi
+ats_trans2.cmx : ats_syntax.cmx ats_symbol.cmx ats_staexp2_util.cmx \
+    ats_staexp2.cmx ats_staexp1.cmx ats_staenv2.cmx ats_stadynenv2.cmx \
+    ats_stacst2.cmx ats_name_space.cmx ats_misc.cmx ats_location.cmx \
+    ats_label.cmx ats_filename.cmx ats_error.cmx ats_errmsg2.cmx ats_env1.cmx \
+    ats_effect.cmx ats_dynexp2_util.cmx ats_dynexp2.cmx ats_dynexp1.cmx \
+    ats_dyncst2.cmx ats_trans2.cmi
+ats_trans3.cmo : ats_trans3_pat.cmo ats_syntax.cmo ats_symbol.cmi \
+    ats_svar_stamp.cmo ats_svar_bind.cmo ats_staexp2_util.cmo \
+    ats_staexp2_solve.cmi ats_staexp2.cmo ats_staenv3.cmo ats_stacst2.cmo \
+    ats_printf_c.cmo ats_patcst2.cmi ats_misc.cmo ats_metric.cmo \
+    ats_macro.cmo ats_location.cmo ats_label.cmi ats_error.cmi \
+    ats_errmsg3.cmo ats_errmsg2.cmo ats_effect.cmo ats_dynexp3.cmo \
+    ats_dynexp2_util.cmo ats_dynexp2.cmo ats_dynenv3.cmo ats_dyncst2.cmo \
+    ats_counter.cmi
+ats_trans3.cmx : ats_trans3_pat.cmx ats_syntax.cmx ats_symbol.cmx \
+    ats_svar_stamp.cmx ats_svar_bind.cmx ats_staexp2_util.cmx \
+    ats_staexp2_solve.cmx ats_staexp2.cmx ats_staenv3.cmx ats_stacst2.cmx \
+    ats_printf_c.cmx ats_patcst2.cmx ats_misc.cmx ats_metric.cmx \
+    ats_macro.cmx ats_location.cmx ats_label.cmx ats_error.cmx \
+    ats_errmsg3.cmx ats_errmsg2.cmx ats_effect.cmx ats_dynexp3.cmx \
+    ats_dynexp2_util.cmx ats_dynexp2.cmx ats_dynenv3.cmx ats_dyncst2.cmx \
+    ats_counter.cmx
+ats_trans3_pat.cmo : ats_trans2.cmi ats_staexp2_util.cmo \
+    ats_staexp2_solve.cmi ats_staexp2.cmo ats_staenv3.cmo ats_stacst2.cmo \
+    ats_patcst2.cmi ats_misc.cmo ats_location.cmo ats_error.cmi \
+    ats_errmsg3.cmo ats_errmsg2.cmo ats_dynexp3.cmo ats_dynexp2_util.cmo \
+    ats_dynexp2.cmo ats_dynenv3.cmo ats_counter.cmi
+ats_trans3_pat.cmx : ats_trans2.cmx ats_staexp2_util.cmx \
+    ats_staexp2_solve.cmx ats_staexp2.cmx ats_staenv3.cmx ats_stacst2.cmx \
+    ats_patcst2.cmx ats_misc.cmx ats_location.cmx ats_error.cmx \
+    ats_errmsg3.cmx ats_errmsg2.cmx ats_dynexp3.cmx ats_dynexp2_util.cmx \
+    ats_dynexp2.cmx ats_dynenv3.cmx ats_counter.cmx
+ats_trans4.cmo : ats_staexp2_util.cmo ats_staexp2.cmo ats_stacst2.cmo \
+    ats_misc.cmo ats_location.cmo ats_label.cmi ats_hiexp_util.cmo \
+    ats_hiexp.cmo ats_filename.cmi ats_dynexp3.cmo ats_dynexp2_util.cmo \
+    ats_dynexp2.cmo ats_dyncst2.cmo
+ats_trans4.cmx : ats_staexp2_util.cmx ats_staexp2.cmx ats_stacst2.cmx \
+    ats_misc.cmx ats_location.cmx ats_label.cmx ats_hiexp_util.cmx \
+    ats_hiexp.cmx ats_filename.cmx ats_dynexp3.cmx ats_dynexp2_util.cmx \
+    ats_dynexp2.cmx ats_dyncst2.cmx

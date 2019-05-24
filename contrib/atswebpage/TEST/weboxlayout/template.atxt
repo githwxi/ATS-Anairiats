@@ -1,0 +1,104 @@
+%{
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+
+#define ISTEMP 1
+
+(* ****** ****** *)
+//
+#include
+"pagenatxt.dats"
+//
+(* ****** ****** *)
+//
+#include "layout.dats"
+//
+(* ****** ****** *)
+//
+val theCSSfilr = $STDIO.fopen_ref_exn
+  ("styles/template.css", file_mode_w)
+val () = fprint_webox_css_all (theCSSfilr, theBodyProp)
+//
+fun addcssrule
+  (rule: string): text = let
+  val () = fprint_string (theCSSfilr, rule) in TEXTnil ()
+end // end of [addcssrule]
+fun addcssrule_strsub
+  (rule: string): text = let
+  val () = fprint_strsub (theCSSfilr, rule) in TEXTnil ()
+end // end of [addcssrule_strsub]
+//
+(* ****** ****** *)
+//
+%}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>ATSLIDE/SPEC</title>
+<link rel="stylesheet" type="text/css" href="styles/template.css" />
+</head><!--head-->
+
+#comment("****** ****** *")
+
+#comment("\n\
+Note: This page is automatically generated from [template.atxt]\n\
+")
+
+#addcssrule_strsub("
+body {
+/*
+background-color: \#E7CF9E; /* golden brown */\n\
+*/
+background-color: \#346090; /* deep green/blue */
+background-position: left;
+background-repeat: repeat-y;
+font-family: sans-serif;
+}
+\#body-layout {
+margin: 0px;
+}
+\#theBodyProp {
+width: 100% ;
+margin-top: 0px;
+}
+")
+
+%{
+local
+(*
+** nothing
+*)
+in
+//
+fun theBodyText (): text = let
+  val res = tostring_fprint<webox>
+    ("theBodyText", fprint_webox_html, theBodyProp)
+  val () = assert (strptr_isnot_null res)
+  val res = string_of_strptr (res)
+in
+  TEXTstrsub (res)
+end (* theBodyText *)
+//
+end // end of [local]
+%}
+<body id="body-layout">
+#theBodyText()
+</body>#comment("body")
+</html>#comment("html")
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "template_atxt.txt")
+//
+} // end of [main]
+%}

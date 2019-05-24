@@ -1,0 +1,96 @@
+<!-- beg of [llazy-evaluation.html] -->
+
+<H2><A id="llazy-evaluation" name="llazy-evaluation">Linear
+Lazy Evaluation</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The feature of linear lazy evaluation, which is considerably advanced,
+addresses the issue of freeing up resources held by a lazy value (that is,
+a thunk representing a delayed computation). Let us first see a concrete
+example involving the issue. In <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/file.sats">prelude/SATS/file.sats</A>
+the following function <i>char_stream_make_file</i> is declared:
+
+<PRE>
+// making a lazy char stream out of a file handle
+fun char_stream_make_file (fil: FILEref):<1,~ref> stream (char)
+</PRE>
+
+Note that the syntax <i>&lt;1,~ref&gt;</i> indicates that the function may
+have all kinds of effects except <i>ref</i>. As suggested by its type, the
+function <i>char_stream_make_file</i> turns a file handle into a (lazy)
+stream of characters. We give an implementation of this function as
+follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">implement</FONT> char_stream_make_file <FONT COLOR="#000000">(</FONT>fil<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">val</FONT> c <FONT COLOR="#000000">=</FONT> fgetc0_err <FONT COLOR="#000000">(</FONT>fil<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">if</FONT> c &lt;&gt; EOF <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> c <FONT COLOR="#000000">=</FONT> char_of_int <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>stream_cons <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">,</FONT> char_stream_make_file fil<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">begin</FONT>
+    <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> fclose0_exn <FONT COLOR="#000000">(</FONT>fil<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>stream_nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [if]
+</FONT><FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [char_stream_make_file]
+</FONT></FONT></PRE>
+
+Clearly, there is an opened file handle inside each character stream formed
+by calling <i>char_stream_make_file</i> until all the characters in the
+file are put into the stream. If such a character stream is discarded
+during evaluation, then the file handle inside it may be left unclosed
+<u>indefinitely</u>. This can cause a serious problem in a situation where
+a large number of character streams need to be formed by calling
+<i>char_stream_make_file</i>. In general, the inability (or the lack of the
+ability) to directly free the resources held by lazy values often makes it
+rather difficult or even infeasible to employ lazy evaluation in a setting
+that requires great precision in resource management.
+
+<H4>A Direct Approach to Freeing Resources inside Lazy Values</H4>
+
+The following function <i>char_stream_vt_make_file</i> is also declared
+in <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/file.sats">prelude/SATS/file.sats</A>:
+
+<PRE>
+// making a linear lazy char stream out of a file handle
+fun char_stream_vt_make_file {m:file_mode} {l:addr}
+  (pf_mod: file_mode_lte (m, r), pf_fil: FILE m @ l | p_fil: ptr l)
+  :<1,~ref> stream_vt (char)
+</PRE>
+
+As suggested by its type, the function <i>char_stream_vt_make_file</i>
+turns a file handle into a linear stream of characters. An implementation
+of this function is given as follows:
+
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">implement</FONT> char_stream_vt_make_file <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mod</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_fil</FONT> <FONT COLOR="#000000">|</FONT> p_fil<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">val</FONT> c <FONT COLOR="#000000">=</FONT> fgetc1_err <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mod</FONT> <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">!</FONT>p_fil<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">if</FONT> c &gt;= 0 <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT> <FONT COLOR="#787878">// c &lt;&gt; EOF
+</FONT>    <FONT COLOR="#000000">val</FONT> c <FONT COLOR="#000000">=</FONT> char_of_int <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">$ldelay</FONT> <FONT COLOR="#000000">(</FONT>
+      stream_vt_cons <FONT COLOR="#000000">(</FONT>c<FONT COLOR="#000000">,</FONT> char_stream_vt_make_file <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_mod</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf_fil</FONT> <FONT COLOR="#000000">|</FONT> p_fil<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">,</FONT> fclose1_exn <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fil</FONT> <FONT COLOR="#000000">|</FONT> p_fil<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">)</FONT> <FONT COLOR="#787878">// end of [$ldelay]
+</FONT>  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> fclose1_exn <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf_fil</FONT> <FONT COLOR="#000000">|</FONT> p_fil<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">$ldelay</FONT> <FONT COLOR="#000000">(</FONT>stream_vt_nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [if]
+</FONT><FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [char_stream_vt_make_file]
+</FONT></FONT></PRE>
+
+The keyword <i>$ldelay</i> is used to form a linear lazy value.  Given
+two dynamic expressions <i>exp1</i> and <i>exp2</i>, the linear lazy value
+<i>$ldelay (exp1, exp2)</i> essentially contains two thunks whose bodies
+are <i>exp1</i> and <i>exp2</i>, repectively.  The first thunk represents a
+suspended computation while the second thunk represents a finalizer that
+can be called to free up the resources held in the first thunk. In the case
+where <i>exp2</i> is missing, <i>exp1</i> is assumed to hold no resources.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="llazy-evaluation.dats">here</a>.
+
+<!-- end of [llazy-evaluation.html] -->

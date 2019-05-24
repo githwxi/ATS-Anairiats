@@ -1,0 +1,20 @@
+/* Standard style sheet for ATS */
+/* copied from Frank Pfenning's homepage on November 3, 2000 */
+/* Override default to more readable sans-serif font */
+/* Base color: brown, base font: sans-serif */
+BODY, H1, H2, H3, H4, P, UL, OL, DL, LI, DT, DD, TH, TD, I, B, EM, STRONG
+{ font-family: tahoma;}
+A:link { color: #0000FF; }        /* new link, blue */
+A:visited { color: #CC00CC; }     /* visited link, violet */
+A:hover { color: #CC9900; }       /* hover, gold */
+A:active { color: #FF0000; }      /* active, red */
+TD.main { background: #FFFFFF; }  /* main body, right */
+TD.small { font-size: 10pt; }     /* small (subnodes) */
+TD.menu { font-size: 10pt; }
+TD.submenu { font-size: 8pt; }
+
+DT { padding: 1ex 0ex; }           /* definition term */
+DT:first-child { padding: 0ex 0ex; }           /* first definition term */
+DT.first { padding: 0ex 0ex; }                 /* first definition term */
+P.bottom { font-size: small; }                 /* navigation bar, bottom */
+B.here { font-weight: bold; color: #FF0000; }  /* current node, bold red */

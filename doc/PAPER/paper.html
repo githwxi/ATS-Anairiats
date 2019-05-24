@@ -1,0 +1,240 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-paper</TITLE>
+<META name="description" content="Home Page for ATS-paper">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../TUTORIAL/tutorial.html">Tutorial</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../EXAMPLE/example.html">Examples</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../IMPLEMENT/implement.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><B CLASS="here">Papers</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../CHANGELOG/changelog.html">ChangeLog</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>Papers about ATS</H1>
+</CENTER>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+This website contains a list of papers about or closely related to ATS.
+
+<MENU>
+<LI>
+<B>Dependent ML: an approach to practical programming with dependent types</B>
+(<A HREF="DML-jfp07.pdf">pdf</A>)
+(<A HREF="DML-jfp07.ps">ps</A>)
+<P>
+We present an approach to enriching the type system of ML with a restricted
+form of dependent types, where type index terms are required to be
+drawn from a given type index language <i>L</i> that is completely separate
+from run-time programs, leading to the <i>DML(L)</i> language schema.  This
+enrichment allows for specification and inference of significantly more
+precise type information, facilitating program error detection and compiler
+optimization.  The primary contribution of the paper lies in our language
+design, which can effectively support the use of dependent types in
+practical programming. In particular, this design makes it both natural and
+straightforward to accommodate dependent types in the presence of effects
+such as references and exceptions.
+<P>
+
+<LI>
+<B>Dependent Types in Practical Programming</B>
+(<A HREF="DML-popl99.pdf">paper.pdf</A>)
+(<A HREF="DML-popl99.ps">paper.ps</A>)
+(<A HREF="DML-thesis.pdf">thesis.pdf</A>)
+(<A HREF="DML-thesis.ps">thesis.ps</A>)
+<P>
+The original version of DML is presented here.  The paper is an extended
+abstract of the thesis.
+<P>
+
+<LI>
+<B>Dependent Types for Program Termination Verification</B>
+(<A HREF="DTPTV-hosc.pdf">pdf</A>)
+(<A HREF="DTPTV-hosc.ps">ps</A>)
+<P>
+Program termination verification is a challenging research subject of
+significant practical importance. While there is already a rich body of
+literature on this subject, it is still undeniably a difficult task to
+design a termination checker for a realistic programming language that
+supports general recursion.  In this paper, we present an approach to
+program termination verification that makes use of a form of dependent
+types developed in Dependent ML (DML), demonstrating a novel application of
+such dependent types to establishing a liveness property. We design a type
+system that enables the programmer to supply metrics for verifying program
+termination and prove that every well-typed program in this type system is
+terminating.  We also provide realistic running examples to support the
+effectiveness of this approach to program termination verification as well
+as its unobtrusiveness to programming.
+<P>
+
+<LI><B>Dependently Typed Pattern Matching</B>
+(<A href="DTPM-jucs03.pdf">pdf</A>)
+(<A href="DTPM-jucs03.ps">ps</A>)
+<P>
+In the presence of dependent datatypes, the sequentiality of pattern
+matching (as is supported in ATS) interacts with type-checking. This, for
+instance, is clearly explained in the implementation of the function
+<i>zip1</i> available <A
+href="../TUTORIAL/contents/pattern-matching.html">here</A>.  In this paper,
+the interaction between sequential pattern matching and type-checking is
+formally studied, and a means is provided for the programmer to control
+such interaction.
+
+<P>
+
+<LI><B>Dependently Typed Data Structures</B> (<A
+href="DTDS-waaapl99.pdf">pdf</A>) (<A href="DTDS-waaapl99.ps">ps</A>)
+<P>
+The paper contains several data structures (e.g., braun trees, red-black
+trees, binomial heaps) implemented in Dependent ML, the predecessor of ATS.
+For people interested in using dependent types to capture invariants in
+data structure, the paper is a good start.
+<P>
+
+<LI><B>Imperative Programming with Dependent Types</B>
+(<A href="IPDT-lics00.pdf">pdf</A>)
+(<A href="IPDT-lics00.ps">ps</A>)
+<P>
+This paper presents a design for supporting dependent types in imperative
+programming. While this design is simple, it is rather inflexible and does
+not seem to be able to handle imperative data structures such as (singly or
+doubly) linked lists and binary trees. Nonetheless, this paper may help the
+reader understand the current approach, which is general and flexible, to
+supporting imperative programming with dependent types in ATS.
+<P>
+
+<LI>
+<B>Guarded Recursive Datatype Constructors</B>
+(<A href="GRDT-popl03.pdf">pdf</A>)
+(<A href="GRDT-popl03.ps">ps</A>)
+<P>
+The paper introduces a notion of guarded recursive (g.r.) datatype
+constructors, generalizing the notion of recursive datatypes in functional
+programming languages such as ML and Haskell. Both theoretical and
+practical issues resulted from this generalization are addressed. On one
+hand, a type system is designed to formalize the notion of g.r. datatype
+constructors and its soundness is proven. On the other hand, some
+significant applications (e.g., implementing objects, implementing staged
+computation, etc.) of g.r. datatype constructors are given, indicating that
+g.r. datatype constructors can have far-reaching consequences in
+programming.  The main contribution of the paper lies in the recognition
+and then the formalization of a programming notion that is of both
+theoretical interest and practical use.
+<P>
+
+<LI><B>Applied Type System</B>
+(<A href="ATS-types03.pdf">pdf</A>)
+(<A href="ATS-types03.ps">ps</A>)
+<P>
+
+<LI><B>Combining Programming with Theorem Proving</B>
+(<A href="CPwTP-icfp05.pdf">pdf</A>)
+(<A href="CPwTP-icfp05.ps">ps</A>)
+<P>
+Applied Type System (ATS) is recently proposed as a framework for
+designing and formalizing (advanced) type systems in support of practical
+programming. In ATS, the definition of type equality involves a
+constraint relation, which may or may not be algorithmically decidable.  To
+support practical programming, we adopted a design in the past that imposes
+certain restrictions on the syntactic form of constraints so that some
+effective means can be found for solving constraints automatically.
+Evidently, this is a rather <EM>ad hoc</EM> design in its nature.  In this
+paper, we rectify the situation by presenting a fundamentally different
+design, which we claim to be both novel and practical. Instead of imposing
+syntactical restrictions on constraints, we provide a means for the
+programmer to construct proofs that attest to the validity of
+constraints. In particular, we are to accommodate a programming paradigm
+that enables the programmer to combine programming with theorem proving.
+Also we present some concrete examples in support of the practicality of
+this design.
+<P>
+
+<LI><B>Attributive Types for Proof Erasure</B>
+(<A href="ATPE-types07.pdf">pdf</A>)
+(<A href="ATPE-types07.ps">ps</A>)
+<P>
+Proof erasure plays an essential role in the paradigm of programming with
+theorem proving as is supported in ATS. In this paper, a form of
+<EM>attributive types</EM> are introduced that carry an attribute to determine
+whether expressions assigned such types are eligible for erasure before
+run-time.  A type system to support this form of attributive types is
+formalized and its soundness is established. In addition, an extension of
+the developed type system with dependent types is outlined and some
+examples are presented to illustrate some practical use of attributive
+types.
+<P>
+
+<LI><B>Safe Programming with Pointers through Stateful Views</B>
+(<A href="SPPSV-padl05.pdf">pdf</A>)
+(<A href="SPPSV-padl05.ps">ps</A>)
+<P>
+The paper gives a brief introduction to using (stateful) views
+in support of safe programming with pointers (and pointer arithmetic).
+It is a good start for people interested in programming with
+theorem-proving in an imperative setting.
+<P>
+
+<LI><B>ATS/LF: a type system for constructing proofs as total functional programs</B>
+(<A href="ATSLF-PAfestschrift.pdf">pdf</A>)
+(<A href="ATSLF-PAfestschrift.ps">ps</A>)
+<P>
+This paper outlines the design of ATS/LF, the theorem proving component in
+ATS (for supporting programming with theorem-proving). In particular, it
+demonstrates, with interesting examples, an approach to theorem proving
+that represents proofs as total functions.  The paper is especially
+important for people interested in using ATS/LF as a logical framework to
+encode deduction systems as well as to reason about their (meta-)properties.
+<P>
+
+<LI><B>A Formalization of Strong Normalization for Simply Typed Lambda-Calculus and System F</B>
+(<A href="STLC-F-SN-lfmtp06.pdf">pdf</A>)
+(<A href="STLC-F-SN-lfmtp06.ps">ps</A>)
+<P>
+The paper first presents in details the encoding of a proof (based on
+Tait's notion of reducibility) in ATS showing that the simply-typed
+lambda-calculus is strongly normalizing. It then encodes in ATS a proof
+(based on Girard's notion of reducibility candidates) showing that System F
+is strongly normalizing.
+<P>
+
+<LI><B>Implementing Reliable Linux Device Drivers in ATS</B>
+(<A href="LDD-plpv07.pdf">pdf</A>)
+(<A href="LDD-plpv07.ps">ps</A>)
+<P>
+
+</MENU>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi/">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

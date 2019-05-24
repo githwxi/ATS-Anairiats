@@ -1,0 +1,114 @@
+<!-- beg of [exception.html] -->
+
+<H2><A id="exceptions" name="exceptions">Exceptions</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Exceptions can provide a convenient approach to handling abnormal or
+erroneous cases. This convenience, however, is not without a cost as
+programs making use of exceptions can often become rather difficult to
+reason about.
+<P>
+
+In ATS, the type for exceptions is denoted by <i>exn</i>, which actually is
+a viewtype of the sort <i>viewtype</i>. So the size of
+<i>exn</i> equals the size of a pointer. The type <i>exn</i> may be thought
+of as a dataviewtype (i.e., linear datatype) with which an extensible set
+of constructors are associated.  The syntax for declaring an exception is
+rather similar to that for declaring a constructor (associated with a
+datatype). For instance, three exceptions (or more precisely, exception
+constructors) are declared as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">exception</FONT> Fail <FONT COLOR="#787878">// Fail: exn
+</FONT><FONT COLOR="#000000">exception</FONT> Fail_msg <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF">string</FONT> <FONT COLOR="#787878">// Fail_msg: string -&gt; exn
+</FONT>
+<FONT COLOR="#787878">// Fail_msgs : {n:nat} (int n, list (string n)) -&gt; exn
+</FONT><FONT COLOR="#000000">exception</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">n<FONT COLOR="#000000">:</FONT>nat</FONT><FONT COLOR="#000000">}</FONT> Fail_msgs <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>int n<FONT COLOR="#000000">,</FONT> list <FONT COLOR="#000000">(</FONT>string<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT>
+</FONT></PRE>
+
+All exceptions in ATS are static and there is no issue of exceptions being
+generative as is in Standard ML. It is allowed that an exception be
+declared in a closed scope so that the declared exception becomes
+inaccessible outside the closed scope. This is analogous to declaring a
+static variable inside the body of a function in C.
+<P>
+
+We present as follows an example that involves an exception being raised
+and then captured.  A binary tree is a Braun tree if it is empty or it
+satisfies the property that its left and right children are Braun trees and
+the size of the left child minus the size of the right child equals 0 or 1.
+The following code implements a function that checks whether a binary tree
+is a Braun tree:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">datatype</FONT> <FONT COLOR="#0000FF">bt</FONT> <FONT COLOR="#000000">=</FONT> E <FONT COLOR="#000000">|</FONT> B <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>bt<FONT COLOR="#000000">,</FONT> bt<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#787878">// datatype for binary trees
+</FONT>
+<FONT COLOR="#000000">fn</FONT> isBraunTree <FONT COLOR="#000000">(</FONT>bt0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">bt</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">bool</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">exception</FONT> NotBraunTree
+  <FONT COLOR="#000000">fun</FONT> aux <FONT COLOR="#000000">(</FONT>bt<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">bt</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">case+</FONT> bt <FONT COLOR="#000000">of</FONT>
+    <FONT COLOR="#000000">|</FONT> B <FONT COLOR="#000000">(</FONT>bt1<FONT COLOR="#000000">,</FONT> bt2<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">val</FONT> ls <FONT COLOR="#000000">=</FONT> aux bt1 <FONT COLOR="#000000">and</FONT> rs <FONT COLOR="#000000">=</FONT> aux bt2
+      <FONT COLOR="#000000">in</FONT>
+        <FONT COLOR="#000000">if</FONT> <FONT COLOR="#000000">(</FONT>ls &gt;= rs &amp;&amp; rs+1 &gt;= ls<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">then</FONT> ls+rs+1 <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">$raise</FONT> NotBraunTree<FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">|</FONT> E <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> 0
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">try</FONT> <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> s <FONT COLOR="#000000">=</FONT> aux bt0 <FONT COLOR="#000000">in</FONT> true <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">with</FONT> <FONT COLOR="#000000">~</FONT>NotBraunTree<FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> false
+<FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+The type of an exception constructor cannot contain free static variables.
+In other words, each exception constructor can be lifted to the toplevel.
+For instance, the following code is illegal: the exception constructor
+<i>Foo</i> cannot be lifted to the toplevel as its type contains a free type
+variable.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> f <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">exception</FONT> Foo <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF">a</FONT> <FONT COLOR="#787878">// Foo: a -&gt; exn
+</FONT><FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#787878">// ...
+</FONT><FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+Sometimes, we may want to raise an exception carrying a value of some
+variable type.  This is shown, for instance, in the following illegal code
+that tries to implement the list subscripting function:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">extern</FONT> <FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT>
+  list_iforeach <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">List a</FONT><FONT COLOR="#000000">,</FONT> f<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>Nat<FONT COLOR="#000000">,</FONT> a<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> void</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT>
+
+<FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> nth <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">List a</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">exception</FONT> Found <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF">a</FONT>
+  <FONT COLOR="#000000">fn</FONT> f <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">if</FONT> i <FONT COLOR="#000000">=</FONT> n <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">$raise</FONT> <FONT COLOR="#000000">(</FONT>Found x<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">try</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> list_iforeach <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> f<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">$raise</FONT> ListSubscriptException <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">with</FONT>
+    <FONT COLOR="#000000">~</FONT>Found x <FONT COLOR="#000000">=&gt;</FONT> x
+  <FONT COLOR="#787878">// end of [try]
+</FONT><FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [nth]
+</FONT></FONT></PRE>
+
+A method to work around the issue is shown in the following code:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> nth <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">List a</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">exception</FONT> Found <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">val</FONT> ans <FONT COLOR="#000000">=</FONT> ref_make_elt&lt;<FONT COLOR="#0000FF">Option a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>None<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">fn</FONT> f <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">Nat</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">if</FONT> i <FONT COLOR="#000000">=</FONT> n <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>ans := Some x<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">$raise</FONT> Found <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">try</FONT> <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> list_iforeach <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> f<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">$raise</FONT> ListSubscriptException <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">with</FONT>
+    <FONT COLOR="#000000">~</FONT>Found <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#787878">// end of [try]
+</FONT><FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#000000">case</FONT> <FONT COLOR="#000000">!</FONT>ans <FONT COLOR="#000000">of</FONT>
+  <FONT COLOR="#000000">|</FONT> Some x <FONT COLOR="#000000">=&gt;</FONT> x <FONT COLOR="#000000">|</FONT> None <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">$raise</FONT> ListSubscriptException <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [nth]
+</FONT></FONT></PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="exceptions.dats">here</a>.
+
+<!-- end of [exception.html] -->

@@ -1,0 +1,110 @@
+<!-- beg of [stack-allocation.html] -->
+
+<H2><A id="stackalloc" name="castingfun">Allocation in Stack Frames</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+ATS supports memory allocation in the stack frame of a calling function,
+and it is guaranteed by the type system of ATS that memory thus allocated
+cannot be accessed once the calling function returns.
+
+<H4>Storing Arrays in Stack Frames</H4>
+
+In the following contrived example, the implemented function
+<i>name_of_month_1</i> allocates in its stack frame a string array of size
+<i>12</i> that is initialized with the names of 12 months, and then returns
+the name of the <i>i</i>th month.
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> name_of_month_1 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>int <span class="keyword">|</span> 1 &lt;= i<span class="keyword">;</span> i &lt;= 12<span class="keyword">}</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">string</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> <span class="keyword">!</span>p_arr <span class="keyword">with</span> <span class="prfexp">pf_arr</span> <span class="keyword">=</span> <span class="keyword">@[</span><span class="staexp">string</span><span class="keyword">]</span><span class="keyword">(</span>
+    "Jan"<span class="keyword">,</span> "Feb"<span class="keyword">,</span> "Mar"<span class="keyword">,</span> "Apr"<span class="keyword">,</span> "May"<span class="keyword">,</span> "Jun"<span class="keyword">,</span> "Jul"<span class="keyword">,</span> "Aug"<span class="keyword">,</span> "Sep"<span class="keyword">,</span> "Oct"<span class="keyword">,</span> "Nov"<span class="keyword">,</span> "Dec"
+  <span class="keyword">)</span>
+<span class="keyword">in</span>
+  p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">i-1</span><span class="keyword">]</span>
+<span class="keyword">end</span> <span class="comment">// end of [name_of_month_1]
+</span></span></PRE>
+
+The following syntax indicates that the starting address of the allocated
+array is stored in <i>p_arr</i> while the view of the array is stored in
+<i>pf_arr</i>:
+<PRE>
+  var !p_arr with pf_arr = @[string](
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  )
+</PRE>
+This allocated array is initialized with the strings representing the names of the 12 months: "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+"Jul", "Aug", "Sep", "Oct", "Nov", "Dec".
+<P>
+
+A variant of the function <i>name_of_month_1</i> is implemeneted as follows:
+<PRE><span class="dynexp"><span class="keyword">fn</span> name_of_month_2 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>int <span class="keyword">|</span> 1 &lt;= i<span class="keyword">;</span> i <span class="keyword">&lt;</span> 12<span class="keyword">}</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">string</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> <span class="keyword">!</span>p_arr <span class="keyword">with</span> <span class="prfexp">pf_arr</span> <span class="keyword">=</span> <span class="keyword">@[</span><span class="staexp">string</span><span class="keyword">]</span><span class="keyword">[</span>12<span class="keyword">]</span><span class="keyword">(</span>""<span class="keyword">)</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">0</span><span class="keyword">]</span> := "Jan"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">1</span><span class="keyword">]</span> := "Feb"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">2</span><span class="keyword">]</span> := "Mar"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">3</span><span class="keyword">]</span> := "Apr"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">4</span><span class="keyword">]</span> := "May"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">5</span><span class="keyword">]</span> := "Jun"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">6</span><span class="keyword">]</span> := "Jul"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">7</span><span class="keyword">]</span> := "Aug"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">8</span><span class="keyword">]</span> := "Sep"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">9</span><span class="keyword">]</span> := "Oct"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">10</span><span class="keyword">]</span> := "Nov"
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">11</span><span class="keyword">]</span> := "Dec"
+<span class="keyword">in</span>
+  p_arr<span class="keyword">-&gt;</span><span class="keyword">[</span><span class="prfexp">i-1</span><span class="keyword">]</span>
+<span class="keyword">end</span> <span class="comment">// end of [name_of_month_2]
+</span></span></PRE>
+
+The following syntax means that the function <i>name_of_month_2</i>
+allocates a string array of size 12 in its stack frame and initializes the
+array with the empty string:
+<PRE>var !p_arr with pf_arr = @[string][12]("")</PRE>
+
+The starting address and the view of the allocated array are stored in
+<i>p_arr</i> and <i>pf_arr</i>, respectively. If the following syntax is
+used:
+
+<PRE>var !p_arr with pf_arr = @[string][12]()</PRE>
+
+then the allocated array is uninitialized, that is, the view of the proof
+<i>pf_arr</i> is <i>[string?][12] @ p_arr</i> (instead of
+<i>[string][12] @ p_arr</i>).
+
+<H4>Storing Closures in Stack Frames</H4>
+When higher-order functions are employed in systems programming, it is often
+desirable to form closures in the stack frame of the calling function so as
+to avoid the need for memory allocation on heap.
+<P>
+
+In the following example, the implemented function <i>print_month_name</i>
+forms a closure in its stack frame, which is then passed to a higher-order
+function <i>iforeach_array_ptr_clo</i>:
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> print_month_names <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> <span class="keyword">!</span>p_arr <span class="keyword">with</span> <span class="prfexp">pf_arr</span> <span class="keyword">=</span> <span class="keyword">@[</span><span class="staexp">string</span><span class="keyword">]</span><span class="keyword">(</span>
+    "Jan"<span class="keyword">,</span> "Feb"<span class="keyword">,</span> "Mar"<span class="keyword">,</span> "Apr"<span class="keyword">,</span> "May"<span class="keyword">,</span> "Jun"<span class="keyword">,</span> "Jul"<span class="keyword">,</span> "Aug"<span class="keyword">,</span> "Sep"<span class="keyword">,</span> "Oct"<span class="keyword">,</span> "Nov"<span class="keyword">,</span> "Dec"
+  <span class="keyword">)</span>
+  <span class="keyword">var</span> <span class="keyword">!</span>p_clo <span class="keyword">with</span> <span class="prfexp">pf_clo</span> <span class="keyword">=</span> @lam <span class="comment">// this closure is allocated in the stack frame
+</span>    <span class="keyword">(</span><span class="prfexp">pf<span class="keyword">:</span> <span class="staexp"><span class="keyword">!</span>unit_v</span></span> <span class="keyword">|</span> i<span class="keyword">:</span> <span class="staexp">sizeLt 12</span><span class="keyword">,</span> x<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>string</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=&lt;</span><span class="staexp">clo1</span><span class="keyword">&gt;</span> <span class="keyword">(</span><span class="keyword">if</span> i <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> print ", "<span class="keyword">;</span> print x<span class="keyword">)</span>
+  <span class="comment">// end of [var]
+</span>  <span class="keyword">prval</span> <span class="prfexp">pf <span class="keyword">=</span> unit_v <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> iforeach_array_ptr_clo_tsz <span class="staexp"><span class="keyword">{</span>string<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>unit_v<span class="keyword">}</span></span> <span class="keyword">(</span><span class="prfexp">pf</span> <span class="keyword">|</span> <span class="keyword">!</span>p_clo<span class="keyword">,</span> <span class="keyword">!</span>p_arr<span class="keyword">,</span> 12<span class="keyword">,</span> sizeof&lt;<span class="staexp">string</span><span class="keyword">&gt;</span><span class="keyword">)</span>
+  <span class="keyword">prval</span> <span class="prfexp">unit_v <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pf</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> print_newline <span class="keyword">(</span><span class="keyword">)</span>
+<span class="keyword">in</span>
+  <span class="comment">// empty
+</span><span class="keyword">end</span> <span class="comment">// end of [print_month_names]
+</span></span></PRE>
+
+Note that the keyword <i>@lam</i> (instead of <i>lam</i>) is used here to
+indicate that the closure is constructed in the stack frame of the function
+<i>print_month_names</i>.
+
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="stack-allocation.dats">here</a>.
+
+<!-- end of [stack-allocation.html] -->

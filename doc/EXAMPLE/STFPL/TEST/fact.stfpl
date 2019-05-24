@@ -1,0 +1,19 @@
+/*
+** computing the factorial numbers
+*/
+
+let
+  val
+  rec fact: int -> int =
+    lam (n: int) => if n >= 1 then n * fact (n-1) else 1
+  // end of [val rec]
+  val _ = print "fact (10) = "
+  val _ = print_int (fact 10)
+  val _ = print "\n"
+in
+  fact (10)
+end // end of [let]
+
+/* ****** ****** */
+
+/* end of [fact.stfpl] */

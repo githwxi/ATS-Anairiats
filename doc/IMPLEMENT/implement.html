@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-implementation</TITLE>
+<META name="description" content="Home Page for ATS-implementation">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../TUTORIAL/tutorial.html">Tutorial</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../EXAMPLE/example.html">Examples</A>&nbsp;(<A HREF="../EXAMPLE/example_new.html">new</A>)</TD></TR>
+  <TR><TD CLASS="menu"><B CLASS="here">Implementation</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../CHANGELOG/changelog.html">ChangeLog</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>Implementations of ATS</H1>
+</CENTER>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+
+<A HREF="http://ats-lang.svn.sourceforge.net/viewvc/ats-lang/trunk"><B>ATS/Anairiats</B></A>
+is the currently released implementation of ATS. ATS/Anairiats is written
+in ATS itself, consisting of nearly 100,000 lines
+of <A HREF="ATSOPT/ATSOPT.html">source code</A>.  When compared to
+ATS/Geizella, a previous implementation of ATS, ATS/Anairiats is
+significantly more efficient, and in general it issues more informative
+messages for identifying program errors.
+<P>
+
+<B>Bootstrapping via gcc</B>&nbsp;
+In order to bootstrap ATS/Anairiats, one needs to first check out the
+following svn directory and name it as some local directory, say, "FOO":
+
+<PRE>svn co https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk FOO</PRE>
+
+Note that this checkout puts the C code needed for bootstrapping in a
+directory of the name "FOO/bootstrap0".
+<P>
+
+<!--
+Then one needs to check out another svn directory and name it as
+the local directory "FOO/bootstrap0":
+
+<PRE>svn co https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/bootstrap/tags/anairiats-x.x.x \
+  FOO/bootstrap0</PRE>
+
+Note that "x.x.x" should be replaced with the latest version number
+available for bootstrapping, which currently is "0.1.5". It also works
+(most of the time) if one checks out the code for bootstrapping as follows:
+
+<PRE>svn co https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/bootstrap/anairiats \
+  FOO/bootstrap0</PRE>
+
+After this is done, please go into the directory "FOO" and execute the
+command 'autoconf' and then do 'make all'.
+-->
+
+<!--
+Please go into the directory "FOO" and execute the command 'aclocal' and
+then the command 'autoconf' and then do 'make all'.
+-->
+
+Please go into the directory "FOO" and then execute 'make all'.
+<P>
+
+<B>Bootstrapping via ocaml</B>&nbsp;
+
+It is also possible to use the ATS/Geizella compiler (written in OCaml) for
+bootstrapping ATS/Anairiats. This can be done by checking out the following
+svn directory and name it as the local directory "FOO/bootstrap0":
+
+<PRE>svn co https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/bootstrap/geizella \
+  FOO/bootstrap0</PRE>
+
+After this is done, please go into the directory "FOO" and then execute
+'make all-geizella'.
+<P>
+
+<hr size=2 align=left color="000000"><p>
+
+<A
+HREF="http://ats-lang.svn.sourceforge.net/viewvc/ats-lang/bootstrap/geizella"><B>ATS/Geizella</B></A>
+is a previously released implementation of ATS (written in <A
+HREF="http://www.ocaml.org">OCaml</A> and C). In this
+implementation, the native unboxed data representation (as is in C) is
+adopted, and this makes ATS/Geizella particularly well suited for direct
+interaction with C.  As for parametric polymorphism, it is supported in
+ATS/Geizella through the use of templates.  ATS/Geizella is now largely out
+of active use as ATS/Anairiats, a compiler for ATS that is almost entirely
+written in ATS, has been bootstrapped successfully (with the help of
+ATS/Geizella).
+<p>
+
+<hr size=2 align=left color="000000"><p>
+
+<A HREF="Proto/"><B>ATS/Proto</B></A> is the first implementation of ATS.  In this
+implementation, the standard boxed data representation is used to support
+parametric polymorphism. As of now, ATS/Proto is no longer actively
+maintained and its main purpose is to serve as an example for future
+reference.
+<P>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi/">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

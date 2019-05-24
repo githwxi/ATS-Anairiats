@@ -1,0 +1,42 @@
+/* 
+** The example is essentially taken from Appel's book:
+** Modern Compiler Implementation in ML
+*/
+
+/*
+** this is a good test for compiling static links
+*/
+
+let
+  type tree = {key: string, left: tree, right: tree}
+
+  function prettyprint (tree: tree): string = let
+    var output := ""
+    function write (s: string) = (output := concat (output, s))
+
+    function show (n: int, t: tree) = let
+      function indent (s: string) = (
+        for i := 1 to n do write (" ");
+        output := concat (output, s); write ("\n")
+      ) /* end of [function indent] */
+    in
+      if t = nil then indent (".") else (
+        indent (t.key); show (n+1, t.left); show (n+1, t.right)
+      ) /* end of [if] */
+    end /* end of [function show] */
+  in
+    show (0, tree); output
+  end /* end of [function] */
+
+  var tree0: tree := nil
+  var tree1 := tree {key = "A", left = tree0, right = tree0}
+  var tree2 := tree {key = "B", left = tree1, right = tree1}
+  var tree3 := tree {key = "C", left = tree2, right = tree2}
+  var tree4 := tree {key = "D", left = tree2, right = tree3}
+in
+  print ("prettyprint (tree4) =\n"); print (prettyprint (tree4))
+end /* end of [let] */
+
+/* ****** ****** */
+
+/* end of [prettyprint.tig] */

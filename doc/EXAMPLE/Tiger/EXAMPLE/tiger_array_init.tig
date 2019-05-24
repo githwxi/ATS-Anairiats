@@ -1,0 +1,15 @@
+let
+
+type ptr = {}
+type ptrarr = array of ptr
+
+function tiger_array_init
+  (A: ptrarr, sz: int, x: ptr) = let
+  var i: int := 0  
+in
+  while (i < sz) do (A[i] := x ; i := i + 1)
+end /* end of [tiger_array_init] */
+
+in /* in of [let] */
+  ()
+end /* end of [let] */

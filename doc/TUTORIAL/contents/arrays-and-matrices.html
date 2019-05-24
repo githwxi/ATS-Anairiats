@@ -1,0 +1,209 @@
+<!-- beg of [arrays-and-matrices.html] -->
+
+<H2><A id="arrays-and-matrices" name="arrays-and-matrices">Persistent
+Arrays and Matrices</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Though arrays are widely used in practice, there are many difficult issues
+involving arrays that seem to have not been adequately addressed in type
+theory.  In particular, programming can become rather tricky when arrays
+are used to store resources (e.g., pointers to allocated memory).
+<P>
+
+In ATS, there are two forms of arrays: linear arrays and persistent
+arrays. On one hand, a linear array cannot be shared but a persistent array
+can. On the other hand, a linear array can be explicitly freed but a
+persistent one cannot. However, a persistent array may be freed by GC.
+
+Although persistent arrays are built in terms of linear arrays, it seems
+easier to explain persistent arrays as such arrays are available in
+probably any programming language that may be considered practical.
+
+<H3>Persistent Arrays</H3>
+
+The interfaces for various functions on persistent arrays can be found in
+the file <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/array.sats">prelude/SATS/array.sats</A>.
+
+Given a viewtype <i>VT</i> and an integer <i>I</I>, the type <i>array(VT,
+I)</i> is for persistent arrays of size <i>I</i> in which each element is
+of viewtype <i>VT</i>. Internally, a value of the type <i>array(VT, I)</i>
+is just a pointer to a piece of consecutive memory holding <i>I</i> elements of
+the type <i>VT</i>. Note that there is no size information directly attached to
+such an array, that is, <u>no function of the following type is available</u>:
+
+<pre>
+fun{a:viewt@ype} array_size {n:nat} (A: array (a, n)): int n
+</pre>
+
+If the size of such an array is needed, it may be stored somewhere
+explicitly by the programmer.
+<P>
+
+<B>Array Creation</B>&nbsp;&nbsp;
+There are several approaches to creating persistent arrays in ATS.
+For instance, the following code in ATS creates an array of integers:
+
+<pre>
+val digits = array $arrsz{int}(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+</pre>
+
+The type assigned to the variable <i>digits</i> is <i>array(int, 10)</i>.
+We can certainly be more precise by stating that <i>digits</i> is indeed an
+array of digits:
+
+<pre>
+typedef digit = [i:nat | i &lt; 10] int (i)
+
+// digits: array (digit, 10)
+val digits = array $arrsz{digit}(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+</pre>
+<P>
+
+<B>Array Subscripting</B>&nbsp;&nbsp;
+
+The following two function templates
+<i>array_get_elt_at</i> and <i>array_set_elt_at</i>
+are for accessing and updating a persistent array, respectively:
+
+<pre>
+fun{a:t@ype} array_get_elt_at {n:nat} (A: array (a, n), i: sizeLt n):&lt;!ref&gt; a
+fun{a:t@ype} array_set_elt_at {n:nat} (A: array (a, n), i: sizeLt n, x: a):&lt;!ref&gt; void
+</pre>
+
+The symbol <i>[]</i> is overloaded with both <i>array_get_elt_at</i> and
+<i>array_set_elt_at</i>:
+
+<pre>
+overload [] with array_get_elt_at
+overload [] with array_set_elt_at
+</pre>
+
+As an example, we implement as follows a function that squares each element
+in a given array of doubles:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT> array_square <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">array <FONT COLOR="#000000">(</FONT>double<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> sz<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT>0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">where</FONT> <FONT COLOR="#000000">{</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i &lt;= n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT>n-i<FONT COLOR="#000000">&gt;.</FONT></FONT> <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">cloptr1</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">if</FONT> i <FONT COLOR="#000000">&lt;</FONT> sz <FONT COLOR="#000000">then</FONT>
+      <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> x <FONT COLOR="#000000">=</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">in</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> := x * x<FONT COLOR="#000000">;</FONT> loop <FONT COLOR="#000000">(</FONT>i+1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// end of [array_square]
+</FONT></FONT></PRE>
+
+In this code, <i>A[i]</i> and <i>A[i] := x * x</i> 
+are shorthands for
+<i>array_get_elt_at(A, i)</i> and <i>array_set_elt_at(A, i, x * x)</i>,
+respectively.
+<P>
+
+<H3>Persistent Matrices</H3>
+
+A matrix is an array of 2 dimensions. Note that the 2 dimensions of a
+matrix are not necessarily the same. If they are the same, then the matrix
+is often referred to as a square matrix.
+<P>
+
+The interfaces for various functions on matrices can be found in the file
+<a href="../../IMPLEMENTATION/Anairiats/ATS/prelude/SATS/matrix.sats">prelude/SATS/matrix.sats
+</a>.
+
+Given a viewtype <i>VT</i> and an integer <i>I</I> and another integer
+<i>J</i>, the type <i>matrix(VT, I, J)</i> is for persistent matrices of
+dimensions <i>I</i> (row) and <i>J</i> (column) in which each element is of
+type <i>VT</i>.  Internally, a value of the type <i>matrix(VT, I, J)</i> is
+just a pointer to a piece of consecutive memory holding <i>I*J</i> elements
+of the type <i>VT</i>, where the elements are placed in the row-major
+format.
+<P>
+
+<B>Matrix Creation</B>&nbsp;&nbsp;
+The approaches to creating matrices resemble those to creating arrays.
+For instance, the following code creates a square matrix of dimension
+10 by 10:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">val</FONT> mat_10_10 <FONT COLOR="#000000">=</FONT>
+  matrix <FONT COLOR="#000000">(</FONT>10<FONT COLOR="#000000">,</FONT> 10<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">$arrsz</FONT> <FONT COLOR="#000000">{</FONT>Int<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>
+   0<FONT COLOR="#000000">,</FONT>  1<FONT COLOR="#000000">,</FONT>  2<FONT COLOR="#000000">,</FONT>  3<FONT COLOR="#000000">,</FONT>  4<FONT COLOR="#000000">,</FONT>  5<FONT COLOR="#000000">,</FONT>  6<FONT COLOR="#000000">,</FONT>  7<FONT COLOR="#000000">,</FONT>  8<FONT COLOR="#000000">,</FONT>  9
+<FONT COLOR="#000000">,</FONT> 10<FONT COLOR="#000000">,</FONT> 11<FONT COLOR="#000000">,</FONT> 12<FONT COLOR="#000000">,</FONT> 13<FONT COLOR="#000000">,</FONT> 14<FONT COLOR="#000000">,</FONT> 15<FONT COLOR="#000000">,</FONT> 16<FONT COLOR="#000000">,</FONT> 17<FONT COLOR="#000000">,</FONT> 18<FONT COLOR="#000000">,</FONT> 19
+<FONT COLOR="#000000">,</FONT> 20<FONT COLOR="#000000">,</FONT> 21<FONT COLOR="#000000">,</FONT> 22<FONT COLOR="#000000">,</FONT> 23<FONT COLOR="#000000">,</FONT> 24<FONT COLOR="#000000">,</FONT> 25<FONT COLOR="#000000">,</FONT> 26<FONT COLOR="#000000">,</FONT> 27<FONT COLOR="#000000">,</FONT> 28<FONT COLOR="#000000">,</FONT> 29
+<FONT COLOR="#000000">,</FONT> 30<FONT COLOR="#000000">,</FONT> 31<FONT COLOR="#000000">,</FONT> 32<FONT COLOR="#000000">,</FONT> 33<FONT COLOR="#000000">,</FONT> 34<FONT COLOR="#000000">,</FONT> 35<FONT COLOR="#000000">,</FONT> 36<FONT COLOR="#000000">,</FONT> 37<FONT COLOR="#000000">,</FONT> 38<FONT COLOR="#000000">,</FONT> 39
+<FONT COLOR="#000000">,</FONT> 40<FONT COLOR="#000000">,</FONT> 41<FONT COLOR="#000000">,</FONT> 42<FONT COLOR="#000000">,</FONT> 43<FONT COLOR="#000000">,</FONT> 44<FONT COLOR="#000000">,</FONT> 45<FONT COLOR="#000000">,</FONT> 46<FONT COLOR="#000000">,</FONT> 47<FONT COLOR="#000000">,</FONT> 48<FONT COLOR="#000000">,</FONT> 49
+<FONT COLOR="#000000">,</FONT> 50<FONT COLOR="#000000">,</FONT> 51<FONT COLOR="#000000">,</FONT> 52<FONT COLOR="#000000">,</FONT> 53<FONT COLOR="#000000">,</FONT> 54<FONT COLOR="#000000">,</FONT> 55<FONT COLOR="#000000">,</FONT> 56<FONT COLOR="#000000">,</FONT> 57<FONT COLOR="#000000">,</FONT> 58<FONT COLOR="#000000">,</FONT> 59
+<FONT COLOR="#000000">,</FONT> 60<FONT COLOR="#000000">,</FONT> 61<FONT COLOR="#000000">,</FONT> 62<FONT COLOR="#000000">,</FONT> 63<FONT COLOR="#000000">,</FONT> 64<FONT COLOR="#000000">,</FONT> 65<FONT COLOR="#000000">,</FONT> 66<FONT COLOR="#000000">,</FONT> 67<FONT COLOR="#000000">,</FONT> 68<FONT COLOR="#000000">,</FONT> 69
+<FONT COLOR="#000000">,</FONT> 70<FONT COLOR="#000000">,</FONT> 71<FONT COLOR="#000000">,</FONT> 72<FONT COLOR="#000000">,</FONT> 73<FONT COLOR="#000000">,</FONT> 74<FONT COLOR="#000000">,</FONT> 75<FONT COLOR="#000000">,</FONT> 76<FONT COLOR="#000000">,</FONT> 77<FONT COLOR="#000000">,</FONT> 78<FONT COLOR="#000000">,</FONT> 79
+<FONT COLOR="#000000">,</FONT> 80<FONT COLOR="#000000">,</FONT> 81<FONT COLOR="#000000">,</FONT> 82<FONT COLOR="#000000">,</FONT> 83<FONT COLOR="#000000">,</FONT> 84<FONT COLOR="#000000">,</FONT> 85<FONT COLOR="#000000">,</FONT> 86<FONT COLOR="#000000">,</FONT> 87<FONT COLOR="#000000">,</FONT> 88<FONT COLOR="#000000">,</FONT> 89
+<FONT COLOR="#000000">,</FONT> 90<FONT COLOR="#000000">,</FONT> 91<FONT COLOR="#000000">,</FONT> 92<FONT COLOR="#000000">,</FONT> 93<FONT COLOR="#000000">,</FONT> 94<FONT COLOR="#000000">,</FONT> 99<FONT COLOR="#000000">,</FONT> 96<FONT COLOR="#000000">,</FONT> 97<FONT COLOR="#000000">,</FONT> 98<FONT COLOR="#000000">,</FONT> 99
+<FONT COLOR="#000000">)</FONT> <FONT COLOR="#787878">// end of [val]
+</FONT></FONT></PRE>
+
+<B>Matrix Subscripting</B>&nbsp;&nbsp;
+
+The following two function templates
+<i>matrix_get_elt_at</i> and <i>matrix_set_elt_at</i>
+are for accessing and updating a persistent matrix, respectively:
+
+<pre>
+fun{a:t@ype} matrix_get_elt_at {m,n:nat} (A: matrix (a,m,n), i: sizeLt m, n: int n, j: sizeLt n): &lt;!ref&gt; a
+fun{a:t@ype} matrix_set_elt_at {m,n:nat} (A: matrix (a,m,n), i: sizeLt m, n: int n, j: sizeLt n, x: a): &lt;!ref&gt; void
+</pre>
+
+Note that the number of columns in a matrix as well as the row and column
+indices are needed in order to perform matrix subscripting. As an example,
+the following code implements a function template that transposes a given
+square matrix in-situ:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> matrix_transpose <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">matrix <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fn</FONT> get <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">;</FONT> j <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT>
+   <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">matrix <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">cloref1</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">a</FONT> <FONT COLOR="#000000">=</FONT>
+   matrix_get_elt_at__intsz <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">)</FONT>
+
+  <FONT COLOR="#000000">fn</FONT> set <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">;</FONT> j <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">}</FONT></FONT>
+   <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">matrix <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">cloref1</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+   matrix_set_elt_at__intsz <FONT COLOR="#000000">(</FONT>A<FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">,</FONT> x<FONT COLOR="#000000">)</FONT>
+
+  <FONT COLOR="#000000">overload</FONT> <FONT COLOR="#800080"><FONT COLOR="#000000">[</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">with</FONT> get</FONT><FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">overload</FONT> <FONT COLOR="#800080"><FONT COLOR="#000000">[</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">with</FONT> set</FONT>
+
+  <FONT COLOR="#787878">// [fn*] indicates a request for tail-call optimization
+</FONT>  <FONT COLOR="#000000">fn*</FONT> loop1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i &lt;= n<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> n-i+1<FONT COLOR="#000000">,</FONT> 0 <FONT COLOR="#000000">&gt;.</FONT></FONT>
+    <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">cloptr1</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT>
+    <FONT COLOR="#000000">if</FONT> i <FONT COLOR="#000000">&lt;</FONT> n <FONT COLOR="#000000">then</FONT> loop2 <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+
+  <FONT COLOR="#000000">and</FONT> loop2 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat <FONT COLOR="#000000">|</FONT> i <FONT COLOR="#000000">&lt;</FONT> n<FONT COLOR="#000000">;</FONT> j &lt;= i<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> n-i<FONT COLOR="#000000">,</FONT> i-j+1 <FONT COLOR="#000000">&gt;.</FONT></FONT>
+    <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int i</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">cloptr1</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT>
+    <FONT COLOR="#000000">if</FONT> j <FONT COLOR="#000000">&lt;</FONT> i <FONT COLOR="#000000">then</FONT>
+      <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> x <FONT COLOR="#000000">=</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">in</FONT> A[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> := A[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">;</FONT> A[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> := x<FONT COLOR="#000000">;</FONT> loop2 <FONT COLOR="#000000">(</FONT>i<FONT COLOR="#000000">,</FONT> j+1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">begin</FONT>
+      loop1 <FONT COLOR="#000000">(</FONT>i+1<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [loop2]
+</FONT><FONT COLOR="#000000">in</FONT>
+  loop1 0
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [matrix_transpose]
+</FONT>
+<FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> matrix_transpose <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>M<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">matrix <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">size_t n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">pf <FONT COLOR="#000000">=</FONT> unit_v <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">val</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> matrix_iforeach_clo&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>unit_v<FONT COLOR="#000000">}</FONT></FONT>
+    <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf</FONT> <FONT COLOR="#000000">|</FONT> M<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_f<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">where</FONT> <FONT COLOR="#000000">{</FONT> <FONT COLOR="#787878">
+</FONT>    <FONT COLOR="#000000">var</FONT> <FONT COLOR="#000000">!</FONT>p_f <FONT COLOR="#000000">=</FONT> @lam
+      <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>unit_v</FONT></FONT> <FONT COLOR="#000000">|</FONT> i<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">sizeLt n</FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">sizeLt n</FONT><FONT COLOR="#000000">,</FONT> _<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=&lt;</FONT><FONT COLOR="#0000FF">clo</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#000000">!</FONT><FONT COLOR="#0000FF">ref</FONT><FONT COLOR="#000000">&gt;</FONT>
+      <FONT COLOR="#000000">if</FONT> i <FONT COLOR="#000000">&gt;</FONT> j <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">let</FONT>
+        <FONT COLOR="#000000">val</FONT> x <FONT COLOR="#000000">=</FONT> M[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">n</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> <FONT COLOR="#000000">in</FONT> M[<FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">n</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">]</FONT> := M[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">n</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT><FONT COLOR="#000000">;</FONT> M[<FONT COLOR="#009000">j</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">n</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">i</FONT><FONT COLOR="#000000">]</FONT> := x
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [if]
+</FONT>    <FONT COLOR="#787878">// end of [var]
+</FONT>  <FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// end of [val]
+</FONT>  <FONT COLOR="#000000">prval</FONT> <FONT COLOR="#009000">unit_v <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> pf</FONT>
+<FONT COLOR="#000000">in</FONT>
+  <FONT COLOR="#787878">// empty
+</FONT><FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [matrix_transpose]
+</FONT></FONT></PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="arrays-and-matrices.dats">here</a>.
+
+<!-- end of [arrays-and-matrices.html] -->

@@ -1,0 +1,41 @@
+This manual documents {\em ATS/Anairiats version x.x.x}, which is the
+current released implementation of the programming language ATS. This
+implementation itself is nearly all written in ATS.
+
+The core of ATS is a call-by-value functional programming language equipped
+with a type system rooted in the framework {\em Applied Type
+System}~\cite{ATS-types03}. In particular, both dependent types and linear
+types are supported in ATS. The dependent types in ATS are directly based
+on those developed in Dependent ML (DML), an experimental programming
+language that is designed in an attempt to extend ML with support for
+practical programming with dependent types~\cite{DML-jfp07}. As of now, ATS
+fully supersedes DML. While the notion of linear types is a familiar one in
+programming lanugage research, the support for practical programming with
+linear types in ATS is unique: It is based on a programming paradigm in
+which programming is combined with theorem-proving.
+
+The type system of ATS is stratified, consisting of a static component
+(statics) and a dynamic component (dynamics). Types are formed and reasoned
+about in the statics while programs are constructed and evaluated in the
+dynamics. There is also a theorem-proving system ATS/LF built within ATS,
+which plays an indispensable role in supporting the paradigm of programming
+with theorem-proving. ATS/LF can also be employed to encode various
+deduction systems and their meta-properties.
+
+There is no support for program extraction (from proofs) in ATS. Instead,
+the ATS compiler (Anairiats) erases all the types and proofs contained in a
+program after it passes typechecking, and then translates the obtained
+erasure into C code that can be further compiled into object code by a C
+compiler such as GCC.
+
+ATS programs can run with or without run-time garbage collection. The time
+and space efficiency of the C code generated from a program written in ATS
+often rivals that of its counterpart written in C (or \cplusplus)
+directly. This is of particular importance when ATS is used for systems
+programming.
+
+%% The organization of the manual is given as follows:
+%% \begin{itemize}
+%% \item{\bf Part I}, {\em An Introduction to ATS}, gives an overview of the
+%% programming language ATS.
+%% \end{itemize}

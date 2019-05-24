@@ -1,0 +1,991 @@
+\chapter{ATS BASICS}
+
+ATS is a rich programming language with a highly expressive type system and
+a large variety of programming features. The core of ATS is a call-by-value
+functional programming language that is similar to the core of Standard
+ML~\cite{SML97} in terms of both syntax and dynamic semantics.
+
+This chapter primarily serves as a tutorial introduction to the basics of
+ATS, and more advanced and more interesting programming features in ATS
+will be presented gradually in the following chapters.
+
+\section{A Simple Example: Hello, world!}
+We first use a simple example to explain how programs written in ATS
+can be compiled and then executed.
+
+The following program is written in the syntax of ATS, where the function
+{\it main} is a special one. For those who are familiar with C, this
+function essentially corresponds to the function in C that is given the
+same name.
+
+\input{DATS/hello_world.dats}
+
+The keyword $\KWimplement$ indicates an implementation of a function that
+is declared elsewhere. For instance, the function {\it main} is already
+declared somewhere in ATS as follows:
+
+\begin{center}
+\texttt{fun main (): void}
+\end{center}
+which indicates that {\it main} is a nullary function that returns no
+value.
+
+The function {\it print\_string} takes a string as its only argument and
+prints out the string onto the standard output while the function {\it
+print\_newline} takes no argument and prints a newline character onto the
+standard output. Also, the keywords $\KWbegin$ and $\KWend$ act as a pair
+of parentheses, and a line of comment is initiated with two consecutive
+appearances of the character \verb`/`.
+
+Now suppose that the above simple program is stored in a file named {\it
+hello\_world.dats}. Then the following command, if executed successfully,
+first generates a file named {\it hello\_world\_dats.c} containing some C
+code translated from the ATS program in {\it hello\_world.dats} and then
+invokes gcc to compile this file into an executable file named {\it
+hello\_world}:
+\begin{verbatim}
+atscc -o hello_world hello_world.dats
+\end{verbatim}
+
+As can be expected, the executable {\it hello\_world} is to print out the
+message "Hello, world!" and a newline character (onto the standard output)
+when executed.
+
+The command {\it atscc} essentially invokes {\it atsopt}, an ATS compiler
+implemented in ATS itself, to translate ATS programs into C programs and
+then relies on a C compiler (e.g., gcc) to compile the generated C programs
+into machine code. More details on {\it atscc} and {\it atsopt} will be
+given in Chapter~\ref{chapter:batch_compilation}.
+
+%%%%%% \section{A Simple Example} %%%%%%
+
+\section{Elements of Programming}
+
+In ATS, there are many forms of expressions as well as means to combining
+simpler expressions into compound ones, and we are to introduce these forms
+and means gradually.
+
+\subsection{Comments}
+There are four forms of comments in $\ATS$: line comment, block comment of
+ML-style, block comment of C-style, and rest-of-file comment.
+\begin{itemize}
+\item
+A line comment starts with the token \texttt{//} and extends until the end
+of the current line.
+
+\item
+A block comment of ML-style starts and closes with the tokens \texttt{(*}
+and \texttt{*)}, respectively. Note that nested block comments of ML-style
+are allowed, that is, one block comment of ML-style can occur within
+another one of the same style.
+
+\item
+A block comment of C-style starts and closes with the tokens \texttt{/*} and
+\texttt{*/}, respectively. Note that block comments of C-style cannot be
+nested.  The use of block comments of C-style is primiarily in code that is
+supposed to be shared by ATS and C. In other cases, block comments of
+ML-style should be the preferred choice.
+
+\item
+A rest-of-file comment starts with the token \texttt{////} (4 consecutive
+occurrences of \texttt{/}) and extends until the end of the file.
+\end{itemize}
+In the following code (whose meaning is to become clear later),
+three forms of comments are present:
+\input{DATS/comment_example_1.dats}
+
+\subsection{Primitive Expressions}
+We informally mention the syntax for some primitive expressions:
+\begin{itemize}
+\item booleans: the truth values are represented as
+{\it true} and {\it false}.
+
+\item integers: the syntax for integers (in decimal notation)
+is a sequence of digits that may be following the negative sign
+\texttt{\char126}
+(not the symbol \texttt{-}). For instance, \texttt{31415926} and
+\texttt{{\char126}27172828} are integers. Note that the first digit
+of an integer (in decimal notation) cannot be \texttt{0} unless the
+integer consists of only a single digit.
+
+The octal digits are from \texttt{0} to \texttt{7}, and an
+integer in octal notation is a sequence of such digits following
+\texttt{0}.
+
+The hexadecimal digits are
+the decimal digits extended with letters from
+\texttt{a} to \texttt{f}, where the case of such a letter
+is insensitive. An integer in hexadecimal notation is a sequence of
+hexadecimal digits following \texttt{0x} or \texttt{0X}.
+
+\item float point numbers:
+the syntax for reals is an integer in decimal notation possibly followed by
+a point (.) and one or more decimal digits, possibly followed by an
+exponent symbol (\texttt{e} or \texttt{E}) and an integer constant in
+decimal notation; at least one of the optional parts must occur, and hence
+no integer constant is a real constant.  Here are some examples of reals:
+\texttt{3.1416}, \texttt{31416E-4}, \texttt{271.83e-2}, and non-examples of
+reals: \texttt{23}, \texttt{.1}, {3.E2}, \texttt{1.e2.3}.
+
+\item
+characters: the syntax for characters is $\texttt{'}c\texttt{'}$, where $c$
+ranges over ASCII characters, or $\texttt{'}\backslash c\texttt{'}$ where
+$c$ ranges over some special characters (e.g., \texttt{n}, \texttt{t}), or
+$\texttt{'}\backslash ddd\texttt{'}$, where $d$ ranges over octal digits,
+that is, digits from \texttt{0} to \texttt{7}.
+
+\item
+strings: the syntax for strings is a sequence of characters inside a pair
+of quotes. For instance, \verb`"Hello, world!\n"` is a string, where
+\verb`\n` is an escape sequence representing the newline character.
+
+\item
+special constants:
+\begin{itemize}
+\item 
+An occurrence of the keyword \texttt{\#FILENAME} refers
+to a string that represents the name of the file in which this occurrence
+appears.
+\item
+An occurrence of the keyword \texttt{\#LOCATION} refers to a string that
+represents the location of this occurrence.
+\end{itemize}
+
+\end{itemize}
+
+\subsection{Fixity}
+In ATS, prefix, infix and postfix operators are all supported. Given an
+operator, its {fixity status} is either prefix, infix, postfix or none.  An
+operator is said to possess some fixity if its fixity status is not none.
+The keywords $\KWprefix$ and $\KWpostfix$ are for introducing prefix and
+postfix operators, respectively, and the keywords $\KWinfix$, $\KWinfixl$
+and $\KWinfixr$ for introducing non-associative, left-associative, and
+right-associated infix operators, respectively. These keywords can be
+followed by an optional integer to indicate the precedence of the
+introduced operators.  As an example, the operator $!!$ is declared to be
+of the postfix fixity in the following code (whose precise meaning should
+become clear later):
+\begin{verbatim}
+postfix 80 !!
+fun !! (x: int): int = if x > 1 then x * (x-2)!! else 1
+\end{verbatim}
+Note that \texttt{>}, \texttt{*} and \texttt{-} are already declared to be
+infix operators elsewhere. Suppose that $!!!$ is introduced later and it is
+to be declared as a postfix operator with the same precedence value as the
+operator $!!$. This can be done as follows:
+\begin{verbatim}
+postfix (!!) !!!
+\end{verbatim}
+This form of fixity declaration obviates the need for remembering the
+actual precedence value assigned to $!!$. If it is needed to assign
+a precedence value to $!!!$ that is 1 higher than the one attached to
+$!!$, then the following fixity declaration can be used:
+\begin{verbatim}
+postfix (!! + 1) !!!
+\end{verbatim}
+The constant $1$ can be replaced with other, possibly negative, integer
+constants, and the plus sign can be replaced with the minus sign as well.
+
+In addition, we may write $e_1~\backslash opr~e_2$ for $opr(e_1, e_2)$,
+where $e_1$ and $e_2$ are two expressions and $opr$ is some operator. More
+precisely, $\backslash opr$ is treated as a non-associative infix operator
+with precedence value equal to $0$.  On the other hand, the keyword $\KWop$
+can be used to suppress the fixity status of an operator: $\KWop~opr$ is
+treated as an operator with no fixity regardless the fixity status of
+$opr$.
+
+It is also possible to deprive an operator $opr$ of its assigned fixity
+status. For instance, the following declaration makes both $!!$ and $!!!$
+nonfix operators, that is, operators with the {\it none} fixity status.
+\begin{verbatim}
+nonfix !! !!!
+\end{verbatim}
+The fixity declaration for commonly used operators in ATS can be found
+in the following file:
+\begin{center}
+\texttt{\ATSHOME/prelude/fixity.ats}
+\end{center}
+where \texttt{\ATSHOME} is the directory in which the ATS package is stored.
+
+\subsection{Naming and the Environment}
+A critical aspect in programming is to bind names to (complex)
+computational objects. For instance, we can bind names to values through
+the following syntax:
+%%%%%%
+\input{DATS/naming_and_environment_1.dats}
+%%%%%%
+where $\KWval$ is a keyword in ATS.  For those who are familiar with
+lambda-notation, we can bind a name to a function value as well:
+%%%%%%
+\input{DATS/naming_and_environment_2.dats}
+%%%%%%
+It is also allowed to use the keyword $\KWand$ to combine several bindings
+together. For instance, three bindings are introduced in the following
+code:
+%%%%%%
+\begin{verbatim}
+// as the evaluation order is unspecified, it should *not* be expected that
+// the printout is "xyz" in this case:
+val x = (print_string "x"; 1)
+and y = (print_string "y"; 2)
+and z = (print_string "z"; 3)
+\end{verbatim}
+%%%%%%
+When bindings are combined in this manner, it should be emphasized that
+the order in which these binding are evaluated is unspecified.
+
+
+
+\subsection{Conditionals}
+The syntax for forming a conditional (expression) is given as follows:
+\[\begin{array}{c}
+\KWif~\synexp~\KWthen~\synexp~\KWelse~\synexp
+\end{array}\]
+where $\synexp$ ranges over expression in ATS. It is also
+allowed to form a conditional as follows:
+\[\begin{array}{c}
+\KWif~\synexp~\KWthen~\synexp
+\end{array}\]
+which is simply treated as a shorthand for
+\[\begin{array}{c}
+\KWif~\synexp~\KWthen~\synexp~\KWelse~()
+\end{array}\]
+Note that $()$ represents the only value that is of type ${\it\blue
+void}$. This special value is often referred to as the void value as its
+size is $0$ (and thus no memory is needed to store it).
+
+\subsection{Local Bindings}
+A let-expression is of the following form:
+\begin{center}
+\mbox{$\KWlet~\langle bindings\rangle~\KWin~\langle scope\rangle~\KWend$}
+\end{center}
+where the (local) bindings placed between the keywords $\KWlet$ and $\KWin$
+can only be accessed in the scope of the let-expression. For instance,
+there are three local bindings in the following let-expression, which are for
+$x$, $y$ and $z$, respectively:
+\input{DATS/local_binding_example_1.dats}
+Another way to introduce local bindings is through the use of a {\it
+where}-clause. For instance, the above let-expression can be rewritten as
+follows:
+\input{DATS/local_binding_example_2.dats}
+
+\subsection{Function Definitions}
+
+A (recursive) function is defined following the keyword $\KWfun$.
+For instance, the following code implements the Fibonacci function:
+\input{DATS/fibonacci_function_1.dats}
+Like in C, the types for the arguments of a function and its return value
+need to be given when the function is defined. In the case of {\it fib},
+the type for its only argument is {\it\blue int}, and the type for its
+return value is {\it\blue int} as well.
+
+Mutually recursive functions can be defined by using the keyword $\KWand$
+to combine function definitions. The following code implements two mutually
+recursive functions {\it isEven} and {\it isOdd}, which test whether a given
+(nonnegative) integer is even or odd:
+\input{DATS/isEvenOdd_functions.dats}
+
+If a function is non-recursive, then the keyword $\KWfn$ can also be used
+in place of the keyword $\KWfun$. For instance, the following code
+implements a non-recursive function that computes the area of a circle when
+the radius of the circle is given:
+%%%%%%
+\input{DATS/area_of_circle_function.dats}
+%%%%%%
+Note that a non-recursive function is just a special kind of recursive
+function.
+
+\subsection{Overloading}
+In ATS, symbol can be introduced and then overloaded with function names.
+Suppose that {\it foo1} and {\it foo2} are two functions of different
+arities. The following code introduces a symbol {\it foo} and then overload
+it with {\it foo1} and {\it foo2}:
+\begin{verbatim}
+symintr foo // symbol introduction
+overload foo with foo1; overload foo with foo2
+\end{verbatim}
+If $\mbox{\it foo}$ is applied to some arguments $(v_1,\ldots,v_n)$, then
+this occurrence of $\mbox{\it foo}$ may be resolved into either $\mbox{\it
+foo1}$ or $\mbox{\it foo2}$ depending on the value of $n$.  If an
+overloaded symbol cannot be resolved based on arity information, then
+argument types are to be used to determine which function should replace
+the overloaded symbol.  For instance, the symbol $+$ is overloaded with
+many functions including the following ones:
+\begin{verbatim}
+fun add_int_int (x: int, y: int): int // addition of integers
+fun add_double_double (x: double, y: double): double // addition of doubles
+fun add_string_string (x: string, y: string): string // string concatenation
+\end{verbatim}
+Clearly, argument types need be taken into consideration in order to
+resolve an application of $+$.
+
+%%%%%% \section{Elements of Programming} %%%%%%
+
+\section{Tuples and Records}
+There are two kinds of tuples in ATS: boxed tuples and flat tuples.
+
+Given values $v_1,\ldots, v_n$, a tuple $'(v_1,\ldots,v_n)$ of length $n$
+can be formed such that the $i$th component of the tuple is $v_i$ for
+$1\leq i\leq n$. The use of the quote symbol $'$ is to indicate that this
+is a boxed tuple.  For instance, a pair $\mbox{\it boxed\_0\_1}$ is
+formed as follows:
+\begin{verbatim}
+val boxed_1_2 = '(1, 2)
+\end{verbatim}
+The components of a tuple can be extracted out by pattern matching. For
+instance, the following code binds $x$ and $y$ to $0$ and $1$,
+respectively:
+\begin{verbatim}
+val '(x, y) = boxed_1_2
+\end{verbatim}
+A tuple of length $n$ is essentially a record with labels ranging from $0$
+to $n-1$. So the components of a tuple can also be extracted out by field
+selection:
+\begin{verbatim}
+val x = boxed_1_2.0 and y = boxed_1_2.1
+\end{verbatim}
+If values $v_1,\ldots,v_n$ are assigned types $T_1,\ldots,T_n$,
+respectively, then the boxed tuple $'(v_1,\ldots,v_n)$ can be assigned the type
+$'(T_1,\ldots,T_n)$. The size of a boxed tuple is always one word.
+
+A flat tuple is like a struct in C. For instance, a pair $\mbox{\it
+flat\_0\_1}$ is formed as follows:
+\begin{verbatim}
+val flat_1_2 = @(1, 2) // the @ symbol is optional and may be omitted
+\end{verbatim}
+Like a boxed tuple, the components of a flat tuple can be extracted out
+by pattern matching or by field selection:
+\begin{verbatim}
+val @(x, y) = flat_1_2 // the @ symbol is optional and may be omitted
+val x = flat_1_2.0 and y = flat_1_2.1
+\end{verbatim}
+If values $v_1,\ldots,v_n$ are assigned types $T_1,\ldots,T_n$,
+respectively, then the flat tuple $@(v_1,\ldots,v_n)$ can be assigned the
+type $@(T_1,\ldots,T_n)$. The size of a flat tuple is not specified but it
+should be greater than or equal to the sum of the sizes of
+its components. In other words, we have:
+\[\begin{array}{l}
+{\it sizeof}(@(T_1,\ldots,T_n)) \geq {\it sizeof}(T_1) + \ldots + {\it sizeof}(T_n)
+\end{array}\]
+
+There are also two kinds of records in ATS: boxed records and flat records.
+For instance, the previous boxed tuple example can be done with a record as
+follows:
+%%%%%%
+\input{DATS/boxed_record_example_1.dats}
+%%%%%%
+The following is an example involving flat records.
+%%%%%%
+\input{DATS/flat_record_example_1.dats}
+%%%%%%
+
+\section{Disjoint Variants}
+
+Like in ML, A disjoint variant type is often referred to as a datatype in
+ATS. For instance, we can declare a datatype {\it weekday} as follows:
+\begin{verbatim}
+datatype weekday = Monday | Tuesday | Wednesday | Thursday | Friday
+\end{verbatim}
+There are five data constructors {\it Monday}, {\it Tuesday} {\it
+Wednesday}, {\it Thursday} and {\it Friday} associated with the datatype
+{\it\blue weekday}. In this case, all the data constructors are nullary, that
+is, they take no arguments to form data. Note that there are no
+restrictions on the names of data constructors in ATS: any valid
+identifiers can be used.
+
+The datatype {\it weekday} is rather close to an enumerate type in C. In
+the following code, a function is implemented that translates values
+of the type {\it weekday} into integers:
+\begin{verbatim}
+fn int_of_weekday (x: weekday): int = case+ x of
+  | Monday () => 1
+  | Tuesday () => 2
+  | Wednesday () => 3
+  | Thursday () => 4
+  | Friday () => 5
+\end{verbatim}
+Given a nullary data constructor $C$, it is important to write $C()$
+(instead of just $C$) in order to form a pattern. If $C$ is used as a
+pattern, then it is a variable pattern that matches any value. If ${\it
+Monday}$ (instead of ${\it Monday ()}$) is used in the implementation of
+${\it int\_of\_weekday}$, then the ATS typechecker will issue an error
+message stating that all the pattern matching clauses following the first
+one are redundant as the variable pattern ${\it Monday}$ already matches
+all the possible values that $x$ may take.
+
+If a case-expression is formed with the keyword $\KWcaseplus$, then the ATS
+typechecker needs to verify that the pattern matching for this
+case-expression is exhaustive. For instance, if the last pattern matching
+clause in the implementation of ${\it int\_of\_weekday}$ is dropped, then
+the ATS typechecker will issue an error stating that the involved pattern
+matching is not exhaustive. If the keyword $\KWcase$ is used in place of
+$\KWcaseplus$, then the typechecker will only issue a warning message. If
+the keyword $\KWcaseminus$ is used instead, then the compiler will issue no
+message.
+
+As another example, a datatype involving non-nullary data constructors is
+given as follows:
+\begin{verbatim}
+datatype exp =
+  | EXPcst of double | EXPvar of string
+  | EXPadd of (exp, exp) | EXPsub of (exp, exp)
+  | EXPmul of (exp, exp) | EXPdiv of (exp, exp)
+  | EXPpow of (exp, int)
+\end{verbatim}
+The declared datatype {\it exp} is for values representing expressions
+formed in terms of constants and variables as well as addition,
+subtraction, multiplication, division, and the exponential function where
+the exponent is restricted to being a integer constant.
+%%%%%%
+\begin{figure}[thp]
+\begin{verbatim}
+val expcst_0 = EXPcst 0.0 and expcst_1 = EXPcst 1.0
+
+fn exp_derivate (e0: exp, x0: string): exp = let
+  fun aux (e0: exp):<cloref1> exp = case+ e0 of
+    | EXPcst _ => expcst_0
+    | EXPvar x => if (x = x0) then expcst_1 else expcst_0
+    | EXPadd (e1, e2) => EXPadd (aux e1, aux e2)
+    | EXPsub (e1, e2) => EXPsub (aux e1, aux e2)
+    | EXPmul (e1, e2) => begin
+        EXPadd (EXPmul (aux e1, e2), EXPmul (e1, aux e2))
+      end
+    | EXPdiv (e1, e2) => begin EXPdiv
+        (EXPsub (EXPmul (aux e1, e2), EXPmul (e1, aux e2)), EXPpow (e2, 2))
+      end
+    | EXPpow (e, n) => begin
+        EXPmul (EXPcst (double_of_int n), EXPmul (EXPpow (e, n-1), aux e))
+      end
+  // end of [aux]
+in
+  aux (e0)
+end // end of [exp_derivate]
+\end{verbatim}
+\caption{An implementation of symbolic derivation}
+\label{figure:symbolic_derivation}
+\end{figure}
+%%%%%%
+In Figure~\ref{figure:symbolic_derivation}, a function named
+{\it exp\_derivate} is implemented to perform symbolic derivation
+on expressions thus formed.
+
+\section{Parametric Polymorphism and Templates}
+Parametric polymorphism (or polymorphism for short) offers a flexible and
+effective approach to supporting code reuse. For instance, given a pair $(v_1,
+v_2)$ where $v_1$ is a a boolean and $v_2$ a character, the function {\it
+swap\_bool\_char} defined below returns a pair $(v_2, v_1)$:
+\begin{verbatim}
+fun swap_bool_char (xy: @(bool, char)): @(char, bool) = (xy.1, xy.0)
+\end{verbatim}
+Now suppose that a pair of integers need to be swapped, and this results in
+the implementation of the following function {\it swap\_int\_int}:
+\begin{verbatim}
+fun swap_int_int (xy: @(int, int)): @(int, int) = (xy.1, xy.0)
+\end{verbatim}
+The code duplication between {\it swap\_bool\_char} and {\it
+swap\_int\_int} is obvious, and it can be easily avoided by implementing a
+function template as follows:
+\begin{verbatim}
+fun{a,b:t@ype} swap (xy: @(a, b)): @(b, a) = (xy.1, xy.0)
+\end{verbatim}
+Now the functions {\it swap\_bool\_char} and {\it swap\_int\_int} can
+simply be replaced with ${\it swap\langle bool,char\rangle}$ and ${\it
+swap\langle int,int\rangle}$, respectively. The function template {\it
+swap} cannot be compiled into executable binary code directly as the sizes
+of type variables $a$ and $b$ are unknown: The special sort {\it t@ype} is
+for classifying types whose sizes are unspecified. If ${\it swap\langle
+T_1,T_2\rangle}$ is used for some types $T_1$ and $T_2$ of known sizes,
+then an instantiation of {\it swap} is created where type variables $a,b$
+are replaced with $T_1$ and $T_2$, respectively, and then compiled into
+executable binary code. For those who know the feature of templates in
+\cplusplus, this should sound rather familiar.
+
+In contrast to {\it swap}, {\it swap\_type\_type} is defined below as a
+polymorphic function (rather than a function template):
+\begin{verbatim}
+fun swap_type_type {a,b:type} (xy: @(a, b)): @(b, a) = (xy.1, xy.0)
+\end{verbatim}
+This function can be compiled into executable binary code as the sizes of
+type variables $a$ and $b$ are known: The special sort {\it type} is for
+classifying types whose sizes equal exactly one word, that is, the size of
+a pointer. For example, the size of a string is one word, and the size of
+any declared datatype is also one word.  Given strings $s_1$ and $s_2$, an
+application of ${\it swap\_type\_type}$ to $@(s_1, s_2)$ can be written as
+follows:
+\begin{center}
+\texttt{swap\_type\_type \{string,string\} @(s1, s2)}
+\end{center}
+where the expression $\{string,string\}$ is often referred to as a static
+argument. As in this case, most static arguments do not have to be provided
+explicitly since they can be automatically inferred.\footnote{However, such
+static arguments, if provided, can often enhance the quality and precision
+of the error messages reported in case of typechecking failure.} This is a
+topic to be explored elsewhere in great depth.
+
+\subsection{Template Declaration and Implementation}
+Often, the interface for a template may need to be declared alone.  For
+instance, the interface for the above {\it swap} function template can be
+declared as follows:
+\begin{verbatim}
+extern fun{a,b:t@ype} swap (xy: @(a, b)): @(b, a)
+\end{verbatim}
+Just like a declared function interface, a declared template interface can
+be implemented.  For instance, the following code implements the interface
+declared for the {\it swap} function template:
+\begin{verbatim}
+implement{a,b} swap (xy) = (xy.1, xy.0)
+\end{verbatim}
+This form of template implementation is often referred to as generic
+template implementation in contrast to specialized template implementation
+presented as follows.
+
+It is also allowed to implement specialized templates in ATS. For instance,
+the following code implements the above {\it swap} function template that
+is specialized with the type variables $a$ and $b$ being set to {\it int}
+and {\it int}, respectively:
+\begin{verbatim}
+implement swap<int,int> (xy) = let val s = x + y in (s - x, s - y) end
+\end{verbatim}
+
+\section{Lists}
+In ATS, $\tlistzero$ is a type constructor defined as follows:
+\begin{verbatim}
+datatype list0 (a:t@ype) = list0_cons (a) of (a, list0 a) | list0_nil (a) 
+\end{verbatim}
+Given a type $T$, $\tlistzero(T)$ is the type for lists consisting of
+elements of type $T$:
+\begin{itemize}
+\item {\it list0\_nil ()} forms an empty list.
+\item Given values $v$ and $vs$ of types $T$ and $\tlistzero(T)$,
+respectively, ${\it list0\_cons}(v, vs)$ forms a list whose head and tail
+are $v$ and $vs$, respectively.
+\end{itemize}
+For instance, a list consisting of $1$, $2$ and $3$ can be constructed as
+follows:
+\begin{verbatim}
+val lst123 = list0_cons (1, list0_cons (2, list0_cons (3, list0_nil ())))
+\end{verbatim}
+Another notation for constructing lists consisting of elements of type $T$
+is $${\it list0\_make\_arrsz}~\$arrsz{T}(v_1,\ldots,v_n)$$
+For instance, a string list consisting names of weekdays is given as follows:
+\begin{verbatim}
+val weekdays (* : list0 string *) = list0_make_arrsz (
+  $arrsz{string}("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+) // end of [val]
+\end{verbatim}
+List manipulation can be done by pattern matching. As an example, the
+following code implements a function template for appending two given list
+arguments:
+\input{DATS/list0_append_function.dats}
+Note that this is functional appending: the two given lists are not altered
+by {\it list0\_append}.
+
+In ATS, there is also a dependent type constructor $\tlist$ for forming
+types for lists. As this type constructor involves more advanced type
+theory, it is to be presented elsewhere.
+
+\section{Exceptions}
+The exception mechanism in ATS is rather similar to the one supported in
+ML~\cite{SML97}, which provides a highly flexible means for the programmer
+to alter the control flow in program execution. For instance,
+an exception (or more precisely, an exception constructor) {\em
+Fatal} is defined as follows and then used in the implementation of a
+function.
+\begin{verbatim}
+exception Fatal
+fun fatal {a:t@ype} (msg: String): a = (prerr_string msg; $raise Fatal ())
+\end{verbatim}
+A call to the defined function {\it fatal} with a string argument {\it msg}
+prints {\it msg} onto stderr and then raises the exception {\it Fatal ()}.
+Note that a raised exception may be assigned any type.
+
+\begin{figure}[thp]
+\input{DATS/binary_tree_is_perfect_function.dats}
+\caption{An example of programming with exceptions}
+\label{figure:isPerfect}
+\end{figure}
+A raised exception can be trapped.  In Figure~\ref{figure:isPerfect}, an
+interesting example of programming with exceptions is presented. First, a
+datatype constructor {\it tree} is delcared for representing binary trees
+(storing integers). Then a function {\it isPerfect} is implemented to test
+whether a given binary tree is perfectly balanced.  The inner function {\it
+aux} computes the height of a given binary tree $t$ if $t$ is perfectly
+balanced. Otherwise, {\it aux} raises the exception {\it NotPerfect}.
+
+Note that the exception {\it NotPerfect} is not declared at the top
+level. Instead, it is declared inside a let-expression in the body of the
+function {\it isPerfect} and thus is only available in the scope of the
+let-expression.
+
+Also note the symbol $\char126$ in front of an occurrence of {\it
+NotPerfect} in the code.  This symbol means that the captured exception is
+to be destroyed (as it is no longer needed). If a captured exception is not
+destroyed, then it must be used in some way (e.g., to be raised again).
+
+\section{References}
+In ATS, a reference is similar to a pointer in C. However, the issue of
+dangling pointers does not appear with references as every reference is
+properly initialized after its creation.  Given a type $T$, $\tref(T)$ is
+the type for references to values of type $T$. For instance, the following
+code creates an integer reference, initializes it with $1$ and binds $r$ to
+it:
+\begin{verbatim}
+val r = ref<int> (1)
+\end{verbatim}
+The operator $!$ is specially reserved for dereferencing.  For
+instance, after the expression $!r~:=~!r + 1$ is evaluated, the value
+stored in the memory location referred to by $r$ is increased by $1$. Note
+that the occurrence of $!r$ to the left of $:=$ is a left-value that can be
+assigned to.  In contrast, this expression would be written as $r~:=~!r +
+1$ in ML.
+
+\begin{figure}[thp]
+\input{DATS/fact_function_ref.dats}
+\caption{An implementation of the factorial function that makes use of a reference}
+\label{figure:fact_function_ref.dats}
+\end{figure}
+As an example, the code in Figure~\ref{figure:fact_function_ref.dats} is an
+implementation of the factorial function in ATS that makes use of a
+reference. In it, the special syntax \verb`:<cloref1>` (where no space is
+allowed between \verb`:` and \verb`<`) is needed to indicate that {\it
+loop} is a closure rather than a function.  The difference between
+functions and closures will be explained elsewhere in details.
+
+\section{Arrays}
+In ATS, $\tarrayzero$ is a type constructor for forming array types.  Given
+a type $T$, the type $\tarrayzero(T)$ is for arrays containing elements of
+type $T$.  Given values $v_1,\ldots,v_n$ of type $T$, the notation ${\it
+array0}~@[T][v_1,\ldots,v_n]$ creates an array of size $n$ that is
+initialized with the values $v_1,\ldots,v_n$.  The valid subscripts for an
+array of size $n$ range from $0$ until $n-1$. For instance, a string array
+of size $5$ is created as follows:
+%%%%%%
+\input{DATS/array0_example_1.dats}
+%%%%%%
+Array subscripting in ATS is conventional. For instance, ${\it
+weekdays}[3]$ returns the string "Thursday", and the following assignment
+\begin{center}
+{\it weekdays}[0] := "foo"
+\end{center}
+replaces the content of the first cell of {\it weekdays} with the string
+"foo". For arrays of type $\tarrayzero(T)$ for some $T$, array bounds
+checking is performed at run-time to guarantee safe subscripting.
+
+%%%%%%
+\begin{figure}[thp]
+\input{DATS/array0_example_2.dats}
+\caption{An implementation of the factorial function that makes use of an array}
+\label{figure:array0_example_2}
+\end{figure}
+%%%%%%
+Given an array $A$ of type $\tarrayzero(T)$, the size of $A$ can be
+obtained by evaluating the function call {\it array0\_size (A)}. As an
+example, the code in Figure~\ref{figure:array0_example_2} gives another
+implementation of the factorial function.  Note that give an integer
+$\mbox{\it sz}$ and a value $v$ of some type $T$, the function call ${\it
+array0\_make\_elt}\langle T\rangle (\mbox{\it sz}, v)$ creates an array of
+size $\mbox{\it sz}$ and then initializes all array cells with the value
+$v$.
+
+\section{Higher-Order Functions}
+A higher-order function is one that takes a function as its argument.  In
+the following code, the function {\it derivate} is a higher-order function
+that takes as its argument a closure representing a function from {\it
+double} to {\it double} and returns a closure representing the derivative
+of the function.
+\input{DATS/derivative_function.dats}
+Some code that makes use of the higher-order function {\it derivate}
+is given as follows:
+\input{DATS/derivative_function_use.dats}
+Many list-processing functions are higher-order. As an example,
+the following code implements a function template {\it list0\_map}:
+%%%%%%
+\input{DATS/list0_map_function.dats}
+%%%%%%
+Given a list $vs$ consisting of elements $v_1,\ldots,v_n$ of type $T_1$ and
+a function $f$ from $T_1$ to $T_2$, the following call: $${\it
+list0\_map}\langle T_1,T_2\rangle(vs, f)$$ returns a list consisting
+of elements $f(v_1),\ldots, f(v_n)$ that are of type $T_2$.
+
+%%%%%% \section{Higher-Order Functions} %%%%%%
+
+\section{Tail-Call Optimization}
+
+It can probably be argued that the single most important optimization
+performed by the ATS compiler (Anairiats) is the translation of tail-calls
+into direct (local) jumps.
+
+As an example, the following defined function {\it sum1} sums up integers
+from 1 to n when applied to a given integer n:
+\begin{verbatim}
+// [sum1] is recursive but not tail-recursive
+fun sum1 (n: int): int = if n > 0 then n + sum1 (n-1) else 0
+\end{verbatim}
+This function is recursive but not tail-recursive. The stack space it
+consumes is proportional to the value of its argument. Essentially,
+Anairiats translates the definition of {\it sum1} into the following C
+code:
+\begin{verbatim}
+int sum1 (int n) {
+  if (n > 1) return n + sum1 (n-1) ; else return 1 ;
+}
+\end{verbatim}
+On the other hand, the following defined function {\it sum2} also sums up
+integers from $1$ to $n$ when applied to a given integer $n$:
+\begin{verbatim}
+fn sum2 (n: int): int = let // sum2 is non-recursive
+  fun loop (n: int, res: int): int = // [loop] is tail-recursive
+    if n > 0 then loop (n-1, res+n) else res
+in
+  loop (n, 0)
+end // end of [sum2]
+\end{verbatim}
+The inner function {\it loop} in the definition of {\it sum2} is
+tail-recursive. The stack space consumed by {\it loop} is a constant
+independent of th value of the argument of {\it sum2}. Essentially,
+Anairiats translates the definition of sum2 into the following C code:
+\begin{verbatim}
+int sum2_loop (int n, int res) {
+  loop: if (n > 0) { res = res + n ; n = n - 1 ; goto loop ; }
+  return res ;
+} /* end of sum2_loop */
+
+int sum2 (int n) { return sum2_loop (n, 0) ; }
+\end{verbatim}
+
+Sometimes, function definitions need to be combined in order to identify
+tail-calls, and the keyword $\KWfnstar$ is reserved for this purpose. In
+the following example, the keyword $\KWfnstar$ indicates to Anairiats that
+the function definitions of {\it even} and {\it odd} need to be combined
+together so as to turn (mutually) recursive function calls into direct
+jumps.
+\begin{verbatim}
+fn* even (n: int): bool = if n > 0 then odd (n-1) else true
+and odd (n: int): bool = if n > 0 then even (n-1) else false
+\end{verbatim}
+%%%%%%
+\begin{figure}[thp]
+\begin{verbatim}
+bool even_odd (int tag, int n) {
+  bool res ; // [bool] is [int]
+
+  switch (tag) { 0: goto even ; 1: goto odd ; default : exit (1) ; }
+
+  even:
+    if (n > 0) { n = n - 1; goto odd; } else { res = true; goto done; }
+  odd:
+    if (n > 0) { n = n - 1; goto even; } else { res = false; goto done; }
+  done: return res ;
+} /* end of [even_odd] */
+
+bool even (int n) {
+  return even_odd (0, n) ;
+}
+
+bool odd (int n) {
+  return even_odd (1, n) ;
+}
+\end{verbatim}
+\caption{An example of tail-call optimization through function definition combination}
+\label{figure:even_odd_combination_in_c}
+\end{figure}
+%%%%%%
+Essentially, Anairiats emits the C code in
+Figure~\ref{figure:even_odd_combination_in_c} after compiling this
+example. Note that mutually recursive functions can be combined in such a
+manner only if they all have the same return type. In the above case, both
+{\it even} and {\it odd} have the same return type {\it bool}.
+
+%%%%%% \section{Tail-Call Optimization} %%%%%%%
+
+\section{Static and Dynamic Files}
+In ATS, the filename extensions ".sats" and ".dats" are used to indicate
+static and dynamic files, respectively. These two extensions have some
+special meaning attached to them and thus cannot be replaced arbitrarily.
+
+A static file may contain sort definitions, datasort declarations, static
+definitions, abstract type declarations, exception declarations, datatype
+declarations, macro definitions, interfaces for dynamic values and
+functions, etc.  These concepts are to be made clear later.  In terms of
+functionality, a static file in ATS is similar to a header file (with the
+filename extension ".h") in C or an interface file (with the filename
+extension ".mli") in Objective Caml.
+
+A dynamic file may contain everything in a static file. In addition, it may
+also contain definitions for dynamic values and functions.
+
+In general, the syntax for constructing code in a static file can also be
+used for constructing code in a dynamic file. The only exception involves
+declaring interfaces for dynamic values and functions. For instance, in a
+{\it static} file, the following syntax can be used to declare interfaces
+(or types) for a value named {\it PI} and a function named
+{\it area\_of\_circle}:
+\begin{verbatim}
+val PI : double
+fun area_of_circle (radius: double): double
+\end{verbatim}
+When the same thing is done in a {\it dynamic} file, the keyword
+$\KWextern$ needs to be put in front of the declarations:
+\begin{verbatim}
+extern val PI : double
+extern fun area_of_circle (radius: double): double
+\end{verbatim}
+
+As a convention, we often use the filename extension ".cats" for a file
+containing some C code that is supposed to be combined with ATS code in
+certain manner. However, the use of this filename extension is not
+mandatory.
+
+%%%%%% \section{Static and Dynamic Files} %%%%%%
+
+\section{Static Load and Dynamic Load}
+The phrase {\em static load} refers to either a static or a dynamic file
+being loaded at compile-time. Suppose that {\it foo.sats} is a static file
+in which a symbol {\it bar} is declared. This symbol may refer to some
+value, function, type (constructor), data constructor, etc.  In order to
+access $\mbox{\it bar}$ (in another file), one can load {\it foo.sats}
+statically as follows:
+\begin{verbatim}
+staload F = "foo.sats" // [F] can be replaced with any valid name
+\end{verbatim}
+Then the qualified symbol {\it \$F.bar} can be used to refer to the
+declared symbol {\it bar} in {\it foo.sats}. It is also possible
+to load {\it foo.sats} statically as follows:
+\begin{verbatim}
+staload "foo.sats" // foo.sats is loaded and then opened
+\end{verbatim}
+If done in this manner, it suffices to simply write {\it bar} to refer to
+the declared symbol {\it bar} in {\it foo.sats}.
+
+\begin{figure}[thp]
+\begin{verbatim}
+staload "foo.sats" // loading foo.sats statically at run-time
+//
+// some code that may make use of symbols declared in foo.sats
+//
+dynload "foo.dats" // loading foo.dats dynamically at run-time
+
+implement main () = begin
+  // some code implementing the body of the main function
+end
+\end{verbatim}
+\caption{A typical scenario involving dynamic load}
+\label{figure:dynamic_load_scenario}
+\end{figure}
+The phrase {\em dynamic load} refers to a dynamic file being loaded at
+run-time. The primary purpose for doing so is often to perform some
+required initialization. In general, a file needs to be dynamically loaded
+only once, and it is often done in the file where the main function is
+implemented. As an example, the code fragment in
+Figure~\ref{figure:dynamic_load_scenario} presents a typical scenario involving
+dynamic load.
+
+%%%%%% \section{Static Load and Dynamic Load} %%%%%%
+
+\section{Input and Output}
+The functions for printing characters, integers, doubles and strings onto
+the standard output (stdout) are {\it print\_char}, {\it print\_int}, {\it
+print\_double} and {\it print\_string} respectively.  The symbol {\it
+print} is overloaded with all these functions, and thus one can simply
+write ${\it print}(v)$ if the type of $v$ is {\it char}, {\it int}, {\it
+double}, or {\it string}.  The function {\it print\_newline} prints a
+newline character onto stdout and then flushes the buffer associated with
+stdout. There is also a function named {\it printf} in ATS, which is rather
+similar to the {\it printf} function in C. For instance, the following
+code:
+\begin{verbatim}
+val () = printf
+  ("c = %c and f = %f and i = %i and s = %s\n", @('a', 3.14, 2008, "July")
+\end{verbatim}
+prints onto stdout the line below:
+\begin{verbatim}
+c = a and f = 3.14 and i = 2008 and s = July
+\end{verbatim}
+Note that the arguments of {\it printf} except the first one, which
+represents a format string, need to be grouped together inside $@(\ldots)$,
+where no space is allowed between $@$ and $($.
+
+For all of these functions printing onto stdout, there are corresponding
+ones that print onto stderr: {\it prerr\_char}, {\it prerr\_double}, {\it
+prerr\_int}, {\it prerr\_string}, {\it prerr\_newline} and {\it prerrf}.
+
+\begin{figure}[thp]
+\input{DATS/multiplication_table_function.dats}
+\caption{A program for printing a single digit multiplication table}
+\label{figure:multiplication_table_program}
+\end{figure}
+For handling files, ATS provides a type {\it FILEref} that roughly
+corresponds to the type {\it FILE*} in C. There are three special values
+{\it stdin\_ref}, {\it stdout\_ref} and {\it stderr\_ref} of type {\it
+FILEref} in ATS, which correspond to {\it stdin}, {\it stdout} and {\it
+stderr} in C, respectively. A variety of file operations are declared in
+the following file:
+\begin{center}
+\texttt{\ATSHOME/libc/SATS/stdio.sats}
+\end{center}
+which all have counterparts in C.
+
+In Figure~\ref{figure:multiplication_table_program}, a complete ATS program
+is constructed to produce the following table for single digit multiplication:
+%\begin{figure}[thp]
+\begin{verbatim}
+1*1=01
+1*2=02 | 2*2=04
+1*3=03 | 2*3=06 | 3*3=09
+1*4=04 | 2*4=08 | 3*4=12 | 4*4=16
+1*5=05 | 2*5=10 | 3*5=15 | 4*5=20 | 5*5=25
+1*6=06 | 2*6=12 | 3*6=18 | 4*6=24 | 5*6=30 | 6*6=36
+1*7=07 | 2*7=14 | 3*7=21 | 4*7=28 | 5*7=35 | 6*7=42 | 7*7=49
+1*8=08 | 2*8=16 | 3*8=24 | 4*8=32 | 5*8=40 | 6*8=48 | 7*8=56 | 8*8=64
+1*9=09 | 2*9=18 | 3*9=27 | 4*9=36 | 5*9=45 | 6*9=54 | 7*9=63 | 8*9=72 | 9*9=81
+\end{verbatim}
+%\caption{A table for single digit multiplication}
+%\label{figure:single_digit_multiplication_table}
+%\end{figure}
+The following explanation is for several functions in this program that
+deal with I/O:
+\begin{itemize}
+\item {\it open\_file}
+creates a file handle, i.e., a value of type {\it FILEref} when applied to
+a string (representing the path to the file to be created) and a file mode.
+\item {\it close\_file}
+closes a given file handle.
+\item {\it input\_line} reads a line from a given file handle and then
+returns a string representing the line minus the last newline character.
+In case the end of file is reached before a newline character is
+encountered, {\it input\_line} returns a string consisting of all the
+characters read.
+\end{itemize}
+
+%%%%%% \section{Input and Output} %%%%%%
+
+%%%%%%
+\input{SATS/rational.sats}
+%%%%%%
+\input{DATS/rational.dats}
+%%%%%%
+\section{A Simple Package for Rational Numbers}
+We implement a simple package for rational numbers in this section.  This
+implementation consists of two files named {\it rational.sats} and {\it
+rational.dats}.
+
+The content of {\it rational.sats} is given in
+Figure~\ref{figure:rational.sats}.  First, an abstract type {\it rat} is
+introduced. The sort of {\it rat} is {\it type}, which indicates that the
+size of {\it rat} is one word. Next, an exception constructor is declared
+for forming exceptions to be raised in case of a division-by-zero error.
+In addition, some functions for creating and handling rational numbers are
+declared.
+
+In Figure~\ref{figure:rational.dats}, the content of {\it rational.dats} is
+shown. First, the file {\it rational.sats} is loaded statically. Next, the
+abstract type {\it rat} is assumed to be a boxed record type with fields
+{\it numer} and {\it denom}. This assumption is available to the rest of
+the file (but not outside the file), and it is needed for verifying that
+the implementation of each function declared in {\it rational.sats} is
+well-typed.
+
+%\begin{figure}[thp]
+%\input{symbolic_derivation.dats}
+%\label{figure:symbolic_derviation}
+%\end{figure}

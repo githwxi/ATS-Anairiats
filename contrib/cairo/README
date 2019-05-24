@@ -1,0 +1,22 @@
+#
+# API for cairo in ATS
+#
+
+######
+
+First, please execute the following command in
+the directory $ATSHOME/contrib/cairo:
+
+make all
+
+This should generate the following file:
+
+atsctrb_cairo.o
+
+which is needed at link time.
+
+######
+
+The TEST directory contains a list of cairo examples.
+
+####### end of [README] ######

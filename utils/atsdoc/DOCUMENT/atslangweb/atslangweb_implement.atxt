@@ -1,0 +1,239 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBIMPLEMENT: atext =
+  strcst"<strong>Implementations</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBIMPLEMENT", _ATSLANGWEBIMPLEMENT)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("./styles/atslangweb_implement.css", file_mode_w)
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+
+fn OCaml (): atext = ulink("http://caml.inria.fr/ocaml", "OCaml")
+
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+#ATSLANGWEBROOTget()/styles/atslangweb_implement.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("IMPLEMENT")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Implementations</h1>
+
+#menu('\
+#lisub("\
+#ulink("IMPLEMENT\#ATS_Proto", "ATS/Proto"): the first implementation of ATS"
+)
+
+#lisub("\
+#ulink("IMPLEMENT\#ATS_Geizella", "ATS/Geizella"): a previously released implementation of ATS"
+)
+
+#lisub("\
+#ulink("IMPLEMENT\#ATS_Anairiats", "ATS/Anairiats"): the currently released implementation of ATS"
+)
+
+#lisub("\
+#ulink("IMPLEMENT\#ATS_Postiats", "ATS/Postiats"): the currently released implementation of ATS2"
+)
+
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("ATS_Proto", "ATS/Proto")</h2>
+
+#para("\
+
+ATS/Proto, written in #OCaml(), is the first complete implementation of
+ATS. In this implementation, the standard boxed data representation is
+chosen to implement parametric polymorphism. There is direct support in
+ATS/Proto for object-oriented programming (OOP), which is no longer
+available in later implementations of ATS. Also, there is support in
+ATS/Proto for typed meta-programming (MP), that is, constructing programs
+that can output well-typed programs, which is mostly abandoned in later
+implementations. As of now, ATS/Proto is no longer actively maintained and
+its main purpose is to serve as an example for future reference.
+
+")#comment("para")
+
+#HR(1)
+
+<h2>#uid("ATS_Geizella", "ATS/Geizella")</h2>
+
+#para('\
+
+#ulink("\
+http://ats-lang.svn.sourceforge.net/viewvc/ats-lang/bootstrap/geizella", "ATS/Geizella"
+)
+is a previously released implementation of ATS, which is also written in
+#OCaml().  In this implementation, the native unboxed data representation
+(as is in C) is adopted, making ATS/Geizella particularly well-suited for
+direct interaction with C (that incurs no run-time overhead).  As for
+parametric polymorphism, it is supported in ATS/Geizella through the use of
+templates.  ATS/Geizella is now largely out of active use as ATS/Anairiats,
+a compiler for ATS that is almost entirely written in ATS, has been
+bootstrapped successfully (with the help of ATS/Geizella).\
+
+')
+
+#HR(1)
+
+<h2>#uid("ATS_Anairiats", "ATS/Anairiats")</h2>
+
+#para('\
+
+#ulink("\
+http://ats-lang.svn.sourceforge.net/viewvc/ats-lang/trunk", "ATS/Anairiats"
+)
+is the currently released implementation of ATS. It is nearly entirely
+written in ATS itself, consisting of 100,000+ lines of source code.  When
+compared to ATS/Geizella, a previous implementation of ATS, ATS/Anairiats
+is significantly more efficient, and in general it issues more informative
+messages for identifying program errors.\
+
+')
+
+<table>
+<tr><td>
+#para('\
+#strong("Bootstrapping via gcc:")
+In order to bootstrap ATS/Anairiats, one needs to first check out the
+following svn directory and name it as some local directory, say, "FOO":
+')
+
+#command('\
+svn checkout svn://svn.code.sf.net/p/ats-lang/code/trunk FOO
+')
+
+#para('\
+
+Note that this checkout puts the C code needed for bootstrapping in a
+directory of the name "FOO/bootstrap0". Please go into the directory "FOO"
+and then execute \'make all\'. If the directory "FOO/bootstrap0" is
+not present, please check it out by executing the following command-line:
+
+#command('\
+svn checkout svn://svn.code.sf.net/p/ats-lang/code/bootstrap/anairiats FOO/bootstrap0
+')
+
+
+')
+</td></tr>
+
+<tr><td>
+#para('\
+
+#strong("Bootstrapping via ocaml") It is also possible to use the
+ATS/Geizella compiler (written in #OCaml()) for bootstrapping
+ATS/Anairiats. This can be done by checking out the following svn
+directory and name it as the local directory "FOO/bootstrap0":
+
+')
+
+#command('\
+svn checkout svn://svn.code.sf.net/p/ats-lang/code/bootstrap/geizella FOO/bootstrap0
+')
+
+#para('\
+After this is done, please go into the directory "FOO" and then execute \'make all-geizella\'.
+')
+
+</td></tr>
+
+<tr><td>
+#comment('\
+#para('\
+
+A git #ulink("https://github.com/rsimoes/ATS-Lang", "mirror") of the
+ATS/Anairiats subversion repository is available at github, maintained by
+Richard Simoes. It is expected that syncs are done weekly at minimum.
+
+')
+')
+</td></tr>
+</table>
+
+#HR(1)
+
+<h2>#uid("ATS_Postiats", "ATS/Postiats")</h2>
+
+#ulink("\
+http://sourceforge.net/p/ats2-lang/code/", "ATS/Postiats"
+)
+is the currently released implementation of ATS2. It is nearly entirely
+written in ATS1, consisting of 140,000+ lines of source code. \
+
+#HR(1)
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("IMPLEMENT")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

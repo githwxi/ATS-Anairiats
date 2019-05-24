@@ -1,0 +1,101 @@
+Some bugs incidents that may be related to GC (or ill-use of GC)
+
+------------------------ beg of [BUGS.txt] ------------------------
+
+July 8, 2008 (HX)
+
+This is a general issue. Various calls to malloc, calloc and free in the GC
+implementation needs to be carefully investigated due to the nonreentrancy
+problem with these operations.
+
+######
+
+July 8, 2008 (HX)
+
+Machine: halfling.bu.edu
+GC: gc_mt.o/single-thread execution
+
+I ran into a fatal error caused by [gc_aut_free]: the pointer to be freed
+was claimed to be invalid. This happened when the file [ats_dynexp2_dcst.dats]
+was being compiled. This error did not surface again in the subsequent runs.
+The [gc_mt.o] was used, and it was a single-thread execution.
+
+This was a very disturbing incident, but what was the (mysterious) cause?
+
+Guess: the pointer to be freed is not properly marked, and the chunk to which
+it points has been reclaimed?
+
+######
+
+July 8, 2008 (HX)
+
+Machine: halfling.bu.edu
+GC: gc_mt.o/single-thread execution
+
+I set [gc_chunk_count_limit_max] to 0 so as to heavily test the GC.
+A bug surfaced:
+
+make: ***
+["/sw/pub/www/faculty/hwxi/ATS/IMPLEMENTATION/Anairiats/ATS"/bootstrap/ats_trans1_dats.c]
+Segmentation fault
+
+######
+
+July 8, 2008 (HX)
+
+Starting program: /home/fac2/hwxi/research/ATS/IMPLEMENT/Geizella/Anairiats/svn/ats-lang/bin/atsopt -d ats_ccomp_trans_clau.dats
+Reading symbols from shared object read from target memory...(no debugging symbols found)...done.
+Loaded system supplied DSO at 0xb7f6d000
+GC initialization is done.
+The 1st translation (fixity) of [ats_ccomp_trans_clau.dats] is successfully completed!
+The 2nd translation (binding) of [ats_ccomp_trans_clau.dats] is successfully completed!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+GC: [gc_mark_all]: mark stack overflow happened!
+
+Program received signal SIGSEGV, Segmentation fault.
+0x080aed32 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_patcst2_2esats__p2atcstlst_intersect_test ()
+(gdb) bt
+#0  0x080aed32 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_patcst2_2esats__p2atcstlst_intersect_test ()
+#1  0x080d4fb9 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__c2laulst_tr_dn ()
+#2  0x080d32b2 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_caseof_tr_dn
+    ()
+#3  0x080d3409 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_tr_dn ()
+#4  0x080d5364 in aux_11 ()
+#5  0x080d3608 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_tr_dn ()
+#6  0x080d3794 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_tr_dn ()
+#7  0x080ccca4 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_tr_up ()
+#8  0x080ce7ce in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2exp_tr_up ()
+#9  0x080d6cca in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2ec_tr ()
+#10 0x0805c296 in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_list_2esats__list_map_main ()
+#11 0x0805c2df in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_list_2esats__list_map_fun ()
+#12 0x080d69af in _2fhome_2ffac2_2fhwxi_2fresearch_2fATS_2fIMPLEMENT_2fGeizella_2fAnairiats_2fsvn_2fats_2dlang_2fsrc_2fats_trans3_2esats__d2eclst_tr ()
+#13 0x08049cc5 in do_trans123_12 ()
+#14 0x0804a17a in do_trans1234_13 ()
+#15 0x0804ae61 in mainats ()
+#16 0x0804b580 in main ()
+
+######
+
+August 6, 2008 (HX)
+
+Machine: types.bu.edu
+uname -a:
+SunOS types 5.7 Generic_106541-24 sun4u sparc SUNW,Ultra-250
+
+GC: gc.o
+
+The bug was triggered when ATS_GC_RUNTIME_CHECK is turned off; it was
+suppressed if ATS_GC_RUNTIME_CHECK turned on. Very strange!!!
+
+------------------------ end of [BUGS.txt] ------------------------

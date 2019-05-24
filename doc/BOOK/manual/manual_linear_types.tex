@@ -1,0 +1,438 @@
+\chapter{Programming with Linear Types}
+
+The paradigm of programming with theorem proving plays an indispensable
+role in making linear types available for practical use in ATS.  In this
+chapter, we present some examples of resource manipulation involving linear
+types. In particular, we demonstrate that ATS not only supports flexible
+uses of pointers but can also guarantee based on its type system that such
+uses are safe.
+
+\section{Safe Memory Access through Pointers}
+In ATS, a linear prop is referred to as a {\it view} and a linear type,
+which is often a type combined with a view, is referred to as a {\it
+viewtype}. A commonly used view constructor is $@$ (infix), which forms a
+view $T@L$ when applied to a type $T$ and a memory location $L$. If a proof
+of the view $T@L$ is available, then it is guaranteed that a value of the
+type $T$ is stored at the location $L$. In the following presentation,
+views of the form $T@L$ is often referred to as @-views.  As an example,
+the following function templates {\it ptr\_get0} and {\it ptr\_set0}, which reads
+and writes through a given pointer, are assigned types containing @-views:
+\begin{verbatim}
+fun{a:t@ype} ptr_get0 {l:addr} (pf: a @ l | p: ptr l): @(a @ l | a)
+fun{a:t@ype} ptr_set0 {l:addr} (pf: a? @ l | p: ptr l, x: a): @(a @ l | void)
+\end{verbatim}
+Note that $\tptr$ is a type constructor that forms a type $\tptr(L)$ when
+applied to a static term $L$ of the sort {\it addr}, and the only value of
+the type $\tptr(L)$ is the pointer that points to the location represented
+by $L$.
+
+Given a type $T$, the function ${\it ptr\_get0}\langle
+T\rangle$ is assigned the following type:
+\[\forall l:\saddr.~(T @ l \mid \tptr (l))\timp(T@l \mid T)\]
+This type indicates that the function ${\it ptr\_get0}\langle T\rangle$
+returns a proof of the view $T@L$ and a value of the type $T$ when applied
+to a proof of the view $T@L$ and a pointer of the type $\tptr(L)$ for some
+$L$. Intuitively speaking, a proof of the view $T@L$, which is a form of
+resource as $T@L$ is linear, is {\it consumed} when it is passed to ${\it
+ptr\_get0}\langle T\rangle$, and another proof of the view $T@L$ is
+generated when ${\it ptr\_get0}\langle T\rangle$ returns. Notice that a
+proof of the view $T@L$ must be returned for otherwise subsequent accesses
+to the memory location $L$ become impossible.
+
+Similarly, the function ${\it ptr\_set0}\langle T\rangle$ is
+assigned the following type:
+\[\forall l:\saddr.~(T? @ l \mid \tptr (l))\timp(T@l \mid void)\]
+Note that $T?$ is a type for values of size ${\it sizeof}(T)$ (that are
+assumed to be uninitialized).  The function ${\it ptr\_set0}\langle
+T\rangle$ returns a proof of the view $T@L$ when applied to a proof of the
+view $T?@L$, a pointer of the type $\tptr(L)$ and a value of the type
+$T$. The use of the view $T?@L$ indicates that the memory location at $L$
+is assumed to be uninitialized when ${\it ptr\_set0}\langle T\rangle$ is
+called.
+
+\begin{figure}
+\input{DATS/swap0_example.dats}
+\caption{A function for swapping memory contents (I)}
+\label{figure:swap0_example.dats}
+\end{figure}
+In Figure~\ref{figure:swap0_example.dats}, a function template {\it swap0}
+is implemented for swapping memory contents at two given
+locations. Compared to a corresponding implementation in C, the verbosity
+of this one in ATS is evident. In particular, the need for {\it threading}
+linear proofs through calls to functions that make use of resources often
+results in a significant amount of code to be written. We now introduce
+some special syntax to significantly alleviate the need for such code.
+
+The function templates ${\it ptr\_get1}$ and ${\it ptr\_set1}$ are given
+the following types:
+\begin{verbatim}
+fun{a:t@ype} ptr_get1 {l:addr} (pf: !a @ l >> a @ l | p: ptr l): a
+fun{a:t@ype} ptr_set1 {l:addr} (pf: !a? @ l >> a @ l | p: ptr l, x: a): void
+\end{verbatim}
+Clearly, for each type $T$, the function
+${\it ptr\_get1}\langle T\rangle$ is assigned the following type:
+\[
+\forall l:\saddr.~(!T@l \gg T@l \mid \tptr(l))\timp T
+\]
+Given a linear proof ${\it pf}$ of the view $T@L$ for some $L$ and a
+pointer $p$ of the type $\tptr(L)$, the function call ${\it
+ptr\_get1}\langle T\rangle({\it pf}, p)$ is expected to return a
+value of the type $T$. However, the proof ${\it pf}$ is not
+consumed. Instead, it is still a proof of the view $T@L$ after the function
+call. Similarly, the function
+${\it ptr\_set1}\langle T\rangle$ is assigned the following type:
+\[
+\forall l:\saddr.~(!T?@l \gg T@l \mid \tptr(l), T)\timp\tvoid
+\]
+Given a linear proof ${\it pf}$ of the view $T?@L$ for some $L$, a pointer
+$p$ of the type $\tptr(L)$ and a value $x$ of the type $T$, the function
+call ${\it ptr\_set1}\langle T\rangle({\it pf}, p, x)$ is expected to
+return the void value while changing the view of ${\it pf}$ from $T?@L$ to
+$T@L$.  In general, if $f$ is given a type of the following form for some
+views $V_1$ and $V_2$: $$(\ldots,!V_1\gg V_2,\ldots)\timp\ldots$$ then a
+function call $f(\ldots,{\it pf},\ldots)$ on some proof variable ${\it pf}$
+of the view $V_1$ is to change the view of ${\it pf}$ into $V_2$ upon its
+return.  In the case where $V_1$ and $V_2$ are the same, $!V_1\gg V_2$ can
+simply be written as $!V_1$.
+\begin{figure}
+\input{DATS/swap1_example.dats}
+\caption{A function for swapping memory contents (II)}
+\label{figure:swap1_example.dats}
+\end{figure}
+As an example, a function {\it swap1} for swapping the contents at two
+given memory locations is implemented in
+Figure~\ref{figure:swap1_example.dats}, where the function templates ${\it
+ptr\_get1}$ and ${\it ptr\_set1}$ are employed.  Clearly, this
+implementation is considerably cleaner when compared to the one in
+Figure~\ref{figure:swap0_example.dats}.
+
+\begin{figure}
+\input{DATS/swap1_alt_example.dats}
+\caption{A function for swapping memory contents (III)}
+\label{figure:swap1_alt_example.dats}
+\end{figure}
+A further simplied implementation of {\it swap1} is given in
+Figure~\ref{figure:swap1_alt_example.dats}. Given a pointer $p$ of the type
+$\tptr(L)$ for some $L$, $!p$ yields the value stored at the memory
+location $L$.  The typechecker first searches for a proof of the view $T@L$
+for some $T$ among all available proofs when typechecking $!p$; if such a
+proof ${\it pf}$ is found, then $!p$ is essentially elaborated into ${\it
+ptr\_get1}({\it pf} \mid p)$ and then typechecked. As $!p$ is a left-value,
+it can also be used to form an assignment like $!p := v$. The typechecker
+elaborates $!p := v$ into ${\it ptr\_set1}({\it pf} \mid p, v)$ for the
+sake of typechecking if a proof of the view $T@L$ can be found among all
+available proofs.
+
+\section{Local Variables}
+Local variables within a function are stored in the frame allocated for the
+function when it is called. In ATS, it is guaranteed by the type system
+that no local variables stored in the frame of a function can be accessed
+once the call to the function returns. In other words, the issue of a local
+variable escaping its legal scope is completely prevented by the type
+system of ATS.
+
+\begin{figure}[thp]
+\input{DATS/fact_function_var.dats}
+\caption{An implementation of the factorial function that makes use of a local variable}
+\label{figure:fact_function_var.dats}
+\end{figure}
+In Figure~\ref{figure:fact_function_var.dats}, a local variable is used in
+an implementation of the factorial function. Given an address $L$, the
+function {\it loop} in the implementation takes a proof of $\tint@L$, an
+integer and a pointer to $L$, and it keeps updating the integer value
+stored at $L$ until it exits. When the local variable ${\it res}$ is
+introduced, a static address of the same name is introduced implicitly. In
+addition, a proof of the view $\tint?@{\it res}$ is introduced implicitly,
+and this proof is often referred to as the proof associated with the
+dynamic variable ${\it res}$.  In order to guarantee that ${\it res}$ can
+never be accessed outside its legal scope, the type system requires that at
+the end of the legal scope of ${\it res}$, the view of the proof associated
+with ${\it res}$ must be the same as the view originally assigned to the
+proof.
+
+The expression ${\it \&res}$, which is assigned the type $\tptr(res)$,
+represents the pointer to ${\it res}$, and the expression ${\it view@}({\it
+res})$ refers to the implicitly introduced proof that is associated with
+${\it res}$. Note that the view of this proof changes from $\tint?@{\it
+res}$ into $\tint@{\it res}$ once ${\it res}$ is initialized with the
+integer $1$.
+
+If the following line is used to introduce ${\it res}$
+instead:
+\begin{verbatim}
+  var res: int // uninitialized
+\end{verbatim}
+then the proof associated with ${\it res}$ is assigned the view
+$\tint?@{\it res}$ when it is passed as a proof argument to the function
+{\it loop}, resulting in a type error.
+
+It is also possible to employ the following syntax to introduce the local
+variable ${\it res}$ in Figure~\ref{figure:fact_function_var.dats}:
+\begin{verbatim}
+  var res: int with pf_res = 1
+\end{verbatim}
+In addition to introducing ${\it res}$, the form of syntax also introduces
+${\it pf\_res}$ as an alias of ${\it view@}({\it res})$, thus allowing the
+former to be used in place of the latter.
+
+The implementation of the factorial function in
+Figure~\ref{figure:fact_function_var.dats} should be compared with the one
+in Figure~\ref{figure:fact_function_ref.dats}, where a reference (instead
+of a local variable) is created to hold intermediate results during
+computation. As references are allocated on heap and the memory for storing
+each reference can only be safely reclaimed through GC, using local
+variables, if possible, is often preferred to using references.
+
+\section{Memory Allocation on Stack}
+ATS supports memory being allocated in the stack frame of a function at
+run-time. Like in the case of local variables, the type system of ATS
+guarantees that no memory allocated in the stack frame of a function can be
+accessed after the call to the function returns.
+
+\begin{figure}[thp]
+\input{DATS/alloca_example_1.dats}
+\caption{An example involving memory allocation in stack frame at run-time}
+\label{figure:alloca_example_1.dats}
+\end{figure}
+As an example, the code in Figure~\ref{figure:alloca_example_1.dats} prints
+out the current time in certain string format. First, a call to the
+function {\it time\_get} is issued to obtain the number of seconds since
+the Epoch (the starting moment of the first of January, 1970 measured in
+UTC time). Then a buffer of $N$ bytes is allocated in the stack frame of
+the current function call, where $N$ equals some integer constant ${\it
+CTIME\_BUFLEN}$ defined to be greater than or equal to $26$. The following
+line in Figure~\ref{figure:alloca_example_1.dats} indicates a buffer of $N$
+bytes is allocated in the current stack frame at run-time:
+\begin{verbatim}
+  var !p_buf with pf_buf = @[byte][CTIME_BUFLEN]()
+\end{verbatim}
+The dynamic variable ${\it p\_buf}$ is assigned the type $\tptr({\it
+p\_buf})$, where ${\it p\_buf}$ is overloaded to refer to the starting
+address of the allocated buffer, and the proof variable ${\it pf\_buf}$ is
+given the view $@[{\it byte}?][N]@{\it p\_buf}$, which states that the
+allocated buffer is uninitialized.  In general, given a type $T$, an
+integer $I$ and an address $L$, the type $@[T][I]$ is for an array of $I$
+values of type $T$ and the view $@[T][I]@L$ indicates that such an array is
+stored at $L$.  If the allocated buffer needs to be initialized with some
+byte value $b$, the following line can be used:
+\begin{verbatim}
+  var !p_buf with pf_buf = @[byte][CTIME_BUFLEN](b)
+\end{verbatim}
+In this case, the view assigned to ${\it pf\_buf}$ is $@[{\it
+byte}][N]@{\it p\_buf}$, meaning that the buffer is initialized. The
+function ${\it ctime\_r}$, which is a reentrant version of the function
+${\it ctime}$, turns a time represented as the number of seconds since the
+Epoch into some string representation and then stores the string inside the
+buffer to which its last argumnent points. After the call to ${\it
+ctime\_r}$ returns, the view of ${\it pf\_buf}$ changes into ${\it
+strbuf}(N, I)@{\it p\_buf}$ for some natural number $I$, meaning that a
+string (i.e., a sequence of bytes ending with the null byte) of length $I$
+is stored in the buffer. After this string is printed out, the view of
+${\it pf\_buf}$ needs to be changed into $@[{\it byte}?][N]@{\it p\_buf}$,
+and this is done by calling the proof function ${\it
+bytes\_v\_of\_strbuf\_v}$.
+
+\section{Call-By-Reference}
+The feature of call-by-reference in ATS is similar to the corresponding one
+in \cplusplus. What is special in ATS is the way in which this feature is
+handled by the type system.  In general, if $f$ is given a type of the
+following form for some viewtypes $\VT_1$ and $\VT_2$:
+%%
+$$(\ldots,\&\VT_1\gg \VT_2,\ldots)\timp\ldots$$
+%%
+then a function call $f(\ldots,{\it x},\ldots)$ on some variable ${\it x}$
+of the viewtype $\VT_1$ is to change the viewtype of ${\it x}$ into $\VT_2$
+upon its return.  In the case where $\VT_1$ and $\VT_2$ are the same,
+$\&\VT_1\gg \VT_2$ can simply be written as $\&\VT_1$. The variable $x$ may
+be replaced with other forms of left-values.
+
+\begin{figure}[thp]
+\input{DATS/fact_function_cbr.dats}
+\caption{An implementation of the factorial function that makes use of call-by-reference}
+\label{figure:fact_function_cbr.dats}
+\end{figure}
+As an example, an implementation of the factorial function is given in
+Figure~\ref{figure:fact_function_cbr.dats} that makes use of
+call-by-reference. Note that if the line for introducing the variable
+${\it res}$ in the implementation is replaced with the following one:
+\begin{verbatim}
+  val res: int = 1 // [res] is now a value, not a variable!
+\end{verbatim}
+then a type error should occurs as ${\it res}$ is no longer a left-value
+when it is passed as an argument to ${\it loop}$. For instance, the reason
+for introducing {\it ntick} as a variable in
+Figure~\ref{figure:alloca_example_1.dats} is precisely due to ${\it
+ctime\_r}$ requiring that its first non-proof argument be passed as a
+reference.
+
+The implementation in Figure~\ref{figure:fact_function_cbr.dats} should be
+compared with the one in Figure~\ref{figure:fact_function_var.dats}. These
+two are really the same implementation, but the latter is clearly cleaner
+than the former in terms of the syntax being used.
+
+\section{Dataviews}
+A linear dataprop (for classifying linear proofs) is referred to as a {\it
+dataview} in ATS.
+
+\begin{figure}[thp]
+\begin{verbatim}
+dataview array_v (a:viewt@ype+, int(*size*), addr(*beg*)) =
+  | {n:nat} {l:addr}
+    array_v_cons (a, n+1, l) of (a @ l, array_v (a, n, l+sizeof a))
+  | {l:addr} array_v_nil (a, 0, l)
+\end{verbatim}
+\caption{A dataview for modeling arrays}
+\label{figure:dataview_array_v.dats}
+\end{figure}
+In Figure~\ref{figure:dataview_array_v.dats}, the dataview declaration
+introduces a view constructor {\it array\_v} and two proof constructors
+${\it array\_v\_nil}$ and ${\it array\_v\_cons}$ that are associated with
+${\it array\_v}$.  Note that the sort $\sviewtaype$ is for classifying
+viewtypes, that is, linear types of unknown size, and we use $\VT$ to range
+over viewtypes (which include all types).  The types (or more precisely, props)
+assigned to these two proof constructors are given as follows:
+\[\begin{array}{rcl}
+{\it array\_v\_nil} & : &
+\forall a:\sviewtaype.\forall l:\saddr. () \timp {\it array\_v} (a, 0, l) \\
+{\it array\_v\_cons} & : &
+\forall a:\sviewtaype.\forall n:\snat.\forall l:\saddr. \\
+&&\kern12pt
+(a @ l, {\it array\_v} (a, n, l+{\it sizeof}(a))) \timp {\it array\_v} (a, n+1, l) \\
+\end{array}\]
+Given a viewtype $\VT$ (of unknown size), an integer $I$ and an address
+$L$, ${\it array\_v}(\VT, I, L)$ is a view stating that there are $I$
+values of the viewtype $\VT$ stored (in a row) at the memory location
+$L$. A view as such is referred to as an array view.
+
+\begin{figure}
+\input{DATS/array_v_split_unsplit.dats}
+\caption{Two proof functions for manipulating array views}
+\label{figure:array_v_split_unsplit.dats}
+\end{figure}
+In Figure~\ref{figure:array_v_split_unsplit.dats}, two functions {\it
+array\_v\_split} and {\it array\_v\_unsplit} are implmented for
+manipulating array views. In essence, given a proof {\it pf} of the view
+${\it array\_v} (\VT, N, L)$ for some viewtype $\VT$, integer $N$ and
+address $L$, ${\it array\_v\_split}$ can be called to split {\it pf} (by
+consuming it) into a pair of proofs ${\it pf}_1$ and ${\it pf}_2$ of the
+views ${\it array\_v} (\VT, I, L)$ and ${\it array\_v} (\VT, N-I, L+{\it
+OFS})$, respectively, for any natural number $I\leq N$, where ${\it OFS}$ equals
+${\it sizeof}(\VT)$ multiplied by $I$. On the other hand, ${\it
+array\_v\_unsplit}$ can be called to combine the views of two adjacently
+allocated arrays into the view of a single array.  Note that the static
+expression ${\it sizeof}(\VT)$ refers to the size of a viewtype $\VT$.
+
+\begin{figure}
+\input{DATS/array_get_set_elt_at.dats}
+\caption{Two function templates for reading from and writing to a given array cell}
+\label{figure:array_get_set_elt_at.dats}
+\end{figure}
+In Figure~\ref{figure:array_get_set_elt_at.dats}, the proof functions {\it
+array\_v\_split} and {\it array\_v\_unsplit} are used in the implementation
+of two function templates for reading from and writing to a given array
+cell. Note that the dynamic expression ${\it sizeof}\langle\VT\rangle$
+represents the size of a viewtype $\VT$, and the symbol ${\it imul2}$,
+which is already given the infix status, refers to a function assigned the
+following type:
+\[\begin{array}{c}
+\forall m:\sint.\forall n:\sint.
+(\tint(m), \tint(n))\timp \exists p:\sint.({\it MUL}(m, n, p) \mid \tint (p)) \\
+\end{array}\]
+Clearly, when applied to two integers $m$ and $n$, ${\it imul2}$ returns
+some integer $p$ and a proof stating that $p$ is the product of $m$ and
+$n$.
+
+\begin{figure}
+\input{DATS/array_v_takeout.dats}
+\caption{Another proof function for manipulating array views}
+\label{figure:array_v_takeout.dats}
+\end{figure}
+In Figure~\ref{figure:array_v_takeout.dats}, a proof function {\it
+array\_v\_takeout} is implemented.
+Given a viewtype $\VT$, an address $L$, an integer $I$ and another integer
+${\it OFS}$, a proof of the following view:
+\[\begin{array}{c}
+\VT @ (L+{\it OFS}) \timp {\it array\_v} (\VT, I, L)
+\end{array}\]
+is a linear function that returns a proof of the view ${\it array\_v} (\VT,
+I, L)$ when applied to a proof of the view $\VT@(L+{\it OFS})$. In other
+words, this linear function represents an array in which one array cell is
+missing.  Therefore, the proof function ${\it array\_v\_takeout}$ turns the
+view for an array into two views: one for a cell in the array and the other
+for the rest of array, that is, the array minus the cell.
+The proof functions ${\it
+mul\_add\_cons}$ and ${\it mul\_elim}$ in the implementation are assigned
+the following types:
+\[\begin{array}{rcl}
+{\it mul\_add\_cons} & : &
+\forall i:\sint.\forall m:\sint.\forall n:\sint.~{\it MUL}(m,n,p)\timp {\it MUL}(m+i,n,p+i*n) \\
+{\it mul\_elim} & : &
+\forall m:\sint.\forall n:\sint.\forall p:\sint.~{\it MUL} (m, n, p)\timp (p = m*n)\Band\tvoid \\
+\end{array}\]
+When ${\it mul\_add\_cons}$ is called, the static variable $i$ should be
+instantiated with an integer constant. Similarly, when ${\it mul\_elim}$ is
+called, either the static variable $m$ or the static variable $n$ should be
+instantiated with a constant. These two functions are declared as axioms in
+the following file:
+\begin{center}
+${\it \$ATSHOME/prelude/SATS/arith.sats}$
+\end{center}
+The function templates ${\it array\_get\_elt\_at}$ and ${\it
+array\_set\_elt\_at}$ are given another implementation in
+Figure~\ref{figure:array_v_takeout.dats}, which makes use of ${\it
+array\_v\_takeout}$.
+
+\section{Dataviewtypes}
+A linear datatype (for classifying linear values) is referred to as a {\it
+dataviewtype} in ATS. As an example, ${\it list\_vt}$ is declared as a
+dataviewtype in the following declaration:
+\begin{verbatim}
+dataviewtype list_vt (a:viewt@ype+, int) =
+  | list_vt_nil (a, 0) | {n:nat} list_vt_cons (a, n+1) of (a, list_vt (a, n))
+\end{verbatim}
+The two data constructors associated with ${\it list\_vt}$ are assgined the
+following types:
+\[\begin{array}{rcl}
+{\it list\_vt\_nil} & : &
+\forall a:\sviewtaype.~()\timp{\it list\_vt}(a, 0) \\
+{\it list\_vt\_cons} & : &
+\forall a:\sviewtaype.\forall n:\snat.~(a, {\it list\_vt}(a, n))\timp{\it list\_vt}(a, n+1) \\
+\end{array}\]
+Assume that $C$ is a constructor of arity $n$ that forms a value
+$C(v_1,\ldots,v_n)$ of some dataviewtype $T$ when applied to values
+$v_1,\ldots,v_n$ of types $T_1,\ldots,T_n$.
+
+\begin{figure}
+\input{DATS/list_vt_free.dats}
+\caption{A function template for freeing a given linear list}
+\label{figure:list_vt_free.dats}
+\end{figure}
+A pattern of the form $\sim\!\!C(x_1,\ldots, x_n)$ is referred to as a
+destruction pattern.  If a (linear) value $v$ of the form
+$C(v_1,\ldots,v_n)$ matches the pattern $\sim\!\!C(x_1,\ldots, x_n)$, then
+each $x_i$ is bound to $v_i$ for $1\leq i\leq n$, and {\em the memory for
+storing $v$ is freed}. A typical case of using destruction patterns is
+shown in Figure~\ref{figure:list_vt_free.dats}, where a function template
+is implemented for freeing a given linear list.
+
+\begin{figure}
+\input{DATS/list_vt_length.dats}
+\caption{A function template for computing the length of a given linear list}
+\label{figure:list_vt_length.dats}
+\end{figure}
+We encounter a different situation when implementing a function for
+computing the length of a given linear list. Instead of freeing the given
+linear list, we need to preserve it (for later use). If a (linear) value
+$v$ of the form $C(v_1,\ldots,v_n)$ matches a pattern of the form
+$C(!x_1,\ldots,!x_n)$, then the type of the left-value holding $v$ changes
+into $C(L_1,\ldots,L_n)$ for some addresses $L_1,\ldots,L_n$, and for each
+$1\leq i\leq n$, $x_i$ is assgined the type $\tptr(L_i)$ and $v_i$ is
+stored at $L_i$. This is referred to as unfolding a linear value.  Given a
+left-value of the type $C(L_1,\ldots,L_n)$, applying ${\it fold@}$ to this
+left-value turns its type into $T$ if the value stored at $L_i$ is $T_i$ for
+each $1\leq i\leq n$. This is referred to as folding a linear value.  In
+Figure~\ref{figure:list_vt_length.dats}, a function template for computing
+the length of a given linear list is implemented that involves
+folding/unfolding linear values.
+
+%%% end of \chapter{Programming with Linear Types}

@@ -1,0 +1,438 @@
+%{
+(*
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: August, 2011
+*)
+%}
+
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload "libatsdoc/SATS/libatsdoc_atext.sats"
+//
+dynload "utils/atsyntax/DATS/ats2xhtml.dats"
+staload "utils/atsyntax/SATS/ats2xhtml.sats"
+//
+%}
+
+%{
+
+val LT = "<"
+val LTSLASH = "</"
+val GT = ">"
+
+val COMMENTopn = atext_strcst"<!--"
+and COMMENTcls = atext_strcst("-->")
+
+fun xmltagging (
+  tag: string, x: string
+) : atext = let
+  val _opn = atext_appstr3 (LT, tag, GT)
+  val _cls = atext_appstr3 (LTSLASH, tag, GT)
+in
+  atext_apptxt3 (_opn, atext_strsub(x), _cls)
+end // end of [xmltagging]
+
+macdef para (x) = xmltagging ("P", ,(x)) // paragraph
+macdef command (x) = xmltagging ("B", ,(x)) // boldfaced
+macdef emph (x) = xmltagging ("I", ,(x)) // italic
+
+(* ****** ****** *)
+
+local
+
+val _opn =
+  atext_strcst"<PRE class=\"textpre\">"
+val _cls = atext_strcst"</PRE>"
+
+in // in of [local]
+
+fn textpre
+  (x: string): atext =
+  atext_apptxt3 (_opn, atext_strsub(x), _cls)
+// end of [textpre]
+
+end // end of [local]
+
+(* ****** ****** *)
+
+local
+
+val _opn =
+  atext_strcst"<span class=\"code\">"
+val _cls = atext_strcst"</span>"
+
+in // in of [local]
+
+fn code (x: string): atext = 
+  atext_apptxt3 (_opn, atext_strsub(x), _cls)
+// end of [code]
+
+end // end of [local]
+
+(* ****** ****** *)
+
+fun ignore (x: string): atext = atext_nil ()
+
+fun comment (x: string): atext =
+  atext_apptxt3 (COMMENTopn, atext_strsub(x), COMMENTcls)
+// end of [comment]
+
+fun sub2str
+  (sub: string): string = let
+  val strp = tostring_strsub (sub)
+in
+  if strptr_isnot_null (strp) then string_of_strptr (strp)
+  else let
+    val () = strptr_free (strp) in ""
+  end (* end of [if] *)
+end // end of [sub2str]
+
+(* ****** ****** *)
+
+fun ats2xhtmls
+  (x: string): atext =
+  atext_strptr0 (ats2xhtml_strcode (0, x))
+fun ats2xhtmld
+  (x: string): atext =
+  atext_strptr0 (ats2xhtml_strcode (1, x))
+
+fun ats2xhtmlss
+  (x: string): atext =
+  atext_strptr0 (ats2xhtml_strcode (0, sub2str x))
+fun ats2xhtmldd
+  (x: string): atext =
+  atext_strptr0 (ats2xhtml_strcode (1, sub2str x))
+
+(* ****** ****** *)
+
+fun DQ () = atext_strcst ("\"")
+
+fun copy (x: string): atext = atext_strcst (x)
+
+fun atslink (): atext =
+  atext_strcst "<a href=\"http://ats-lang.sourceforge.net/\">ATS</a>"
+// end of [atslink]
+
+#define MYDOCROOT "../../DOCUMENT"
+#define MYIMPROOT "../../IMPLEMENT"
+
+fun mydoclink (
+  codepath: string, linkname: string
+) : atext = let
+  val res = sprintf (
+    "<a href=\"%s/atsdocman/%s\">%s</a>", @(MYDOCROOT, codepath, linkname)
+  ) // end of [val]
+in
+  atext_strptr (res)
+end // end of [mydoclink]
+
+fun myatsimplink (
+  codepath: string, linkname: string
+) : atext = let
+  val res = sprintf (
+    "<a href=\"%s/Anairiats/%s\">%s</a>", @(MYIMPROOT, codepath, linkname)
+  ) // end of [val]
+in
+  atext_strptr (res)
+end // end of [myatsimplink]
+
+macdef filename(x) = xmltagging ("I", ,(x)) // italic
+
+%}
+
+#copy('\
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <style type="text/css">
+    .code {color:\#E80000;}
+    .atsyntax {color:\#E80000;background-color:\#E0E0E0;}
+    .atsyntax span.comment {color:\#787878;font-style:italic;}
+    .atsyntax span.extern  {color:\#A52A2A;}
+    .atsyntax span.keyword {color:\#000000;font-weight:bold;}
+    .atsyntax span.neuexp  {color:\#800080;}
+    .atsyntax span.staexp  {color:\#0000FF;}
+    .atsyntax span.dynexp  {color:\#E80000;}
+    .atsyntax span.prfexp  {color:\#009000;}
+    .atsyntax span.stacstdec  {text-decoration:none;}
+    .atsyntax span.stacstuse  {color:\#0000CF;text-decoration:underline;}
+    .atsyntax span.dyncstdec  {text-decoration:none;}
+    .atsyntax span.dyncstimp  {color:\#B80000;text-decoration:underline;}
+    .atsyntax span.dyncstuse  {color:\#B80000;text-decoration:underline;}
+  </style>
+</head>
+')#comment("copy")
+
+<body>
+
+%{
+fun HR (sz: int): atext = let
+  val res = sprintf ("<HR SIZE=%i ALIGN=LEFT></HR>", @(sz))
+in
+  atext_strcst (string_of_strptr (res))
+end // end of [HR]
+%}
+
+<H1>atsdoc</H1>
+
+#HR(2)
+
+#comment(" ****** ****** ")
+
+#para("\
+
+The command #command("atsdoc") is a utility in #atslink() for turning a
+text file laden with #emph("texting function calls") into one in which
+these calls are replaced with the strings represented by their return
+values. This utility is designed for people who have some basic knowledge
+of programmming in ATS.
+
+")
+
+<H2>Texting Function Calls</H2>
+
+#para("\
+
+The syntax for texting function calls (TFC's) is given as follows:
+
+#textpre('\
+funarg    ::= DSTRING | SSTRING | INTEGER | ID | funcall
+funarglst ::= /*empty*/ | funarg | funarg "," funarglst
+funcall   ::= "\\\#" ID {funres} "(" funarglst ")" | "\\\#" ID {funres} "{" funarglst "}"
+funres    ::= "[" ID "]"
+')#comment("textpre")
+
+where DSTRING and SSTRING are for double-quoted and single-quoted strings,
+respectively, and INTEGER is for integers of base 10, and ID is for valid
+identifiers in ATS. For instance, following are some syntactically valid
+TFC's:
+
+#textpre('\
+\\\#fact(10)
+\\\#timestamp[NOW]()
+\\\#foo("\\\#Hello("world")")
+\\\#foo("\\\#Hello(\'world\')")
+\\\#bar(\\\#version(), 100)
+\\\#foolst{itm1, itm2, itm3}
+')
+
+")#comment("para")
+
+<H2>Text Laden with TFC's</H2>
+
+#para("\
+Let us coin a word #emph("atext") to refer to text laden with
+TFC's. Suppose that following is the content of a file named #emph("foo.atxt"):
+
+#textpre("\
+Author: \\\#author()
+Time of the last modification: \\\#timestamp[NOW]()
+")
+")#comment("para")
+
+#para("\
+If we execute the following command-line:
+
+#textpre("\
+#command("atsdoc") --outcode foo_atxt.dats --outdata foo_atxt.txt -i foo.atxt
+")#comment("textpre")
+
+then two files named #filename("foo_atxt.dats") and #filename("foo_atxt.txt")
+are generated. It is also possible to do the same thing by executing the
+following command-line:
+
+#textpre("\
+#command("atsdoc") --outcode foo_atxt.dats -i foo.atxt > foo_atxt.txt
+")#comment("textpre")
+
+")#comment("para")
+
+#para("\
+The content of #filename("foo_atxt.dats") is listed as follows:
+
+#ats2xhtmld('\
+(*
+foo.atxt: 10(line=1, offs=10) -- 18(line=1, offs=18)
+*)
+val __tok1 = author()
+val () = theAtextMap_insert_str ("__tok1", __tok1)
+
+(*
+foo.atxt: 51(line=2, offs=33) -- 67(line=2, offs=49)
+*)
+val NOW = timestamp()
+val () = theAtextMap_insert_str ("NOW", NOW)
+')#comment("ats2xhtmld")
+
+Note that the name of the identifier #code("__tok1") is generated
+automatically while the name of the identifer #code("NOW") is taken from
+the input. The embedded location information in #filename("foo_atxt.dats")
+is present primarily for the purpose of debugging.
+
+")#comment("para")
+
+#para("\
+The content of #filename("foo_atxt.txt") is listed as follows:
+
+#textpre("
+Author: \\\#__tok1$
+Time of the last modification: \\\#NOW$
+")#comment("textpre")
+
+Note that each marked token in #filename("foo_atxt.txt") is formed
+by placing an identifier between the char '\\\#' and the char '$'.
+")
+
+#para("\
+
+The plan is to compile #filename("foo_atxt.dats") into an executable that
+can generate a text file by replacing each marked token in
+#filename("foo_atxt.txt") with some text attached to it. However, the
+#code("main") function is not present in #filename("foo_atxt.dats").  Also,
+the functions #code("author") and #code("timestamp") are not available.  By
+embedding proper ATS source code into #filename("foo.atxt"), we can readily
+resolve these issues and fulfill the plan.
+
+")#comment("para")
+
+#para("\
+
+Let #filename("foo2.atxt") be a file of the following content:
+
+#textpre('\
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload "libatsdoc/SATS/libatsdoc_atext.sats"
+//
+%}
+
+%{
+fn author () = atext_strcst"John Doe"
+%}
+
+%{
+staload
+UN = "prelude/SATS/unsafe.sats"
+staload TIME = "libc/SATS/time.sats"
+
+fn timestamp
+  (): atext = let
+  var time = $TIME.time_get ()
+  val (fpf | x) = $TIME.ctime (time)
+  val x1 = sprintf ("%s", @($UN.castvwtp1(x)))
+  prval () = fpf (x)
+  val x1 = string_of_strptr (x1)
+in
+  atext_strcst (x1)
+end // end of [val]
+%}
+
+Author: \\\#author()
+Time of the last modification: \\\#timestamp[NOW]()
+
+%{
+implement main () = fprint_filsub (stdout_ref, "foo2_atxt.txt")
+%}
+')#comment("textpre")
+
+Any text surrounded by the special symbols '%{' and '%}' is copied into
+#filename("foo2_atxt.dats") after the following command-line is executed:
+
+#textpre("\
+#command("atsdoc") -do foo2_atxt.dats -i foo2.atxt > foo2_atxt.txt
+")
+
+The function #code("fprint_filsub") is called to replace each marked token
+in #filename("foo2_atxt.txt") with the string attached to it.
+
+")#comment("para")
+
+#para("
+We can now compile #filename("foo2_atxt.dats") into #filename("foo2")
+and then dump the output from executing #filename("foo2") into #filename("foo2.output"):
+
+#textpre("\
+atscc -o foo2 foo2_atxt.dats -latsdoc
+./foo2 > foo2.output
+")
+
+As can be expected, following is the content of #filename("foo2.output"):
+
+#textpre("\
+Author: John Doe
+Time of the last modification: Wed Aug 24 20:31:59 2011
+")
+")#comment("para")
+
+<H2>Representation for Texts</H2>
+
+#para("\
+
+The functions #code("author") and #code("timestamp") presented above do not
+return strings. Instead, they return values of the type #code("text"),
+which is declared in #myatsimplink("libatsdoc/SATS/libatsdoc_atext.sats", "libatsdoc/SATS/libatsdoc_atext.sats") as
+follows:
+
+#ats2xhtmls("\
+datatype atext =
+//
+  | ATEXTnil of () // empty text
+//
+  | ATEXTstrcst of string // string constants
+  | ATEXTstrsub of string // strings containing marked tokens
+//
+  | ATEXTapptxt2 of (atext, atext) // text concatenation
+  | ATEXTappstr2 of (string, string) // string concatenation
+//
+  | ATEXTapptxt3 of (atext, atext, atext) // text concatenation
+  | ATEXTappstr3 of (string, string, string) // string concatenation
+//
+  | ATEXTconcatxt of atextlst // text concatenation
+  | ATEXTconcatxtsep of (atextlst, atext(*sep*)) // text concatenation with separator
+// end of [atext]
+
+where
+atextlst = List (atext)
+and
+stringlst = List (string)
+")#comment("ats2xhtmls")
+
+The meaning of all the data constructors associated with the datatype
+#code("atext") should be easily understood except #code("ATEXTstrsub"), which
+indicates that its (string) argument may contain marked tokens, that is,
+symbols formed by placing identifiers between the two characters '\\\#' and
+'$'. When stringizing a value of the form #code("ATEXTstrsub")(str) for some
+string str, we must replace each marked token in str with the string it
+represents. For further details, please see the implementation of
+#code("fprint_strsub") in
+#myatsimplink("libatsdoc/DATS/libatsdoc_atext.dats", "libatsdoc/DATS/libatsdoc_atext.dats").
+
+")#comment("para")
+
+#HR(2)
+
+#para("\
+
+Please find #mydoclink("TEST", "on-line") all the files involved in the
+above presentation.  The atext file for producing the current html file is
+also available #mydoclink("atsdocman.atxt", "on-line").
+
+")
+
+#comment(" ****** ****** ")
+
+#comment(" end of [atsdocman.atxt] ")
+
+</body>
+</html>
+
+%{
+implement main () = fprint_filsub (stdout_ref, "atsdocman_atxt.txt")
+%}

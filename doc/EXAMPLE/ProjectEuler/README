@@ -1,0 +1,160 @@
+The set of problems are taken from the following site:
+
+http://projecteuler.net
+
+######
+#
+# If you have a verified solution to one of the PE problems that is
+# implemented in ATS, please consider sharing it with other ATS users.
+# If you send it to me (hwxi AT cs DOT bu DOT edu), I will post it after
+# testing it successfully.
+#
+######
+
+######
+
+Problem1:
+Solution is fully verified:
+problem1-hwxi2.dats
+
+######
+
+Problem2:
+Solution is fully verified:
+problem2-hwxi2.dats
+
+######
+
+Problem3:
+Problem4:
+Problem5:
+
+######
+
+Problem6:
+Solution is fully verified:
+problem6-hwxi2.dats:
+In particular, the following equations are proved:
+1+...+n = n(n+1)/2
+1^2+...+n^2 = n(n+1)(2n+1)/6
+
+######
+
+Problem7:
+Solution is fully verified IF a primality test is ASSUMED to be correct:
+problem7-hwxi2.dats
+
+######
+
+Problem8:
+Problem9:
+Problem10:
+Problem11:
+Problem12:
+Problem13:
+Problem14:
+
+######
+
+Problem15:
+Solution is fully verified:
+problem15-hwxi2.dats // via memoization
+problem15-mberndt.dats // a pure solution
+
+######
+
+Problem16:
+Solution is fully verified:
+problem16-hwxi2.dats
+
+######
+
+Problem17:
+Problem18:
+Problem19:
+
+######
+
+Problem20:
+Solution is fully verified:
+problem20-hwxi2.dats
+
+######
+
+Problem21:
+Problem22:
+Problem23:
+Problem24:
+
+######
+
+Problem25:
+Solution is fully verified:
+problem25-hwxi2.dats
+
+######
+
+Problem26:
+Problem27:
+Problem28:
+Problem29:
+Problem30:
+Problem31:
+Problem32:
+Problem33:
+Problem34:
+Problem35:
+Problem36:
+Problem37:
+Problem38:
+Problem39:
+Problem40:
+Problem41:
+Problem43:
+Problem44:
+Problem45:
+Problem46:
+Problem47:
+Problem48:
+Problem49:
+Problem50:
+Problem51:
+Problem52:
+Problem53:
+Problem55:
+Problem56:
+Problem57:
+Problem58:
+Problem63:
+Problem65:
+Problem66:
+Problem69:
+Problem71:
+Problem73:
+Problem75:
+Problem76:
+Problem77:
+Problem80:
+Problem92:
+Problem94:
+Problem97:
+Problem100:
+Problem104:
+Problem108:
+Problem110:
+Problem120:
+Problem125:
+Problem145:
+Problem157:
+Problem162:
+Problem164:
+Problem169:
+Problem301:
+
+######
+
+######
+#
+# end of [README]
+#
+######

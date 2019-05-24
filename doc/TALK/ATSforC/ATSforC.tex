@@ -1,0 +1,712 @@
+\documentclass[pdf]{prosper}
+\usepackage{amssymb}
+
+\renewcommand{\slidetopmargin}{25mm}
+\renewcommand{\slidebottommargin}{12mm}
+\renewcommand{\slideleftmargin}{0mm}
+\renewcommand{\sliderightmargin}{32mm}
+
+\def\sc{{\it sc}}
+\def\basesort{b}
+\def\saddr{{\it addr}}
+\def\sbool{{\it bool}}
+\def\simp{\rightarrow}
+\def\Simp{\Rightarrow}
+\def\sint{{\it int}}
+\def\snat{{\it nat}}
+\def\sprop{{\it prop}}
+\def\stype{{\it type}}
+
+\def\tint{\mbox{\bf int}}
+\def\tptr{\mbox{\bf ptr}}
+\def\tbool{\mbox{\bf bool}}
+\def\tvoid{\mbox{\bf void}}
+\def\tlist{\mbox{\bf list}}
+\def\tllist{\mbox{\bf list\_vt}}
+\def\tarray{\mbox{\bf array}}
+
+\def\Band{\land}
+\def\Bimp{\supset}
+\def\timp{\rightarrow}
+
+%%%%%%
+%%
+%% NASAC@NanHang
+%%
+%% Title: ATS as a functional programming front-end for C
+%% Author: Hongwei Xi, Boston University
+%%
+%% Date: October 21, 2012
+%%
+\title{\huge\bf ATS as a Functional Programming Front-end for C}
+\author{~\\~\\
+{\large Hongwei Xi} \\~\\
+{\large Boston University} \\~\\~\\~\\
+\institution{Work partly funded by NSF}}
+\slideCaption{\footnotesize{\em ATS as a functional programming front-end for C}}
+%%%%%%
+%%
+%% Abstract
+%%
+%% Typical system design is marked by tradeoffs between factors such as
+%% efficiency and reliability, features and security, etc. As of now, most
+%% embedded systems are written in unsafe programming languages that are
+%% either untyped (e.g., assembly) or weakly typed (e.g., C).  Evidently, a
+%% question of great interest is why people (in general) do not implement
+%% these systems in existing safe languages such as Java (object-oriented) and
+%% ML (functional). Among a variety of reasons, a particularly important one
+%% is that low-level features such as explicit use of pointers and pointer
+%% arithmetic are disallowed in such safe languages (in order to guarantee
+%% safety). However, the very need to achieve optimal hardware usage often
+%% demands the availability of such features. In addition, the requirement for
+%% run-time garbage collection (GC) by safe languages can often become a great
+%% or even insurmountable obstacle to handling real-time events (that have
+%% hard deadlines).
+%%
+%% ATS is a full-fledged functional programming language with a type system
+%% rooted in the framework Applied Type System. ATS can run without GC and it
+%% supports low-level features such as pointers and pointer arithmetic. When
+%% such features are used, the programmer is required to construct proofs
+%% within ATS to justify the safety of their use. This is a programming
+%% paradigm we refer to as programming with theorem-proving. In this talk, I
+%% will primarily argue that ATS as a functional programming front-end to C
+%% can be readily employed in the construction of safe and reliable embedded
+%% systems. In particular, I will demonstrate some highly effective uses of
+%% dependent types and linear types in tracking the allocation/deallocation
+%% and manipulation of computing resources and thus preventing their potential
+%% misuses.
+%%
+%%%%%%
+\begin{document}
+%%%%%%
+%%
+%% Title Slide
+%%
+%%%%%%
+\maketitle
+%%%%%%
+%%
+%% Slide 1.1
+%%
+%%%%%%
+\begin{slide}{\em Why functional programming?}
+\begin{itemize}
+\item
+It can be readily observed that functional programming (FP) style is often
+closer than imperative programming style to high-level specifications that
+need to be implemented.
+
+\begin{itemize}
+\item FP is more ``declarative'': it is more about what-to-do than how-to-do-it.
+\end{itemize}
+
+\item
+Common Misconceptions of FP:
+\begin{itemize}
+\item FP is exotic and difficult to learn.
+\item FP is inherently inefficient time-wise.
+\item FP is inherently inefficient memory-wise; it requires the support of run-time garbage collection (GC).
+\end{itemize}
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 1.2
+%%
+%%%%%%
+\begin{slide}{\em Functional programming in ATS}
+\begin{itemize}
+\item ATS is a typed language of functional programming core.
+\item FP programs in ATS can run with and without the support of run-time GC.
+\item
+The efficiency of programs written in ATS can rival their counterparts in
+C both time-wise and memory-wise. See the following benchmarking site
+run by a third-party:
+\begin{center}
+\texttt{\bf http://shootout.alioth.debian.org/}
+\end{center}
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.1
+%%
+%%%%%%
+\begin{slide}{\em Why types?}
+\begin{itemize}
+
+\item
+Types are essentially a specification language for writing specifications
+against which implementations can be checked {\em mechanically} at
+compile-time.
+
+\item
+The tool for supporting this kind of static checking is called
+{\em typechecker}.
+
+\item
+Common Misconceptions of Types:
+\begin{itemize}
+\item Types are exotic and difficult to learn.
+\item Types are too simple for capturing ``interesting'' program properties.
+\end{itemize}
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.2
+%%
+%%%%%%
+\begin{slide}{\em Types in ATS}
+\begin{itemize}
+\item Types in ATS are rich and expressive.
+\item In particularly, there are dependent types and linear types in ATS.
+\begin{itemize}
+\item Dependent types, which are rooted in the first-order
+predicate logic, bring precision into specification.
+\item Linear types, which are (casually) rooted in a fragment of the linear
+logic, allow direct modeling of resource allocation/deallocation and manipulation.
+\end{itemize}
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.3
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (1)}
+
+\begin{itemize}
+\item Primitive singleton types for enhancing precision:
+\begin{itemize}
+\item Given a integer n, $\tint(n)$ is the type for the only integer whose
+  value equals n.
+\item Given a boolean b, $\tbool(b)$ is the type for the only boolean whose
+  value equals b.
+\item Given a memory location l, $\tptr(l)$ is the type for the only pointer to the
+  location l.
+\end{itemize}
+
+\item Precise dependent types for primitive operations:
+$$\begin{array}{rcl}
+{+} & : & \forall i:int.\forall j:int.(\tint(i), \tint(j))\timp \tint(i+j) \\
+{-} & : & \forall i:int.\forall j:int.(\tint(i), \tint(j))\timp \tint(i-j) \\
+{*} & : & \forall i:int.\forall j:int.(\tint(i), \tint(j))\timp \tint(i*j) \\
+\ldots & : & \ldots \\
+\end{array}$$
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.4
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (2)}
+\begin{itemize}
+\item
+
+The following type is for a function that takes an integer and returns
+a non-negative integer:
+
+$$\begin{array}{l}
+\forall i:\sint.~\tint(i) \timp \exists j:\sint.~(j \geq 0)\Band\tint(j) \\
+\end{array}$$
+
+The following is a representation of the above type in the concrete syntax
+of ATS:
+
+$$\begin{array}{l}
+\texttt{\{i:int\} int(i) -> [j:int | j >= 0] int(j)} \\
+\end{array}$$
+
+For instance, this type can be assigned to the absolute-value function
+or the square function on integers.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.5
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (3)}
+\begin{itemize}
+\item
+
+The following type is for a function that takes an array with a valid index
+(i.e., a natural number less the size of the array) and returns an element
+in the array:
+$$\begin{array}{l}
+\forall a:\stype.\forall n:\sint.\forall i:\snat.~\\
+\kern18pt(i<n)\Bimp(\tarray(a, n), \tint(i)) \timp a \\
+\end{array}$$
+The following is a representation of the above type in the concrete syntax
+of ATS:
+$$\begin{array}{l}
+\texttt{\{a:type\}\{n:int\}}\\
+\kern12pt\texttt{\{i:nat | i < n\}(array(a, n), int(i)) -> a}\\
+\end{array}$$
+Clearly, this type can be assigned to the array-subscripting
+function.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.6
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (4)}
+\begin{itemize}
+\item
+
+The following type is for a function that takes two lists of length $m$ and
+$n$, respectively, and returns a list of length $m+n$:
+
+$$\begin{array}{l}
+\forall a:\stype.\forall m:\snat.\forall n:\snat.~\\
+\kern18pt(\tlist(a, m), \tlist(a, n)) \timp \tlist(a, m+n)\\
+\end{array}$$
+
+For instance, this type can be assigned to the function for concatenating
+two given lists in functional style.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.7
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (5)}
+\begin{itemize}
+\item
+
+The following type is for a function that takes two linear lists of length
+$m$ and $n$, respectively, and returns a linear list of length $m+n$:
+
+$$\begin{array}{l}
+\forall a:\stype.\forall m:\snat.\forall n:\snat.~\\
+\kern18pt(\tllist(a, m), \tllist(a, n)) \timp \tllist(a, m+n)\\
+\end{array}$$
+
+Note that the two arguments of this function are no longer available
+after a call to it returns.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 2.8
+%%
+%%%%%%
+\begin{slide}{\em Examples of Types in ATS (6)}
+\begin{itemize}
+\item
+
+There is a famous saying in English: {\em one cannot have the cake and
+eat it!} This can be formalized as follows:
+$$\begin{array}{rcl}
+\texttt{eat} & : & \texttt{(cake) -> void} \\
+\texttt{have\_and\_eat} & : & \texttt{(!cake) -> void} \\
+\end{array}$$
+
+The symbol $!$ indicates that the argument of the function
+\texttt{have\_and\_eat} is still available after a call to it returns.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 3.1
+%%
+%%%%%%
+\begin{slide}{\em ATS (1)}
+\begin{itemize}
+
+\item
+ATS is a statically typed programming language that unifies implementation
+with formal specification.
+
+\item
+The type system of ATS is rooted in the framework {\em Applied Type System},
+which gives the language its name.
+
+\item
+Both dependent types (based on first-order logic) and linear types are
+available in ATS.
+
+\item
+The currently released compiler of ATS (ATS/Anairiats) is written in ATS
+itself, consisting of more than 100K lines of code, and ATS2
+(ATS/Postiats), the successor of ATS is being actively developed and should
+be ready for release in the near feature.
+
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 3.2
+%%
+%%%%%%
+\begin{slide}{\em ATS (2)}
+\begin{itemize}
+\item
+The core of ATS is a call-by-value functional programming language,
+which can also support lazy evaluation.
+\item
+ATS supports a programming paradigm referred to as {\em programming with
+theorem-proving (PwTP)}, allowing code for run-time computation and
+code for proof construction to be written in a syntactically intertwined
+manner.
+\item
+Imperative programming in ATS makes essential use of PwTP.
+\item
+ATS and C share the same native data representation, and
+programs in ATS are compiled directly into C code. To some extent, ATS
+can be thought of as a front end for C.
+\item
+For more details, please visit:
+\begin{center}
+\texttt{\bf http://www.ats-lang.org}
+\end{center}
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 4
+%%
+%%%%%%
+\begin{slide}{\em The rest of the talk}
+\begin{itemize}
+\item Programming with Theorem-Proving (PwTP)
+\item Views as Linear Props
+\item Viewtypes as Linear Types
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 5.1
+%%
+%%%%%%
+\begin{slide}{\em Programming with Theorem-Proving}
+
+Programming with Theorem-Proving (PwTP) is considered the signatory
+feature of ATS. It advocates a programming paradigm in which code for
+(run-time) computation and code for proof construction can be written in a
+syntactically intertwined manner.
+
+\begin{itemize}
+\item
+Props are introduced to classify proofs.
+\item
+A proof is required to be pure and total, and it is to be erased before
+program execution. In particular, we do not extract programs out of
+proofs. Consequently, we can and do construct classical proofs.
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide 5.2.1
+%%
+%%%%%%
+\begin{slide}{\em Ind. Def. of Fibonacci Numbers}
+$$\begin{array}{rcl}
+fib(0) & = & 0 \\
+fib(1) & = & 1 \\
+fib(n) & = & fib(n-2)+fib(n-1)~~\mbox{if $n \geq 2$} \\
+\end{array}$$
+\end{slide}
+%%%%%%
+\begin{slide}{\em Implementation of $fib$ in C}
+{\blue\begin{verbatim}
+int fib (int n) {
+  int tmp;
+  int r0 = 0, r1 = 1;
+  while (n > 0) { tmp = r1; r1 = r0+r1; r0 = tmp; }
+  return r0 ;
+} // end of [fib]
+\end{verbatim}}
+\end{slide}
+%%%%%%
+%%
+%% Slide 5.2.3
+%%
+%%%%%%
+\begin{slide}{\em A Dataprop Declaration in ATS}
+{\blue\begin{verbatim}
+dataprop FIB (int, int) =
+  | FIB0 (0, 0) of () // fib(0) = 0
+  | FIB1 (1, 1) of () // fib(1) = 1
+  | {n:nat}{r0,r1:nat} // fib(n+2) = fib(n)+fib(n+1)
+    FIB2 (n+2, r0+r1) of (FIB (n, r0), FIB (n+1, r1))
+\end{verbatim}
+}~\\~\\
+The following function {\it fib} computes Fibonacci numbers:\\~\\
+{\blue\begin{verbatim}
+fun fib {n:nat}
+  (n: int (n)): [r:nat] (FIB (n, r) | int (r))
+// end of [fib]
+\end{verbatim}
+}
+\vfill
+\end{slide}
+%%%%%%
+%%
+%% Slide 5.3
+%%
+%%%%%%
+\begin{slide}{\em A Direct Implementation of {\it fib}}
+{\blue\begin{verbatim}
+implement fib (n) =
+  case+ n of
+  | 0 => (FIB0 () |  0)
+  | 1 => (FIB1 () |  1)
+  | _ =>> let
+      val (pf0 | r0) = fib (n-2)
+      val (pf1 | r1) = fib (n-1)
+    in
+      (FIB2 (pf0, pf1) | r0 + r1)
+    end // end of [_]
+// end of [fib]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide 5.4
+%%
+%%%%%%
+\begin{slide}{\em A Tail-Recursive Implementation of {\it fib}}
+{
+\fontsize{10}{10}
+\blue\begin{verbatim}
+implement
+fib {n} (n) = let
+  fun loop
+    {i:nat | i < n} {r0,r1:nat} (
+    pf0: FIB (i, r0), pf1: FIB (i+1, r1)
+  | ni: int (n-i), r0: int r0, r1: int r1
+  ) : [r:nat] (FIB (n, r) | int r) =
+    if ni > 1 then
+      loop {i+1} (pf1, FIB2 (pf0, pf1) | ni-1, r1, r0+r1)
+    else (pf1 | r1)
+  // end of [loop]
+in
+  case+ n of
+  | 0 => (FIB0 () |  0)
+  | 1 => (FIB1 () |  1)
+  | _ =>> loop {0} (FIB0, FIB1 | n, 0, 1)
+end // end of [fib]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Views}
+A view is a linear prop.
+\begin{itemize}
+\item
+Given a type $T$ and an address $L$, $T@L$ is a primitive view
+meaning that a value of the type $T$ is stored at the location $L$.
+\item
+Given two views $V_1$ and $V_2$, we use $V_1\otimes V_2$ for a
+view that joins $V_1$ and $V_2$ together.
+\item
+We also provide a means for forming recursive views. 
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+%%%%%%
+%%
+%% Slide 18
+%%
+%%%%%%
+\def\tptr{\mbox{\bf ptr}}
+\def\fptrget{{\it ptrget}}
+\def\fptrset{{\it ptrset}}
+\begin{slide}{\em Some Built-in Functions}
+{\blue\begin{verbatim}
+fun{a:type}
+ptrget {l:addr}
+  (pf: a@l | p: ptr l): (a@l | a)
+// end of [ptrget]
+
+fun{a:type}
+ptrset {l:addr}
+  (pf: (a?)@l | p: ptr l, x: a): (a@l | void)
+// end of [ptrset]
+\end{verbatim}
+}
+\[\begin{array}{rcl}
+\fptrget &~:~& \forall a:\stype.\forall l:\saddr.~~(a@l \mid \tptr(l)) \timp (a@l \mid a) \\
+\fptrset &~:~& \forall a:\stype.\forall l:\saddr.~~(a?@l \mid \tptr(l), a)\timp (a@l \mid \tvoid) \\
+\end{array}\]
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Example: {\it Swap}}
+{\blue\begin{verbatim}
+fun{a:type}
+swap {l1,l2:addr} (
+  pf1: a@l1, pf2: a@l2
+| p1: ptr l1, p2: ptr l2
+) : (a@l1, a@l2 | void) = let
+  val (pf1 | x1) = ptrget<a> (pf1 | p1)
+  val (pf2 | x2) = ptrget<a> (pf2 | p2)
+  val (pf1 | ()) = ptrset<a> (pf1 | p1, x2)
+  val (pf2 | ()) = ptrset<a> (pf2 | p2, x1)
+in
+  (pf1, pf2 | ())
+end // end of [swap]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Syntactical Convenience}
+{\blue\begin{verbatim}
+fun{a:type}
+ptrget {l:addr} (pf: !a@l | p: ptr l): a
+
+fun{a:type}
+ptrset {l:addr}
+  (pf: !(a?)@l >> a@l | p: ptr l, x: a): void
+// end of [ptrset]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Another Implementation of {\it Swap}}
+{\blue\begin{verbatim}
+fun{a:type}
+swap {l1,l2:addr} (
+  pf1: !a@l1, pf2: !a@l2
+| p1: ptr l1, p2: ptr l2
+) : void = let
+  val tmp = !p1 in !p1 := !p2; !p2 := tmp
+end // end of [swap]
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\def\VT{{\it VT}}
+\def\sviewtype{{\it viewtype}}
+\begin{slide}{\em Viewtypes}
+\begin{itemize}
+\item
+A linear type in ATS is given the name viewtype, which is chosen to
+indicate that a linear type consists of two parts: one part for views and
+the other for types. We use $\sviewtype$ as the sort for viewtypes.
+\item Given a view V and a type T, the
+tuple (V | T) is a viewtype, where the bar symbol (|) is a separator (just
+like a comma) to separate views from types.
+\item
+What seems a bit surprising is the opposite: For each viewtype VT, we may
+assume the existence of a view V and a type T such that VT is equivalent to
+(V | T). Formally, this T can be referred as VT?! in ATS. This somewhat
+unexpected interpretation of linear types stresses that the linearity of a
+viewtype comes entirely from the view part residing within it.
+\end{itemize}
+\vfill
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Abstract Viewtypes (1)}
+{\blue\begin{verbatim}
+absviewtype queue (a:viewtype, n:int)
+
+fun{a:viewtype} queue_new (): queue (a, 0)
+fun{a:viewtype} queue_free (obj: queue (a, 0)): void
+
+fun{a:viewtype}
+queue_enque {n:nat} (
+  obj: !queue (a, n) >> queue (a, n+1), x: a
+) : void // end of [queue_enque]
+
+fun{a:viewtype}
+queue_deque {n:pos}
+  (obj: !queue (a, n) >> queue (a, n-1)): a
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Abstract Viewtypes (2)}
+{\blue\begin{verbatim}
+absviewtype mylock (v:view)
+
+fun mylock_create
+  {v:view} (pf: v | (*none*)): mylock(v)
+
+fun mylock_destroy
+  {v:view} (lock: mylock v): (v | void)
+
+fun mylock_acquire
+  {v:view} (lock: !mylock v): (v | void)
+
+fun mylock_release
+  {v:view} (pf: v | lock: !mylock v): void
+\end{verbatim}
+}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em Future Directions}
+\begin{itemize}
+\item Applying ATS to systems programming. We need more case studies.
+\item
+Reducing the amount of ``administrative code'' needed for proof
+manipulation. We want to investigate more effective approaches to proof
+management in order to better support PwTP.
+\item
+Identifying the potential of PwTP in areas other than systems programming
+(e.g., security, privacy).
+\end{itemize}
+\end{slide}
+%%%%%%
+%%
+%% Slide ??
+%%
+%%%%%%
+\begin{slide}{\em The End}
+\vspace{72pt}
+\begin{center}
+{\huge\bf Thank you!}
+\end{center}
+\end{slide}
+\end{document}
+%%%%%% end of [ATSforC.tex] %%%%%%

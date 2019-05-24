@@ -1,0 +1,83 @@
+<!-- beg of [variadicity.html] -->
+
+<H2><A id="variadicity" name="variadicity">Variadic Functions</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+As in C, a funciton in ATS may also take an indefinite number of arguments.
+Let us use the function <i>printf</i> in ATS, which corresponds to the
+function of the same name in C, as an example to explain this feature.
+<P>
+
+The type of <i>printf</i> is given as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT> printf <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>ts<FONT COLOR="#000000">:</FONT>types<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>printf_c ts<FONT COLOR="#000000">,</FONT> ts<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> void</FONT>
+</FONT></PRE>
+
+We use <i>printf_c</i> for a type constructor that forms types for format
+strings (in C) when applied to lists of types. For instance,
+<i>printf_c(char, double, int)</i> is a type for format strings that require
+a character, a double, and an integer to be supplied. Given
+a character <i>c</i>, a double <i>d</i> and an integer <i>i</i>,
+<i>@(c, d, i)</i> is an argument of types <i>(char, double, int)</i>,
+and the following expression is well-typed in ATS:
+
+<PRE><span class="dynexp">printf <span class="keyword">(</span>"c = %c and d = %f and i = %i"<span class="keyword">,</span> <span class="keyword">@(</span>c<span class="keyword">,</span> d<span class="keyword">,</span> i<span class="keyword">)</span><span class="keyword">)</span>
+</span></PRE>
+
+The type of the format string
+<i>"c = %c and d = %f and i = %i"</i> is computed to be
+<i>printf_c (char, double, int)</i>
+and then <i>@(c, d, i)</i> is checked to be of the type
+<i>(char, double, int)</i>.  Note that a format string must be a constant
+in order for its type to be computed during typechecking.
+<P>
+
+As an example, we present as follows a program that prints out a
+multiplication table for single digits:
+
+<PRE><span class="dynexp"><span class="keyword">#define</span> <span class="neuexp">N 9</span>
+
+<span class="keyword">implement</span> main <span class="keyword">(</span>argc<span class="keyword">,</span> argv<span class="keyword">)</span> <span class="keyword">=</span> loop1 <span class="keyword">(</span>0<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+
+  <span class="comment">// [loop1] and [loop2] are verified to be terminating based on the supplied metrics
+</span>
+  <span class="comment">// [.&lt; N-i, 0 &gt;.] is a termination metric
+</span>  <span class="comment">// Ignore it if you have not learned this feature yet
+</span>  <span class="keyword">fun</span> loop1 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i &lt;= N<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span> N-i<span class="keyword">,</span> 0 <span class="keyword">&gt;.</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span>
+    <span class="keyword">if</span> i <span class="keyword">&lt;</span> N <span class="keyword">then</span> loop2 <span class="keyword">(</span>i+1<span class="keyword">,</span> 0<span class="keyword">)</span> <span class="keyword">else</span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="comment">// end of [loop1]
+</span>
+  <span class="comment">// [.&lt; N-i, N+1-j &gt;.] is a termination metric
+</span>  <span class="comment">// Ignore it if you have notlearned this feature yet
+</span>  <span class="keyword">and</span> loop2 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">,</span>j<span class="keyword">:</span>nat <span class="keyword">|</span> i &lt;= N<span class="keyword">;</span> j &lt;= i<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span> N-i<span class="keyword">,</span> i-j+1 <span class="keyword">&gt;.</span></span> <span class="keyword">(</span>i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">,</span> j<span class="keyword">:</span> <span class="staexp">int j</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span>
+    <span class="keyword">if</span> j <span class="keyword">&lt;</span> i <span class="keyword">then</span> <span class="keyword">begin</span>
+      <span class="keyword">if</span> <span class="keyword">(</span>j <span class="keyword">&gt;</span> 0<span class="keyword">)</span> <span class="keyword">then</span> print '\t'<span class="keyword">;</span>
+      printf <span class="keyword">(</span>"%1d*%1d=%2.2d"<span class="keyword">,</span> <span class="keyword">@(</span>j+1<span class="keyword">,</span> i<span class="keyword">,</span> <span class="keyword">(</span>j+1<span class="keyword">)</span> * i<span class="keyword">)</span><span class="keyword">)</span><span class="keyword">;</span>
+      loop2 <span class="keyword">(</span>i<span class="keyword">,</span> j+1<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span>
+      print_newline <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">;</span> loop1 <span class="keyword">(</span>i<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>  <span class="comment">// end of [loop2]
+</span>
+<span class="keyword">}</span> <span class="comment">// end of [main]
+</span></span></PRE>
+
+The following text is the output of the program:
+<pre>
+1*1=01
+1*2=02	2*2=04
+1*3=03	2*3=06	3*3=09
+1*4=04	2*4=08	3*4=12	4*4=16
+1*5=05	2*5=10	3*5=15	4*5=20	5*5=25
+1*6=06	2*6=12	3*6=18	4*6=24	5*6=30	6*6=36
+1*7=07	2*7=14	3*7=21	4*7=28	5*7=35	6*7=42	7*7=49
+1*8=08	2*8=16	3*8=24	4*8=32	5*8=40	6*8=48	7*8=56	8*8=64
+1*9=09	2*9=18	3*9=27	4*9=36	5*9=45	6*9=54	7*9=63	8*9=72	9*9=81
+</pre>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The code used for illustration is available <a href="variadicity.dats">here</a>.
+
+<!-- end of [variadicity.html] -->

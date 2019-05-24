@@ -1,0 +1,608 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-example</TITLE>
+<META name="description" content="Home Page for ATS-example">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<STYLE TYPE="text/css">
+span.comment {color:787878;font-style:italic}
+span.extern  {color:A52A2A}
+span.keyword {color:000000;font-weight:bold}
+span.neuexp  {color:800080}
+span.staexp  {color:0000FF}
+span.dynexp  {color:E80000}
+span.prfexp  {color:009000}
+span.stacstdec  {text-decoration:none}
+span.stacstuse  {color:0000CF;text-decoration:underline}
+span.dyncstdec  {text-decoration:none}
+span.dyncstimp  {color:B80000;text-decoration:underline}
+span.dyncstuse  {color:B80000;text-decoration:underline}
+</STYLE>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../TUTORIAL/tutorial.html">Tutorial</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="example.html">Examples</A>&nbsp;(<B CLASS="here">new</B>)</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../IMPLEMENT/implement.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../CHANGE/log-of-changes.html">Changes</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>New Examples in ATS/Anairiats</H1>
+</CENTER>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+In this page, we primarily present some newly constructed examples in ATS
+that are relatively short but interesting.
+<P>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+<PRE>
+<span class="comment">(*
+**
+** A proof sketch for the representation
+** of Pythagorean triangluar integer triples
+**
+** Suppose that a and b are positive integers
+** satisfying gcd (a, b) = 1.
+**
+** If a*a + b*b = c*c for some integer c, then
+**
+** 1. either a or b is even
+** 2. if a is even, then there exist integers
+**    p, q such that:
+**
+**    a = 2*p*q
+**    b = p*p - q*q
+**    c = p*p + q*q
+**
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(*
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: February 7, 2010
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(*
+**
+** HX-2010-02-08:
+**
+** What is written as follows is not really a proof in any rigourous
+** sense. However, it is close to a style we as human beings do mathematics.
+** I envision a system (ATS/LF) where refinement can be done gradually to
+** remove the number of __assert functions used in such a proof. Who will
+** take the grand challenge :)
+**
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">absprop</span> <span class="staexp"><A name="900"><span class="stacstdec">MOD</span></span></A> <span class="keyword">(</span>n<span class="keyword">:</span>int<span class="keyword">,</span> p<span class="keyword">:</span>int<span class="keyword">,</span> r<span class="keyword">:</span>int<span class="keyword">)</span> <span class="comment">// n mod p = r
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="976"><span class="dyncstdec">lemma1 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>n2<span class="keyword">:</span>int<span class="keyword">}</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>n<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>n<span class="keyword">,</span> n<span class="keyword">,</span> n2<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>n2<span class="keyword">,</span> 4<span class="keyword">,</span> 0<span class="keyword">)</span></span></span></span></A>
+<span class="comment">// end of [lemma1]
+</span>
+<span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="1093"><span class="dyncstdec">lemma2 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>n2<span class="keyword">:</span>int<span class="keyword">}</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>n<span class="keyword">,</span> 2<span class="keyword">,</span> 1<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>n<span class="keyword">,</span> n<span class="keyword">,</span> n2<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>n2<span class="keyword">,</span> 4<span class="keyword">,</span> 1<span class="keyword">)</span></span></span></span></A>
+<span class="comment">// end of [lemma2]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="1227"><span class="stacstdec">por <span class="keyword">(</span>A<span class="keyword">:</span> prop<span class="keyword">,</span> B<span class="keyword">:</span> prop<span class="keyword">)</span></span></span></A> <span class="keyword">=</span> inl <span class="staexp"><span class="keyword">(</span>A<span class="keyword">,</span> B<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">A</span> <span class="keyword">|</span> inr <span class="staexp"><span class="keyword">(</span>A<span class="keyword">,</span> B<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">B</span></span>
+
+<span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="1300"><span class="dyncstdec">lemma3 <span class="staexp"><span class="keyword">{</span>a<span class="keyword">,</span>b<span class="keyword">,</span>c<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>a2<span class="keyword">,</span>b2<span class="keyword">:</span>int<span class="keyword">}</span></span>
+  <span class="keyword">(</span>pfa<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>a<span class="keyword">,</span> a<span class="keyword">,</span> a2<span class="keyword">)</span></span><span class="keyword">,</span> pfb<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>b<span class="keyword">,</span> b<span class="keyword">,</span> b2<span class="keyword">)</span></span><span class="keyword">,</span> pfc<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>c<span class="keyword">,</span> c<span class="keyword">,</span> a2+b2<span class="keyword">)</span></span><span class="keyword">)</span>
+  <span class="keyword">:</span> <span class="staexp">por <span class="keyword">(</span>MOD <span class="keyword">(</span>a<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span><span class="keyword">,</span> MOD <span class="keyword">(</span>b<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span><span class="keyword">)</span></span></span></span></A>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="1474"><span class="dyncstdec">lemma5 <span class="staexp"><span class="keyword">{</span>P<span class="keyword">,</span>Q<span class="keyword">:</span>pos<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span>
+  <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">GCD <span class="keyword">(</span>P<span class="keyword">,</span> Q<span class="keyword">,</span> 1<span class="keyword">)</span></span><span class="keyword">,</span> pf<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>P<span class="keyword">,</span> Q<span class="keyword">,</span> n*n<span class="keyword">)</span></span><span class="keyword">)</span>
+  <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>p<span class="keyword">,</span>q<span class="keyword">:</span>nat<span class="keyword">]</span> <span class="keyword">(</span>MUL <span class="keyword">(</span>p<span class="keyword">,</span> p<span class="keyword">,</span> P<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>p<span class="keyword">,</span> q<span class="keyword">,</span> n<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>q<span class="keyword">,</span> q<span class="keyword">,</span> Q<span class="keyword">)</span><span class="keyword">)</span></span></span></span></A>
+<span class="comment">// end of [lemma5]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="1656"><span class="dyncstdec">PyTri <span class="staexp"><span class="keyword">{</span>a<span class="keyword">,</span>b<span class="keyword">,</span>c<span class="keyword">:</span>pos<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>a2<span class="keyword">,</span>b2<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="keyword">(</span>
+    pfa_mod<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>a<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span></span>
+  <span class="keyword">,</span> pfab_gcd<span class="keyword">:</span> <span class="staexp">GCD <span class="keyword">(</span>a<span class="keyword">,</span> b<span class="keyword">,</span> 1<span class="keyword">)</span></span>
+  <span class="keyword">,</span> pfa<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>a<span class="keyword">,</span> a<span class="keyword">,</span> a2<span class="keyword">)</span></span>
+  <span class="keyword">,</span> pfb<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>b<span class="keyword">,</span> b<span class="keyword">,</span> b2<span class="keyword">)</span></span>
+  <span class="keyword">,</span> pfc<span class="keyword">:</span> <span class="staexp">MUL <span class="keyword">(</span>c<span class="keyword">,</span> c<span class="keyword">,</span> a2+b2<span class="keyword">)</span></span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>p<span class="keyword">,</span>q<span class="keyword">:</span>nat<span class="keyword">]</span>
+    <span class="keyword">[</span>p2<span class="keyword">,</span>pq<span class="keyword">,</span>q2<span class="keyword">:</span>int <span class="keyword">|</span> a == 2*pq<span class="keyword">;</span> b == p2-q2<span class="keyword">;</span> c == p2+q2<span class="keyword">]</span>
+    <span class="keyword">(</span>MUL <span class="keyword">(</span>p<span class="keyword">,</span> p<span class="keyword">,</span> p2<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>p<span class="keyword">,</span> q<span class="keyword">,</span> pq<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>q<span class="keyword">,</span> q<span class="keyword">,</span> q2<span class="keyword">)</span><span class="keyword">)</span></span></span></span></A>
+<span class="comment">// end of [PyTri]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">implement</span> PyTri <span class="staexp"><span class="keyword">{</span>a<span class="keyword">,</span>b<span class="keyword">,</span>c<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>a2<span class="keyword">,</span>b2<span class="keyword">}</span></span>
+  <span class="keyword">(</span>pfa_mod<span class="keyword">,</span> pfab_gcd<span class="keyword">,</span> pfa<span class="keyword">,</span> pfb<span class="keyword">,</span> pfc<span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">ha<span class="keyword">:</span>int</span><span class="keyword">]</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span>pfa_mod<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2123"><span class="dyncstdec">__assert <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>a<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>ha<span class="keyword">:</span>int <span class="keyword">|</span> 2*ha==a<span class="keyword">]</span> void</span></span></span></A>
+  <span class="keyword">}</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">hb<span class="keyword">:</span>int</span><span class="keyword">]</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span>pfb_mod<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2247"><span class="dyncstdec">__assert <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>b<span class="keyword">,</span> 2<span class="keyword">,</span> 1<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>hb<span class="keyword">:</span>int <span class="keyword">|</span> 2*hb+1==b<span class="keyword">]</span> void</span></span></span></A>
+    <span class="keyword">prval</span> <span class="prfexp">pfb_mod <span class="keyword">=</span> __assert <span class="keyword">(</span>pfa_mod<span class="keyword">,</span> pfab_gcd<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+      <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2379"><span class="dyncstdec">__assert <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>a<span class="keyword">,</span> 2<span class="keyword">,</span> 0<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">GCD <span class="keyword">(</span>a<span class="keyword">,</span> b<span class="keyword">,</span> 1<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">MOD <span class="keyword">(</span>b<span class="keyword">,</span> 2<span class="keyword">,</span> 1<span class="keyword">)</span></span></span></span></A>
+    <span class="keyword">}</span></span> <span class="comment">// end of [prval]
+</span>  <span class="keyword">}</span></span> <span class="comment">// end of [prval]
+</span>  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">hc<span class="keyword">:</span>int</span><span class="keyword">]</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2549"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>hc<span class="keyword">:</span>int <span class="keyword">|</span> 2*hc+1==c<span class="keyword">]</span> void</span></span></span></A>
+  <span class="keyword">}</span></span> <span class="comment">// end of [prval]
+</span>  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2660"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>a <span class="keyword">&lt;</span> c<span class="keyword">;</span> b <span class="keyword">&lt;</span> c<span class="keyword">]</span> void</span></span></span></A>
+  <span class="keyword">}</span></span>
+<span class="comment">//
+</span>  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">ha2<span class="keyword">:</span>int</span><span class="keyword">]</span> _pf <span class="keyword">=</span> mul_istot <span class="staexp"><span class="keyword">{</span>ha<span class="keyword">,</span>ha<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_elim <span class="keyword">(</span>_pf<span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2823"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>4*ha2 == a2<span class="keyword">]</span> void</span></span></span></A>
+  <span class="keyword">}</span></span>
+<span class="comment">//
+</span>  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">_a2<span class="keyword">:</span>int</span><span class="keyword">]</span> _pf <span class="keyword">=</span> mul_istot <span class="staexp"><span class="keyword">{</span>c+b<span class="keyword">,</span>c-b<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_elim <span class="keyword">(</span>_pf<span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="2987"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>_a2 == a2<span class="keyword">]</span> void</span></span></span></A> <span class="comment">// (c+b)*(c-b) = c*c - b*b
+</span>  <span class="keyword">}</span></span> <span class="comment">// end of [prval]
+</span>  <span class="keyword">stadef</span> <span class="staexp"><A name="3075"><span class="stacstdec">P <span class="keyword">=</span> hc+hb+1</span></span></A> <span class="keyword">and</span> <span class="staexp"><A name="3091"><span class="stacstdec">Q <span class="keyword">=</span> hc-hb</span></span></A>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">PQ<span class="keyword">:</span>int</span><span class="keyword">]</span> pfPQ_mul <span class="keyword">=</span> mul_istot <span class="staexp"><span class="keyword">{</span>P<span class="keyword">,</span>Q<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_elim <span class="keyword">(</span>_pf<span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="3226"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>4*PQ == a2<span class="keyword">]</span> void</span></span></span></A>
+  <span class="keyword">}</span></span>
+  <span class="keyword">prval</span> <span class="prfexp">pfPQ_gcd <span class="keyword">=</span> __assert <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">extern</span> <span class="keyword">prfun</span> <span class="prfexp"><A name="3317"><span class="dyncstdec">__assert <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">GCD <span class="keyword">(</span>P<span class="keyword">,</span> Q<span class="keyword">,</span> 1<span class="keyword">)</span></span></span></span></A>
+  <span class="keyword">}</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">p</span><span class="keyword">,</span><span class="staexp">q<span class="keyword">:</span>int</span><span class="keyword">]</span> <span class="keyword">(</span>pfpp<span class="keyword">,</span> pfpq<span class="keyword">,</span> pfqq<span class="keyword">)</span> <span class="keyword">=</span> lemma5 <span class="staexp"><span class="keyword">{</span>P<span class="keyword">,</span>Q<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>ha<span class="keyword">}</span></span> <span class="keyword">(</span>pfPQ_gcd<span class="keyword">,</span> pfPQ_mul<span class="keyword">)</span></span>
+  <span class="comment">// prval () = verify_constraint {false} () // check for sanity
+</span><span class="keyword">in</span>
+  <span class="keyword">(</span>pfpp<span class="keyword">,</span> pfpq<span class="keyword">,</span> pfqq<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [PyTri]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(* end of [PyTri.dats] *)</span>
+</PRE>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+<PRE>
+<span class="comment">(*
+**
+** A proof of the equivalence of two definitions
+** of the Ackermann function
+**
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: December 2, 2009
+**
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(*
+
+The following two functions are proven to be the same
+(in the set-theoretic sense):
+
+fun ack
+  (m:int, n:int): int =
+  case+ m of
+  | 0 =&gt; n+1
+  | _ =&gt; begin case+ n of
+    | 0 =&gt; ack (m-1, 1) | _ =&gt; ack (m-1, ack (m, n-1))
+    end // end of [_]
+// end of [ack1]
+
+fun ackf (m: int): int -&lt;cloref1&gt; int = let
+  fun helper
+    (f: int -&lt;cloref1&gt; int): int -&lt;cloref1&gt; int =
+    lam n =&gt; if n = 0 then f (1) else f (helper f (n-1))
+  // end of [helper]
+in
+  case+ m of
+  | 0 =&gt; lam n =&gt; n+1 | _ =&gt; helper (ackf (m-1))
+end // end of [ackf]
+
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="765"><span class="stacstdec">ACK <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">,</span> int<span class="keyword">)</span></span></span></A> <span class="keyword">=</span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> ACK1 <span class="staexp"><span class="keyword">(</span>0<span class="keyword">,</span> n<span class="keyword">,</span> n+1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">m<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r<span class="keyword">:</span>int</span><span class="keyword">}</span> ACK2 <span class="staexp"><span class="keyword">(</span>m+1<span class="keyword">,</span> 0<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> 1<span class="keyword">,</span> r<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">m<span class="keyword">,</span>n<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r1<span class="keyword">,</span>r2<span class="keyword">:</span>int</span><span class="keyword">}</span>
+    ACK3 <span class="staexp"><span class="keyword">(</span>m+1<span class="keyword">,</span> n+1<span class="keyword">,</span> r2<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>ACK <span class="keyword">(</span>m+1<span class="keyword">,</span> n<span class="keyword">,</span> r1<span class="keyword">)</span><span class="keyword">,</span> ACK <span class="keyword">(</span>m<span class="keyword">,</span> r1<span class="keyword">,</span> r2<span class="keyword">)</span><span class="keyword">)</span></span></span>
+<span class="comment">// end of [ACK]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">ACK_nat_nat_nat <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span>
+  <span class="staexp"><span class="keyword">{</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">,</span>n<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r &gt;= 0<span class="keyword">]</span> void</span> <span class="keyword">=</span>
+  <span class="keyword">case+</span> pf <span class="keyword">of</span>
+  <span class="keyword">|</span> ACK1 <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">|</span> ACK2 pf1 <span class="keyword">=&gt;</span> ACK_nat_nat_nat <span class="keyword">(</span>pf1<span class="keyword">)</span>
+  <span class="keyword">|</span> ACK3 <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_nat_nat_nat pf1</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_nat_nat_nat pf2</span>
+    <span class="keyword">in</span>
+      <span class="comment">// nothing
+</span>    <span class="keyword">end</span></span> <span class="comment">// end of [ACK3]
+</span><span class="comment">// end of [ACK_nat_nat_nat]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">ACK_isfun <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r1<span class="keyword">,</span>r2<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">,</span>n<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> n<span class="keyword">,</span> r1<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> n<span class="keyword">,</span> r2<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r1==r2<span class="keyword">]</span> void</span> <span class="keyword">=</span>
+  <span class="keyword">case+</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span> <span class="keyword">of</span>
+  <span class="keyword">|</span> <span class="keyword">(</span>ACK1 <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">,</span> ACK1 <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">|</span> <span class="keyword">(</span>ACK2 <span class="keyword">(</span>pf11<span class="keyword">)</span><span class="keyword">,</span> ACK2 <span class="keyword">(</span>pf12<span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> ACK_isfun <span class="keyword">(</span>pf11<span class="keyword">,</span> pf12<span class="keyword">)</span>
+  <span class="keyword">|</span> <span class="keyword">(</span>ACK3 <span class="keyword">(</span>pf11<span class="keyword">,</span> pf12<span class="keyword">)</span><span class="keyword">,</span> ACK3 <span class="keyword">(</span>pf21<span class="keyword">,</span> pf22<span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_nat_nat_nat <span class="keyword">(</span>pf11<span class="keyword">)</span></span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_isfun <span class="keyword">(</span>pf11<span class="keyword">,</span> pf21<span class="keyword">)</span></span> <span class="keyword">in</span> ACK_isfun <span class="keyword">(</span>pf12<span class="keyword">,</span> pf22<span class="keyword">)</span>
+    <span class="keyword">end</span></span> <span class="comment">// end of [ACK3, ACK3]
+</span><span class="comment">// end of [ACK_isfun]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">sortdef</span> <span class="staexp">int2rel <span class="keyword">=</span> <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">)</span> <span class="keyword">-&gt;</span> prop</span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="1812"><span class="stacstdec">SUCC <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">)</span></span></span></A> <span class="keyword">=</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> SUCC1 <span class="staexp"><span class="keyword">(</span>n<span class="keyword">,</span> n+1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span><span class="keyword">)</span></span></span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="1869"><span class="stacstdec">HELPER <span class="keyword">(</span>rel<span class="keyword">:</span>int2rel<span class="keyword">,</span> int<span class="keyword">,</span> int<span class="keyword">)</span></span></span></A> <span class="keyword">=</span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">r<span class="keyword">:</span>int</span><span class="keyword">}</span> HELPER1 <span class="staexp"><span class="keyword">(</span>rel<span class="keyword">,</span> 0<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">rel <span class="keyword">(</span>1<span class="keyword">,</span> r<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r1<span class="keyword">,</span>r2<span class="keyword">:</span>int</span><span class="keyword">}</span>
+    HELPER2 <span class="staexp"><span class="keyword">(</span>rel<span class="keyword">,</span> n+1<span class="keyword">,</span> r2<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>HELPER <span class="keyword">(</span>rel<span class="keyword">,</span> n<span class="keyword">,</span> r1<span class="keyword">)</span><span class="keyword">,</span> rel <span class="keyword">(</span>r1<span class="keyword">,</span> r2<span class="keyword">)</span><span class="keyword">)</span></span></span>
+<span class="comment">// end of [HELPER]
+</span>
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="2067"><span class="stacstdec">ACKF <span class="keyword">(</span>int<span class="keyword">,</span> int2rel<span class="keyword">)</span></span></span></A> <span class="keyword">=</span>
+  <span class="keyword">|</span> ACKF1 <span class="staexp"><span class="keyword">(</span>0<span class="keyword">,</span> SUCC<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">m<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">rel<span class="keyword">:</span>int2rel</span><span class="keyword">}</span>
+    ACKF2 <span class="staexp"><span class="keyword">(</span>m+1<span class="keyword">,</span> <span class="keyword">lam</span> <span class="keyword">(</span>r1<span class="keyword">:</span>int<span class="keyword">,</span> r2<span class="keyword">:</span>int<span class="keyword">)</span> <span class="keyword">=&gt;</span> HELPER <span class="keyword">(</span>rel<span class="keyword">,</span> r1<span class="keyword">,</span> r2<span class="keyword">)</span><span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span></span></span>
+<span class="comment">// end of [ACKF]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">ACKF_istot
+  <span class="staexp"><span class="keyword">{</span>m<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">&gt;.</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>rel<span class="keyword">:</span>int2rel<span class="keyword">]</span> ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">sif</span> <span class="staexp">m <span class="keyword">&gt;</span> 0</span> <span class="keyword">then</span> ACKF2 <span class="keyword">(</span>ACKF_istot <span class="staexp"><span class="keyword">{</span>m-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">else</span> ACKF1 <span class="keyword">(</span><span class="keyword">)</span></span>
+<span class="comment">// end of [ACKF_istot]
+</span>
+<span class="keyword">propdef</span> <span class="staexp"><A name="2396"><span class="stacstdec">int2rel_istot
+  <span class="keyword">(</span>rel<span class="keyword">:</span> int2rel<span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">-&lt;</span>prf<span class="keyword">&gt;</span> <span class="keyword">[</span>r<span class="keyword">:</span>nat<span class="keyword">]</span> rel <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span></span></A>
+<span class="comment">// end of [int2rel_istot]
+</span>
+<span class="keyword">prfn</span> <span class="prfexp">HELPER_istot
+  <span class="staexp"><span class="keyword">{</span>rel<span class="keyword">:</span>int2rel<span class="keyword">}</span></span> <span class="keyword">(</span>fpf<span class="keyword">:</span> <span class="staexp">int2rel_istot rel</span><span class="keyword">)</span>
+  <span class="keyword">:</span> <span class="staexp">int2rel_istot <span class="keyword">(</span><span class="keyword">lam</span> <span class="keyword">(</span>r1<span class="keyword">:</span>int<span class="keyword">,</span>r2<span class="keyword">:</span>int<span class="keyword">)</span> <span class="keyword">=&gt;</span> HELPER <span class="keyword">(</span>rel<span class="keyword">,</span> r1<span class="keyword">,</span> r2<span class="keyword">)</span><span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">prfun</span> <span class="prfexp">fpf_res <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n<span class="keyword">&gt;.</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>nat<span class="keyword">]</span> HELPER <span class="keyword">(</span>rel<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">=</span>
+    <span class="keyword">sif</span> <span class="staexp">n <span class="keyword">&gt;</span> 0</span> <span class="keyword">then</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">r1<span class="keyword">:</span>int</span><span class="keyword">]</span> pf1 <span class="keyword">=</span> fpf_res <span class="staexp"><span class="keyword">{</span>n-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+    <span class="keyword">in</span>
+      HELPER2 <span class="keyword">(</span>pf1<span class="keyword">,</span> fpf <span class="staexp"><span class="keyword">{</span>r1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="keyword">else</span> <span class="comment">// n = 0
+</span>      HELPER1 <span class="keyword">(</span>fpf <span class="staexp"><span class="keyword">{</span>1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span></span>
+    <span class="comment">// end of [sif]
+</span>  <span class="comment">// end of [pf_res]
+</span><span class="keyword">in</span>
+  fpf_res
+<span class="keyword">end</span></span> <span class="comment">// end of [HELPER_istot]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">ACKF_rel_istot
+  <span class="staexp"><span class="keyword">{</span>m<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>rel<span class="keyword">:</span>int2rel<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int2rel_istot <span class="keyword">(</span>rel<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">sif</span> <span class="staexp">m <span class="keyword">&gt;</span> 0</span> <span class="keyword">then</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp">ACKF2 pf1 <span class="keyword">=</span> pf</span>
+    <span class="keyword">prval</span> <span class="prfexp">fpf1 <span class="keyword">=</span> ACKF_rel_istot <span class="staexp"><span class="keyword">{</span>m-1<span class="keyword">}</span></span> <span class="keyword">(</span>pf1<span class="keyword">)</span></span>
+  <span class="keyword">in</span>
+    HELPER_istot <span class="keyword">(</span>fpf1<span class="keyword">)</span>
+  <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span> <span class="comment">// m = 0
+</span>    <span class="keyword">prval</span> <span class="prfexp">ACKF1 <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pf</span> <span class="comment">// rel = SUCC
+</span>  <span class="keyword">in</span>
+    <span class="keyword">lam</span> <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&lt;</span><span class="staexp">prf</span><span class="keyword">&gt;</span> SUCC1 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">end</span></span> <span class="comment">// end of [sif]
+</span><span class="comment">// end of [ACKF_rel_istot]
+</span>
+<span class="comment">(*
+** this lemma means that applying ackf (m) to n gives
+** ack (m, n)
+*)</span>
+<span class="keyword">prfun</span> <span class="prfexp">ackf_ack_lemma
+  <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>rel<span class="keyword">:</span>int2rel<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">,</span>n+1<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">rel <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">case</span> pf1 <span class="keyword">of</span>
+  <span class="keyword">|</span> ACKF1 <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp">SUCC1 <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pf2</span> <span class="keyword">in</span> ACK1 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [ACKF1]
+</span>  <span class="keyword">|</span> ACKF2 pf11 <span class="keyword">=&gt;</span> ackf_ack_lemma2 <span class="keyword">(</span>pf11<span class="keyword">,</span> pf2<span class="keyword">)</span>
+<span class="comment">// end of [ackf_ack_lemma]
+</span>
+<span class="comment">(*
+** this lemma means that applying ackf (m) n times to 1 
+** gives ack (m+1, n)
+*)</span>
+<span class="keyword">and</span> ackf_ack_lemma2
+  <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>rel<span class="keyword">:</span>int2rel<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m+1<span class="keyword">,</span>n<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">HELPER <span class="keyword">(</span>rel<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m+1<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">sif</span> <span class="staexp">n <span class="keyword">&gt;</span> 0</span> <span class="keyword">then</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp">HELPER2 <span class="keyword">(</span>pf21<span class="keyword">,</span> pf22<span class="keyword">)</span> <span class="keyword">=</span> pf2</span>
+    <span class="keyword">prval</span> <span class="prfexp">pf_ack <span class="keyword">=</span> ackf_ack_lemma2 <span class="keyword">(</span>pf1<span class="keyword">,</span> pf21<span class="keyword">)</span></span> <span class="comment">// ACK (m+1, n-1)
+</span>    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_nat_nat_nat <span class="keyword">(</span>pf_ack<span class="keyword">)</span></span>
+  <span class="keyword">in</span>
+    ACK3 <span class="keyword">(</span>pf_ack<span class="keyword">,</span> ackf_ack_lemma <span class="keyword">(</span>pf1<span class="keyword">,</span> pf22<span class="keyword">)</span><span class="keyword">)</span>
+  <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span> <span class="comment">// n == 0
+</span>    <span class="keyword">prval</span> <span class="prfexp">HELPER1 <span class="keyword">(</span>pf21<span class="keyword">)</span> <span class="keyword">=</span> pf2</span>
+  <span class="keyword">in</span>
+    ACK2 <span class="keyword">(</span>ackf_ack_lemma <span class="keyword">(</span>pf1<span class="keyword">,</span> pf21<span class="keyword">)</span><span class="keyword">)</span>
+  <span class="keyword">end</span></span> <span class="comment">// end of [sif]
+</span><span class="comment">// end of [ackf_ack_lemma2]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">prfun</span> <span class="prfexp">ack_ackf_lemma
+  <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;&gt;.</span></span> <span class="keyword">(</span>pf<span class="keyword">:</span> <span class="staexp">ACK <span class="keyword">(</span>m<span class="keyword">,</span> n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span>
+  <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>rel<span class="keyword">:</span>int2rel<span class="keyword">]</span> <span class="keyword">(</span>ACKF <span class="keyword">(</span>m<span class="keyword">,</span> rel<span class="keyword">)</span><span class="keyword">,</span> rel <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span><span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">prval</span> <span class="prfexp">pf_ackf <span class="keyword">=</span> ACKF_istot <span class="staexp"><span class="keyword">{</span>m<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp">fpf_rel <span class="keyword">=</span> ACKF_rel_istot <span class="keyword">(</span>pf_ackf<span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp">pf_rel <span class="keyword">=</span> fpf_rel <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp">pf_alt <span class="keyword">=</span> ackf_ack_lemma <span class="keyword">(</span>pf_ackf<span class="keyword">,</span> pf_rel<span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> ACK_isfun <span class="keyword">(</span>pf<span class="keyword">,</span> pf_alt<span class="keyword">)</span></span>
+<span class="keyword">in</span>
+  <span class="keyword">(</span>pf_ackf<span class="keyword">,</span> pf_rel<span class="keyword">)</span>
+<span class="keyword">end</span></span> <span class="comment">// end of [ack_ackf_lemma]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(*
+**
+** By [ackf_ack_lemma] and [ack_ackf_lemma], it is clearly
+** one can go from ACKF to ACK and vice versa.
+**
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(* end of [Ackermann.dats] *)</span>
+</PRE>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+<PRE>
+<span class="comment">(*
+**
+** [infprime] proves that for any given natural number [n], there exists a
+** prime number [p] that is greater than [n]
+**
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: October 7, 2009
+**
+*)</span>
+
+<span class="keyword">propdef</span> <span class="staexp"><A name="219"><span class="stacstdec">PRIME <span class="keyword">(</span>p<span class="keyword">:</span>int<span class="keyword">)</span> <span class="keyword">=</span> <span class="comment">// if p &gt;= 2
+</span>  <span class="keyword">{</span>x<span class="keyword">,</span>y<span class="keyword">:</span>nat <span class="keyword">|</span> x &lt;= y<span class="keyword">}</span> MUL <span class="keyword">(</span>x<span class="keyword">,</span> y<span class="keyword">,</span> p<span class="keyword">)</span> <span class="keyword">-&lt;&gt;</span> <span class="keyword">[</span>x==1<span class="keyword">]</span> void</span></span></A>
+<span class="comment">// end of [propdef]
+</span>
+<span class="comment">(*
+
+extern prval prime2: PRIME (2)
+extern prval prime3: PRIME (3)
+extern prval prime5: PRIME (5)
+extern prval prime7: PRIME (7)
+
+*)</span>
+
+<span class="keyword">extern</span> <span class="comment">// this one is not proven
+</span><span class="keyword">prfun</span> <span class="prfexp"><A name="492"><span class="dyncstdec">lemma10 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat <span class="keyword">|</span> n &gt;= 2<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>p<span class="keyword">,</span>q<span class="keyword">:</span>int <span class="keyword">|</span> p &gt;= 2<span class="keyword">]</span> <span class="keyword">(</span>PRIME p<span class="keyword">,</span> MUL <span class="keyword">(</span>p<span class="keyword">,</span> q<span class="keyword">,</span> n<span class="keyword">)</span><span class="keyword">)</span></span></span></span></A>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="596"><span class="stacstdec">FACT <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">)</span></span></span></A> <span class="keyword">=</span> 
+  <span class="keyword">|</span> FACTbas <span class="staexp"><span class="keyword">(</span>0<span class="keyword">,</span> 1<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r<span class="keyword">,</span>r1<span class="keyword">:</span>int</span><span class="keyword">}</span> FACTind <span class="staexp"><span class="keyword">(</span>n+1<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>FACT <span class="keyword">(</span>n<span class="keyword">,</span> r1<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>n+1<span class="keyword">,</span> r1<span class="keyword">,</span> r<span class="keyword">)</span><span class="keyword">)</span></span></span>
+<span class="comment">// end of [FACT]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">fact_istot
+  <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n<span class="keyword">&gt;.</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>nat<span class="keyword">]</span> FACT <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">=</span>
+  <span class="keyword">sif</span> <span class="staexp">n == 0</span> <span class="keyword">then</span> FACTbas <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">else</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp">pf_fac <span class="keyword">=</span> fact_istot <span class="staexp"><span class="keyword">{</span>n-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+    <span class="keyword">prval</span> <span class="prfexp">pf_mul <span class="keyword">=</span> mul_istot <span class="keyword">(</span><span class="keyword">)</span></span><span class="keyword">;</span> <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf_mul<span class="keyword">)</span></span>
+  <span class="keyword">in</span>
+    FACTind <span class="keyword">(</span>pf_fac<span class="keyword">,</span> pf_mul<span class="keyword">)</span>
+  <span class="keyword">end</span></span> <span class="comment">// end of [sif]
+</span><span class="comment">// end of [fact_istot]
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">fact_isfun <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r1<span class="keyword">,</span>r2<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf1<span class="keyword">:</span> <span class="staexp">FACT <span class="keyword">(</span>n<span class="keyword">,</span> r1<span class="keyword">)</span></span><span class="keyword">,</span> pf2<span class="keyword">:</span> <span class="staexp">FACT <span class="keyword">(</span>n<span class="keyword">,</span> r2<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r1==r2<span class="keyword">]</span> void</span> <span class="keyword">=</span>
+  <span class="keyword">case+</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span> <span class="keyword">of</span>
+  <span class="keyword">|</span> <span class="keyword">(</span>FACTbas <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">,</span> FACTbas <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">|</span> <span class="keyword">(</span>FACTind <span class="keyword">(</span>pf11<span class="keyword">,</span> pf12<span class="keyword">)</span><span class="keyword">,</span> FACTind <span class="keyword">(</span>pf21<span class="keyword">,</span> pf22<span class="keyword">)</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> fact_isfun <span class="keyword">(</span>pf11<span class="keyword">,</span> pf21<span class="keyword">)</span></span><span class="keyword">;</span> <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_isfun <span class="keyword">(</span>pf12<span class="keyword">,</span> pf22<span class="keyword">)</span></span>
+    <span class="keyword">in</span>
+      <span class="comment">// nothing
+</span>    <span class="keyword">end</span></span> <span class="comment">// end of [FACTind, FACTind]
+</span><span class="comment">// end of [fact_isfun]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">prfun</span> <span class="prfexp">lemma20 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span>
+  <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>pos <span class="keyword">|</span> i &lt;= n<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n<span class="keyword">&gt;.</span></span>
+  <span class="keyword">(</span>pf_fac<span class="keyword">:</span> <span class="staexp">FACT <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>k<span class="keyword">:</span>nat<span class="keyword">]</span> MUL <span class="keyword">(</span>k<span class="keyword">,</span> i<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">prval</span> <span class="prfexp">FACTind <span class="keyword">(</span>pf1_fac<span class="keyword">,</span> pf2_mul<span class="keyword">)</span> <span class="keyword">=</span> pf_fac</span> <span class="comment">// r = n*r1
+</span><span class="keyword">in</span>
+  <span class="keyword">sif</span> <span class="staexp">i <span class="keyword">&lt;</span> n</span> <span class="keyword">then</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">k1<span class="keyword">:</span>int</span><span class="keyword">]</span> pf3_res <span class="keyword">=</span> lemma20 <span class="staexp"><span class="keyword">{</span><span class="keyword">..</span><span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>i<span class="keyword">}</span></span> <span class="keyword">(</span>pf1_fac<span class="keyword">)</span></span> <span class="comment">// pf3_res: k1 * i = r1
+</span>    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">k<span class="keyword">:</span>int</span><span class="keyword">]</span> pf4_mul <span class="keyword">=</span> mul_istot <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>k1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span> <span class="comment">// k = n*k1
+</span>    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf4_mul<span class="keyword">)</span></span>
+    <span class="keyword">prval</span> <span class="prfexp">pf5_res <span class="keyword">=</span> mul_istot <span class="staexp"><span class="keyword">{</span>k<span class="keyword">,</span>i<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf5_res<span class="keyword">)</span></span>
+    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_associate <span class="keyword">(</span>pf4_mul<span class="keyword">,</span> pf3_res<span class="keyword">,</span> pf5_res<span class="keyword">,</span> pf2_mul<span class="keyword">)</span></span>
+  <span class="keyword">in</span>
+    pf5_res
+  <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp">pf1_fac_another <span class="keyword">=</span> fact_istot <span class="staexp"><span class="keyword">{</span>n-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> fact_isfun <span class="keyword">(</span>pf1_fac<span class="keyword">,</span> pf1_fac_another<span class="keyword">)</span></span>
+  <span class="keyword">in</span>
+    mul_commute <span class="keyword">(</span>pf2_mul<span class="keyword">)</span>
+  <span class="keyword">end</span> <span class="comment">// end of [sif]
+</span><span class="keyword">end</span></span> <span class="comment">(* end of [lemma20] *)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">extern</span>
+<span class="keyword">prfun</span> <span class="prfexp"><A name="2169"><span class="dyncstdec">infprime <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>int <span class="keyword">|</span> n &gt;= 1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>p<span class="keyword">:</span>int <span class="keyword">|</span> p <span class="keyword">&gt;</span> n<span class="keyword">]</span> PRIME p</span></span></span></A>
+
+<span class="keyword">implement</span> infprime <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">r<span class="keyword">:</span>int</span><span class="keyword">]</span> pf_fac <span class="keyword">=</span> fact_istot <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> lemma <span class="keyword">(</span>pf_fac<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+    <span class="keyword">prfun</span> <span class="prfexp">lemma <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>r<span class="keyword">:</span>int <span class="keyword">|</span> n &gt;= 1<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>pf_fac<span class="keyword">:</span> <span class="staexp">FACT <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r &gt;= n<span class="keyword">]</span> void</span> <span class="keyword">=</span>
+      <span class="keyword">sif</span> <span class="staexp">n &gt;= 2</span> <span class="keyword">then</span> <span class="keyword">let</span>
+        <span class="keyword">prval</span> <span class="prfexp">FACTind <span class="keyword">(</span>pf1_fac<span class="keyword">,</span> pf2_mul<span class="keyword">)</span> <span class="keyword">=</span> pf_fac</span>
+        <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> lemma <span class="keyword">(</span>pf1_fac<span class="keyword">)</span></span>
+        <span class="keyword">prval</span> <span class="prfexp">pf2_mul <span class="keyword">=</span> mul_commute <span class="keyword">(</span>pf2_mul<span class="keyword">)</span></span>
+        <span class="keyword">prval</span> <span class="prfexp">MULind <span class="keyword">(</span>pf3_mul<span class="keyword">)</span> <span class="keyword">=</span> pf2_mul</span>
+        <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf3_mul<span class="keyword">)</span></span>
+      <span class="keyword">in</span>
+        <span class="comment">// nothing
+</span>      <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span>
+        <span class="keyword">prval</span> <span class="prfexp">FACTind <span class="keyword">(</span>pf1_fac<span class="keyword">,</span> pf1_mul<span class="keyword">)</span> <span class="keyword">=</span> pf_fac</span>
+        <span class="keyword">prval</span> <span class="prfexp">FACTbas <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pf1_fac</span>
+        <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_elim <span class="staexp"><span class="keyword">{</span>1<span class="keyword">,</span>1<span class="keyword">}</span></span> <span class="keyword">(</span>pf1_mul<span class="keyword">)</span></span>
+      <span class="keyword">in</span>
+        <span class="comment">// nothing
+</span>      <span class="keyword">end</span></span> <span class="comment">// end of [sif]
+</span>   <span class="comment">// end of [lemma]
+</span>  <span class="keyword">}</span></span>
+  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">p</span><span class="keyword">,</span><span class="staexp">q<span class="keyword">:</span>int</span><span class="keyword">]</span>
+    <span class="keyword">(</span>pf_prime<span class="keyword">,</span> pf1_mul<span class="keyword">)</span> <span class="keyword">=</span> lemma10 <span class="staexp"><span class="keyword">{</span>r+1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span></span> <span class="comment">// pf1_mul: p * q = r+1
+</span>  <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">(</span><span class="keyword">sif</span> <span class="staexp">p &lt;= n</span> <span class="keyword">then</span> <span class="keyword">let</span>
+    <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">[</span><span class="staexp">k<span class="keyword">:</span>int</span><span class="keyword">]</span> pf2_mul <span class="keyword">=</span> lemma20 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">,</span>r<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>p<span class="keyword">}</span></span> <span class="keyword">(</span>pf_fac<span class="keyword">)</span></span> <span class="comment">// pf2_mul: k * p = r
+</span>    <span class="keyword">prval</span> <span class="prfexp">pf2_mul <span class="keyword">=</span> mul_negate <span class="keyword">(</span>pf2_mul<span class="keyword">)</span></span> <span class="comment">// pf2_mul: ~k * p = ~r
+</span>    <span class="keyword">prval</span> <span class="prfexp">pf2_mul <span class="keyword">=</span> mul_commute <span class="keyword">(</span>pf2_mul<span class="keyword">)</span></span> <span class="comment">// pf2_mul: p * ~k = ~r
+</span>    <span class="keyword">prval</span> <span class="prfexp">pf3_mul <span class="keyword">=</span> mul_distribute <span class="keyword">(</span>pf1_mul<span class="keyword">,</span> pf2_mul<span class="keyword">)</span></span> <span class="comment">// pf3_mul: p * (q-k) = 1
+</span>    <span class="keyword">prval</span> <span class="prfexp">pf3_mul <span class="keyword">=</span> mul_commute <span class="keyword">(</span>pf3_mul<span class="keyword">)</span></span> <span class="comment">// pf3_mul : (q-k) * p = 1
+</span>  <span class="keyword">in</span>
+    <span class="keyword">sif</span> <span class="staexp">q <span class="keyword">&gt;</span> k</span> <span class="keyword">then</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp">MULind pf4_mul <span class="keyword">=</span> pf3_mul</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf4_mul<span class="keyword">)</span></span>
+    <span class="keyword">in</span>
+      <span class="comment">// nothing
+</span>    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">sif</span> <span class="staexp">q <span class="keyword">&lt;</span> k</span> <span class="keyword">then</span> <span class="keyword">let</span>
+      <span class="keyword">prval</span> <span class="prfexp">pf3_mul <span class="keyword">=</span> mul_negate <span class="keyword">(</span>pf3_mul<span class="keyword">)</span></span> <span class="comment">// pf3_mul: (k-q) * p = 1
+</span>      <span class="keyword">prval</span> <span class="prfexp">MULind pf4_mul <span class="keyword">=</span> pf3_mul</span>
+      <span class="keyword">prval</span> <span class="prfexp"><span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> mul_nat_nat_nat <span class="keyword">(</span>pf4_mul<span class="keyword">)</span></span>
+    <span class="keyword">in</span>
+      <span class="comment">// nothing
+</span>    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span> <span class="comment">// q = k
+</span>      <span class="keyword">prval</span> <span class="prfexp">MULbas <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pf3_mul</span> <span class="keyword">in</span> <span class="keyword">(</span><span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [sif]
+</span>  <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span>
+    <span class="comment">// nothing
+</span>  <span class="keyword">end</span><span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>p <span class="keyword">&gt;</span> n<span class="keyword">]</span> void</span></span> <span class="comment">// end of [prval]
+</span><span class="keyword">in</span>
+  <span class="staexp"><span class="keyword">#[</span>p <span class="keyword">|</span></span> pf_prime<span class="keyword">]</span>
+<span class="keyword">end</span> <span class="comment">// end of [infprime]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(* end of [infprime.dats] *)</span>
+</PRE>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+<PRE>
+<span class="comment">(*
+**
+** A proof of the pigeonhole principle in ATS
+**
+**
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: September 28, 2009
+**
+*)</span>
+
+<span class="comment">(*
+
+What is encoded and proven in ATS is the following formulation of
+pigeonhole principle:
+
+Let P be a relation on pairs of integers and m and n be two naturnal
+numbers satisfying m &gt; n and n &gt;= 1. If there exists a natural number
+j &lt; n for each given naturnal number i &lt; m such that P (i, j) holds,
+then there exists i1, i2 and j satisfying 0 &lt;= i1 &lt; i2 &lt; m and j &lt; n
+such that both P (i1, j) and P (i2, j) hold.
+
+*)</span>
+
+<span class="keyword">sortdef</span> <span class="staexp">int2rel <span class="keyword">=</span> <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">)</span> <span class="keyword">-&gt;</span> prop</span> <span class="comment">// for binary relations on integers
+</span>
+<span class="keyword">prfun</span> <span class="prfexp">pigeonhole
+  <span class="staexp"><span class="keyword">{</span>P<span class="keyword">:</span> int2rel<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>m<span class="keyword">,</span>n<span class="keyword">:</span>nat <span class="keyword">|</span> m <span class="keyword">&gt;</span> n<span class="keyword">;</span> n &gt;= 1<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>m<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>
+    fpf<span class="keyword">:</span> <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i <span class="keyword">&lt;</span> m<span class="keyword">}</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">-&gt;</span> <span class="keyword">[</span>j<span class="keyword">:</span>nat <span class="keyword">|</span> j <span class="keyword">&lt;</span> n<span class="keyword">]</span> P <span class="keyword">(</span>i<span class="keyword">,</span> j<span class="keyword">)</span></span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>i1<span class="keyword">,</span>i2<span class="keyword">,</span>j<span class="keyword">:</span>nat <span class="keyword">|</span> i1 <span class="keyword">&lt;</span> i2<span class="keyword">;</span> i2 <span class="keyword">&lt;</span> m<span class="keyword">]</span> <span class="keyword">(</span>P <span class="keyword">(</span>i1<span class="keyword">,</span> j<span class="keyword">)</span><span class="keyword">,</span> P <span class="keyword">(</span>i2<span class="keyword">,</span> j<span class="keyword">)</span><span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">sif</span> <span class="staexp">n &gt;= 2</span> <span class="keyword">then</span> <span class="keyword">let</span>
+  <span class="keyword">val</span> <span class="keyword">[</span><span class="staexp">x<span class="keyword">:</span>int</span><span class="keyword">]</span> pf0 <span class="keyword">=</span> fpf <span class="staexp"><span class="keyword">{</span>m-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><A name="883"><span class="stacstdec">P1 <span class="keyword">(</span>i<span class="keyword">:</span>int<span class="keyword">,</span> int<span class="keyword">)</span></span></span></A> <span class="keyword">=</span>
+    <span class="keyword">|</span> P1r1 <span class="staexp"><span class="keyword">(</span>i<span class="keyword">,</span> 0<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">P <span class="keyword">(</span>i<span class="keyword">,</span> x<span class="keyword">)</span></span>
+    <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">x<span class="keyword">&gt;</span>0</span><span class="keyword">}</span> P1r2 <span class="staexp"><span class="keyword">(</span>i<span class="keyword">,</span> x-1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">P <span class="keyword">(</span>i<span class="keyword">,</span> 0<span class="keyword">)</span></span>
+    <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">j<span class="keyword">:</span>int</span> <span class="keyword">|</span> <span class="staexp">j <span class="keyword">&gt;</span> 0</span><span class="keyword">;</span> <span class="staexp">j &lt;&gt; x</span><span class="keyword">}</span> P1r3 <span class="staexp"><span class="keyword">(</span>i<span class="keyword">,</span> j-1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp">P <span class="keyword">(</span>i<span class="keyword">,</span> j<span class="keyword">)</span></span></span>
+  <span class="keyword">prfn</span> <span class="prfexp">fpf1 <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i <span class="keyword">&lt;</span> m-1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>j<span class="keyword">:</span>nat <span class="keyword">|</span> j <span class="keyword">&lt;</span> n-1<span class="keyword">]</span> P1 <span class="keyword">(</span>i<span class="keyword">,</span> j<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+    <span class="keyword">val</span> <span class="keyword">[</span><span class="staexp">j<span class="keyword">:</span>int</span><span class="keyword">]</span> pf <span class="keyword">=</span> fpf <span class="staexp"><span class="keyword">{</span>i<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">in</span>
+    <span class="keyword">sif</span> <span class="staexp">j == 0</span> <span class="keyword">then</span>
+      <span class="keyword">(</span><span class="keyword">sif</span> <span class="staexp">x == 0</span> <span class="keyword">then</span> P1r1 <span class="keyword">(</span>pf<span class="keyword">)</span> <span class="keyword">else</span> P1r2 <span class="keyword">(</span>pf<span class="keyword">)</span><span class="keyword">)</span>
+    <span class="keyword">else</span>
+      <span class="keyword">(</span><span class="keyword">sif</span> <span class="staexp">j == x</span> <span class="keyword">then</span> P1r1 <span class="keyword">(</span>pf<span class="keyword">)</span> <span class="keyword">else</span> P1r3 <span class="keyword">(</span>pf<span class="keyword">)</span><span class="keyword">)</span>
+    <span class="comment">// end of [sif]
+</span>  <span class="keyword">end</span></span> <span class="comment">// end of [fpf1]
+</span>  <span class="keyword">val</span> <span class="keyword">[</span><span class="staexp">i1</span><span class="keyword">,</span><span class="staexp">i2</span><span class="keyword">,</span><span class="staexp">j<span class="keyword">:</span>int</span><span class="keyword">]</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span> <span class="keyword">=</span> pigeonhole <span class="staexp"><span class="keyword">{</span>P1<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>m-1<span class="keyword">,</span>n-1<span class="keyword">}</span></span> <span class="keyword">(</span>fpf1<span class="keyword">)</span>
+<span class="keyword">in</span>
+  <span class="keyword">case+</span> pf1 <span class="keyword">of</span>
+  <span class="keyword">|</span> P1r1 <span class="keyword">(</span>pf1<span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf0<span class="keyword">)</span>
+  <span class="keyword">|</span> P1r2 <span class="keyword">(</span>pf1<span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">begin</span> <span class="keyword">case+</span> pf2 <span class="keyword">of</span>
+    <span class="keyword">|</span> P1r1 pf2 <span class="keyword">=&gt;</span> <span class="keyword">(</span>pf2<span class="keyword">,</span> pf0<span class="keyword">)</span> <span class="keyword">|</span> P1r2 pf2 <span class="keyword">=&gt;</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [P1r2]
+</span>  <span class="keyword">|</span> P1r3 <span class="keyword">(</span>pf1<span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">begin</span> <span class="keyword">case+</span> pf2 <span class="keyword">of</span>
+    <span class="keyword">|</span> P1r1 pf2 <span class="keyword">=&gt;</span> <span class="keyword">(</span>pf2<span class="keyword">,</span> pf0<span class="keyword">)</span> <span class="keyword">|</span> P1r3 pf2 <span class="keyword">=&gt;</span> <span class="keyword">(</span>pf1<span class="keyword">,</span> pf2<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [P1r3]
+</span><span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span> <span class="comment">// n = 1
+</span>  <span class="keyword">(</span>fpf <span class="staexp"><span class="keyword">{</span>0<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">,</span> fpf <span class="staexp"><span class="keyword">{</span>1<span class="keyword">}</span></span> <span class="keyword">(</span><span class="keyword">)</span><span class="keyword">)</span>
+<span class="keyword">end</span></span> <span class="comment">// end of [pigenhole]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(* end of [pigeonhole.dats] *)</span>
+</PRE>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi/">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

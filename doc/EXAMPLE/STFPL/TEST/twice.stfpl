@@ -1,0 +1,18 @@
+/*
+** a simple example involving a Church numeral
+*/
+
+let
+  val succ = lam (x:int) => x+1
+  val twice = lam (f: int->int) => lam (x: int) => f (f x)
+  val ans = twice (succ) (0)
+  val _ = print "ans = "
+  val _ = print_int ans
+  val _ = print "\n"
+in
+  ()
+end
+
+/* ****** ****** */
+
+/* end of [twice.stfpl] */

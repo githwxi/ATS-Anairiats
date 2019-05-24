@@ -1,0 +1,26 @@
+#
+# A GUI for ATS/Anairiats based on GTK
+#
+# Author: Hongwei Xi
+# Start Time: April, 2010
+#
+
+######
+
+HX-2010-04-28:
+This project of implementing a GUI for ATS starts today!
+
+######
+
+HX-2010-05-10:
+A functioning version emerges. There will be a long way to go to perfect
+it!
+
+######
+
+HX-2011-09-30:
+After ZR's Eclipse plug-in based on xtext, there is little incentive to
+go on with this UI. However, I may try to reuse the code for a tool doing
+slide presentation.
+
+###### end of [README] ######

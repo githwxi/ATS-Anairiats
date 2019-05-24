@@ -1,0 +1,106 @@
+<!-- beg of [lazy-evaluation.html] -->
+
+<H2><A id="lazy-evaluation" name="lazy-evaluation">Lazy Evaluation</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Though ATS is a language based on eager call-by-value evaluation, it also
+allows the programmer to perform lazy call-by-need evaluation.
+In ATS, there is a special language construct
+<i>$delay</i> that can be used to delay or suspend the evaluation of
+an expression and a special function <i>lazy_force</i>
+that can be called to resume a suspended computation.
+<P>
+
+There is a special type constructor <i>lazy</i> of the sort <i>(t@ype) =>
+type</i> in ATS, which forms a (boxed) type when applied to a type.  On one
+hand, given an expression <i>exp</i> of type <i>T</i>, <i>$delay (exp)</i>
+forms a value of type <i>lazy(T)</i> that represents the suspended
+evaluation of <i>exp</i>.  On the other hand, given a value <i>v</i> of
+type <i>lazy(T)</i> for some type <i>T</i>, <i>lazy_force(v)</i> resumes
+the suspended evaluation represented by <i>v</i> and returns a result of
+type <i>T</i> (if the resumed evaluation terminates). The interface for the
+(template) function <i>lazy_force</i> is:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> lazy_force <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">lazy a <FONT COLOR="#000000">-&gt;</FONT> a</FONT>
+</FONT></PRE>
+
+The special operatior <i>!</i> in ATS is overloaded with the function <i>lazy_force</i>.
+
+<P>
+
+In the file
+<a href="../../IMPLEMENTATION/Anairiats/ATS/prelude/SATS/lazy.sats">prelude/SATS/lazy.sats</a>,
+the following datatype <i>stream_con</i> and type <i>stream</i> are
+declared for representing (lazy) streams:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">datatype</FONT> <FONT COLOR="#0000FF">stream_con <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>t@ype+<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">|</FONT> stream_nil <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">|</FONT> stream_cons <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> stream a<FONT COLOR="#000000">)</FONT></FONT>
+
+<FONT COLOR="#000000">where</FONT> <FONT COLOR="#0000FF">stream <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>t@ype<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> lazy <FONT COLOR="#000000">(</FONT>stream_con a<FONT COLOR="#000000">)</FONT></FONT>
+</FONT></PRE>
+
+Also, a number of common functions on streams are implemented in
+<a href="../../IMPLEMENTATION/Anairiats/ATS/prelude/DATS/lazy.dats">prelude/DATS/lazy.dats</a>.
+<P>
+
+To simplify the presentation, we use the following
+syntax to create shorthands for
+the stream constructors <i>stream_nil</i> and <i>stream_cons</i>:
+
+<pre>
+<FONT COLOR="#000000">#define</FONT> <FONT COLOR="#800080">nil stream_nil</FONT>
+<FONT COLOR="#000000">#define</FONT> <FONT COLOR="#800080">:: stream_cons</FONT>
+</pre>
+
+The following code implements a stream representing
+the sequence of natural numbers starting from 2:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">typedef</FONT> <FONT COLOR="#0000FF">N2 <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">:</FONT>int <FONT COLOR="#000000">|</FONT> n &gt;= 2<FONT COLOR="#000000">]</FONT> int n</FONT>
+<FONT COLOR="#000000">val</FONT> N2s<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream N2</FONT> <FONT COLOR="#000000">=</FONT> from 2 <FONT COLOR="#000000">where</FONT> <FONT COLOR="#000000">{</FONT>
+  <FONT COLOR="#000000">fun</FONT> from <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">N2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream N2</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>n :: from <FONT COLOR="#000000">(</FONT>n+1<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">}</FONT>
+</FONT></PRE>
+
+More interestingly, the stream of prime numbers can be readily computed
+as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT> sieve <FONT COLOR="#000000">(</FONT>ns<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream N2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:&lt;</FONT><FONT COLOR="#0000FF">1</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#000000">~</FONT><FONT COLOR="#0000FF">ref</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#0000FF">stream N2</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#787878">// [val-] means no warning message from the compiler
+</FONT>  <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val-</FONT> n :: ns <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>ns <FONT COLOR="#000000">in</FONT>
+     <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>n :: sieve <FONT COLOR="#000000">(</FONT>stream_filter&lt;<FONT COLOR="#0000FF">N2</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>ns<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">lam</FONT> x <FONT COLOR="#000000">=&gt;</FONT> x nmod n <FONT COLOR="#000000">&gt;</FONT> 0<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+
+<FONT COLOR="#000000">val</FONT> primes<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream N2</FONT> <FONT COLOR="#000000">=</FONT> sieve N2s
+
+<FONT COLOR="#787878">// find the nth prime
+</FONT><FONT COLOR="#000000">fn</FONT> nprime <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT> pos<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">N2</FONT> <FONT COLOR="#000000">=</FONT> stream_nth <FONT COLOR="#000000">(</FONT>primes<FONT COLOR="#000000">,</FONT> n-1<FONT COLOR="#000000">)</FONT></FONT></PRE>
+
+Note that the keyword <i>val-</i> indicates to the typechecker that
+no message warning of nonexhaustive pattern matching should be reported.
+<P>
+
+As another example, the following code based on lazy evaluation computes
+Fibonacci numbers:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">val</FONT> <FONT COLOR="#787878">// the following values are defined mutually recursively
+</FONT><FONT COLOR="#000000">rec</FONT> fibs_1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream int64</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>one :: fibs_2<FONT COLOR="#000000">)</FONT> <FONT COLOR="#787878">// fib1, fib2, ...
+</FONT><FONT COLOR="#000000">and</FONT> fibs_2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream int64</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">$delay</FONT> <FONT COLOR="#000000">(</FONT>one :: fibs_3<FONT COLOR="#000000">)</FONT> <FONT COLOR="#787878">// fib2, fib3, ...
+</FONT><FONT COLOR="#000000">and</FONT> fibs_3<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">stream int64</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#787878">// fib3, fib4, ...
+</FONT>  stream_map2&lt;<FONT COLOR="#0000FF">int64</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#0000FF">int64</FONT><FONT COLOR="#000000">,</FONT><FONT COLOR="#0000FF">int64</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>fibs_1<FONT COLOR="#000000">,</FONT> fibs_2<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">lam</FONT> <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> x + y<FONT COLOR="#000000">)</FONT>
+
+<FONT COLOR="#787878">// find the nth Fibonacci number (counting starts from 1)
+</FONT><FONT COLOR="#000000">fn</FONT> nfib <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>pos<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>n<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int64</FONT> <FONT COLOR="#000000">=</FONT> stream_nth <FONT COLOR="#000000">(</FONT>fibs_1<FONT COLOR="#000000">,</FONT> n-1<FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+<P>
+
+Please find extensive use of lazy evaluation in the implementation of
+a package for parsing combinators: <A
+HREF="https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk/contrib/parcomb">contrib/parcomb</A>.
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="lazy-evaluation.dats">here</a>.
+
+<!-- end of [lazy-evaluation.html] -->

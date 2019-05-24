@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-changes</TITLE>
+<META name="description" content="Home Page for ATS-changelog">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../TUTORIAL/tutorial.html">Tutorial</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../EXAMPLE/example.html">Examples</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../IMPLEMENTATION/implementation.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><B CLASS="here">Changes</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>Log of Changes for ATS/Anairiats</H1>
+</CENTER>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+In this page, we list some important changes made to ATS/Anairiats. In
+particular, we report changes made to the grammar of ATS.
+<P>
+<HR SIZE=6 ALIGN=LEFT><P>
+
+<H2>Changes</H2>
+
+<MENU>
+<LI>Date: 2007-09-13<P>
+
+The sorts for boxed types and viewtypes are introduced.  We now use
+<i>type</i> and <i>viewtype</i> as the sorts for boxed types and viewtypes,
+respectively. For unboxed types and viewtypes, the sorts are <i>t@ype</i> and
+<i>viewt@ype</i>, respectively.
+<P>
+
+Here are two type definitions for boxed and unboxed pairs of integers:
+
+<pre>stadef int2_box: type = '(int, int) // boxed tuple
+stadef int2_flt: t@ype = @(int, int) // flat tuple</pre>
+
+<LI>Date: 2007-11-25<P>
+
+For a function declaration, the default function kind is now <i>function
+(FUNCLOfun)</i> instead of <i>closure (FUNCLOclo)</i>. For example, The
+following function declaration assigns <i>foo</i> the type <i>T1
+-&lt;fun1&gt; T2</i>:
+
+<pre>
+fun foo (x: T1): T2 = ...
+</pre>
+
+We use <i>fun1</i> to indicate that <i>foo</i> is function potentially of
+(full) effects.
+<P>
+
+In order to assign a closure type to <i>foo</i>, the function kind
+annoation needs to be supplied as follows:
+
+<pre>
+fun foo (x: T1):&lt;clo1&gt; T2 = ...
+</pre>
+
+We use <i>clo1</i> to indicate that <i>foo</i> is closure potentially of
+(full) effects.
+<P>
+
+<LI>Date: 2007-12-09<P>
+
+For each constructor associated with a dataviewtype, we can use refvar
+patterns to gain access to both the locations of the arguments of the
+constructor and the views associated with these locations.
+<P>
+
+In the following example, we first declare a dataviewtype for linked
+lists:
+
+<pre>
+datatype list_vt (a:viewt@ype+, int) =
+  | {n:nat} list_vt_cons (a, n+1) of (a, list (a, n)) | list_vt_nil (a, 0)
+</pre>
+
+We then implement a list traversal function <i>foreach_list_vt</i>:
+
+<pre>
+fun{a:t@ype} foreach_list_vt {n:nat} .<n>.
+  (f: (!a) -&lt;f&gt; void, xs: !list_vt (a, n)): int n =
+  case+ xs0 of
+  | cons (!x, !xs) => (f (!x); foreach_list_vt (!xs); fold@ xs0)
+  | nil () => ()
+</pre>
+
+The patterns <i>!x</i> and <i>!xs</i> are refvar patterns. If a list
+matches the pattern <i>cons (!x, !xs)</i>, then the pointers pointing to
+the head and tail of the list are stored in <i>x</i> and <i>xs</i>,
+respectively, and the views associated with these pointers are
+automatically absorbed into the proofstore.
+<P>
+<HR SIZE=1 ALIGN=LEFT>
+
+<LI>Date: 2008-03-30<P>
+
+Closures are classified into linear closures (cloptr) and persistent
+closures (cloref). This is a great change, resulting in global impacts on
+ATS statically as well as dynamically. With linear closures, it becomes
+possible to support high-order functional programming in a situation where
+the memory footprint of a program must be kept minimal.
+<P>
+<HR SIZE=1 ALIGN=LEFT>
+
+<LI>Date: 2010-05-12<P>
+
+ATS/Proto, the first implementation of ATS, supported object-oriented
+programming (OOP). So, it was naturally assumed that OOP should be
+supported in the following implementations of ATS, and there was a lot
+of work done to prepare for incorporating OOP into ATS/Anairiats.
+However, after a long struggle (for several years), I have decided to
+abandon the plan to directly support OOP in ATS as this would simply
+make ATS overly complicated. However, indirect support for OOP in ATS
+is fairly easy to achieve. For instance, the API for GTK in ATS is done
+in the OOP-style. The plan to have an OOP-style module system in ATS is
+now on hold.
+<P>
+<HR SIZE=1 ALIGN=LEFT>
+
+<LI>Date: 2010-08-13<P>
+
+Linear strings (strptr) are now supported in ATS. Most string-generating
+functions return linear strings. If needed, a linear string can be readily
+casted into a persistent one by calling <i>string_of_strptr</i>.
+<P>
+<HR SIZE=1 ALIGN=LEFT>
+
+</MENU>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

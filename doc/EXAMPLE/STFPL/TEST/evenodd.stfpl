@@ -1,0 +1,18 @@
+/*
+** an example of mutual recursion
+*/
+
+let
+  val
+  rec isevn: int -> bool =
+    lam (n: int) => if n >= 1 then isodd (n-1) else true
+  and isodd: int -> bool =
+    lam (n: int) => if n >= 1 then isevn (n-1) else false
+  // end of [val]
+in
+  isevn (10)
+end // end of [let]
+
+/* ****** ****** */
+
+/* end of [evenodd.stfpl] */

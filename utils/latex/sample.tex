@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[literate]{lstatslang}
+\begin{document}
+
+\lstset{language=[literate]ATS}
+\lstset{columns=fullflexible,captionpos=b,basicstyle=\ttfamily\small}
+
+\begin{lstlisting}
+extern
+prfun array_v_takeout
+  {a:t@ype} {n,i:nat | i < n} {l:addr} {ofs:int} (
+  pfmul: MUL (i, sizeof(a), ofs), pfarr: array_v (a, n, l)
+) : (a @ l+ofs, a @ l+ofs -<lin,prf> array_v (a, n, l))
+\end{lstlisting}
+
+\end{document}

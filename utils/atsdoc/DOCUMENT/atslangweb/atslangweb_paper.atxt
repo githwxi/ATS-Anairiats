@@ -1,0 +1,294 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBPAPER: atext =
+  strcst"<strong>Papers</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBPAPER", _ATSLANGWEBPAPER)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_paper.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_paper.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("PAPER")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Papers about ATS and Its Uses</h1>
+
+#menu('\
+#litxt(#ulink("PAPER\#DMLpaper", "Dependent ML"))
+#litxt(#ulink("PAPER\#DTPterm", "Dependent Types for Program Termination Verification"))
+#litxt(#ulink("PAPER\#GRDTpaper", "Guarded Recursive Datatype Constructors"))
+#litxt(#ulink("PAPER\#ATSpaper", "Applied Type System"))
+#litxt(#ulink("PAPER\#CPwTPpaper", "Combining Programming with Theorem-Proving"))
+#litxt(#ulink("PAPER\#SPPSVpaper", "Safe Programming with Pointers through Stateful Views"))
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("DMLpaper",'Dependent ML:<br>
+<span style="font-size:87.5%;">an approach to practical programming with dependent types</span>')
+</h2>
+
+<table>
+
+<tr><td>
+Abstract:
+The paper presents an approach to enriching the type system of ML with a
+restricted form of dependent types, where type index terms are required to
+be drawn from a given type index language #emph("L") that is completely
+separate from run-time programs, leading to the #emph("DML(L)") language
+schema.  This enrichment allows for specification and inference of
+significantly more precise type information, facilitating program error
+detection and compiler optimization.  The primary contribution of the paper
+lies in a novel language design, which can effectively support the use of
+dependent types in practical programming. In particular, this design makes
+it both natural and straightforward to accommodate dependent types in the
+presence of effects such as references and exceptions.
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("DML-jfp07.pdf", "pdf") #ulink("DML-jfp07.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("DTPterm", "Dependent Types for Program Termination Verification")
+</h2>
+
+<table>
+
+<tr><td>
+Abstract:
+Program termination verification is a challenging research subject of
+significant practical importance. While there is already a rich body of
+literature on this subject, it is still undeniably a difficult task to
+design a termination checker for a realistic programming language that
+supports general recursion.  In this paper, we present an approach to
+program termination verification that makes use of a form of dependent
+types developed in Dependent ML (DML), demonstrating a novel application of
+such dependent types to establishing a liveness property. We design a type
+system that enables the programmer to supply metrics for verifying program
+termination and prove that every well-typed program in this type system is
+terminating.  We also provide realistic running examples to support the
+effectiveness of this approach to program termination verification as well
+as its unobtrusiveness to programming.
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("DTPTV-hosc.pdf", "pdf") #ulink("DTPTV-hosc.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("GRDTpaper", "Guarded Recursive Datatype Constructors")</h2>
+
+<table>
+
+<tr><td>
+Abstract:
+The paper introduces a notion of guarded recursive (g.r.) datatype
+constructors, generalizing the notion of recursive datatypes in functional
+programming languages such as ML and Haskell. Both theoretical and
+practical issues resulted from this generalization are addressed. On one
+hand, a type system is designed to formalize the notion of g.r. datatype
+constructors and its soundness is proven. On the other hand, some
+significant applications (e.g., implementing objects, implementing staged
+computation, etc.) of g.r. datatype constructors are given, indicating that
+g.r. datatype constructors can have far-reaching consequences in
+programming.  The main contribution of the paper lies in the recognition
+and then the formalization of a programming notion that is of both
+theoretical interest and practical use.
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("GRDT-popl03.pdf", "pdf") #ulink("GRDT-popl03.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("ATSpaper",'Applied Type System')</h2>
+
+<table cellspacing="0" cellpadding="0">
+
+<tr><td>
+Abstract:
+The framework Pure Type System (PTS) offers a simple and general approach
+to designing and formalizing type systems. However, in the presence of
+dependent types, there often exist some acute problems that make it
+difficult for PTS to accommodate many common realistic programming features
+such as general recursion, recursive types, effects (e.g., exceptions,
+references, input/output), etc. In this paper, we propose a new framework
+Applied Type System (ATS) to allow for designing and formalizing type
+systems that can readily support common realistic programming features. The
+key salient feature of ATS lies in a complete separation of statics, in
+which types are formed and reasoned about, from dynamics, in which programs
+are constructed and evaluated. With this separation, it is no longer
+possible for a program to occur in a type as is otherwise allowed in PTS.
+We outline a formal development of ATS, establishing various (meta)
+properties of applied type systems. In addition, we provide some
+examples taken from ATS, a programming language with its type system rooted
+in ATS, to demonstrate the expressiveness and flexibility of ATS as a
+framework for type system design and formalization in support of practical
+programming.
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("ATS-types03.pdf", "pdf") #ulink("ATS-types03.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("CPwTPpaper", "Combining Programming with Theorem-Proving")</h2>
+
+<table>
+
+<tr><td>
+Abstract:
+Applied Type System (ATS) is recently proposed as a framework for
+designing and formalizing (advanced) type systems in support of practical
+programming. In ATS, the definition of type equality involves a
+constraint relation, which may or may not be algorithmically decidable.  To
+support practical programming, we adopted a design in the past that imposes
+certain restrictions on the syntactic form of constraints so that some
+effective means can be found for solving constraints automatically.
+Evidently, this is a rather <EM>ad hoc</EM> design in its nature.  In this
+paper, we rectify the situation by presenting a fundamentally different
+design, which we claim to be both novel and practical. Instead of imposing
+syntactical restrictions on constraints, we provide a means for the
+programmer to construct proofs that attest to the validity of
+constraints. In particular, we are to accommodate a programming paradigm
+that enables the programmer to combine programming with theorem proving.
+Also we present some concrete examples in support of the practicality of
+this design.
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("CPwTP-icfp05.pdf", "pdf") #ulink("CPwTP-icfp05.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("SPPSVpaper", "Safe Programming with Pointers through Stateful Views")</h2>
+
+<table>
+
+<tr><td>
+Abstract:\
+
+The need for direct memory manipulation through pointers is essential in
+many applications. However, it is also commonly understood that the use (or
+probably misuse) of pointers is often a rich source of program errors.
+Therefore, approaches that can effectively enforce safe use of pointers in
+programming are highly sought after.  ATS is a programming language with a
+type system rooted in a recently developed framework #emph("Applied Type
+System"), and a novel and desirable feature in ATS lies in its support for
+safe programming with pointers through a novel notion of #emph("stateful
+views"). In particular, even pointer arithmetic is allowed in ATS and
+guaranteed to be safe by the type system of ATS.  In this paper, we give an
+overview of this feature in ATS, presenting some interesting examples based
+on a prototype implementation of ATS to demonstrate the practicality of
+safe programming with pointer through stateful views.\
+
+#para("")
+</td></tr>
+
+<tr><td>
+Links: #ulink("SPPSV-padl05.pdf", "pdf") #ulink("SPPSV-padl05.ps", "ps")
+</td></tr>
+
+</table>
+#para("")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks("PAPER")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\

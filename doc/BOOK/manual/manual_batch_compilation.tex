@@ -1,0 +1,193 @@
+\chapter{BATCH COMPILATION}\label{chapter:batch_compilation}
+
+The command for compiling ATS programs into C code is {\it atsopt}.  After
+C code is emitted by {\it atsopt}, it can then be compiled into machine
+code by {\it gcc}. The command {\it atscc}, which essentially combines {\it
+atsopt} and {\it gcc}, compiles ATS programs directly into machine code.
+Both {\it atsopt} and {\it atscc} are implemented in ATS. If a
+C compiler other than {\it gcc} is to be used, the command name for
+this C compiler needs to be defined in the environment variable
+{\it ATSCCOMP}.
+
+\section{The Command {\it atsopt}}
+The command {\it atsopt} compiles ATS programs into C code.  This command
+is primarily used in scripting files such as those needed by the {\it make}
+command.
+
+\subsection{Compiling Static and Dynamic Files}
+The following command line compiles a dynamic file {\it foo.dats} into C
+code:
+\begin{verbatim}
+atsopt -d foo.dats
+\end{verbatim}
+and the output is directed to {\it stdout}.  The flag \verb`-d` may be
+replaced with `--dynamic`.
+
+Suppose it is desired to store the emitted C code into a file with the name
+{\it foo\_dats.c}, the following command line can be issued:
+\begin{verbatim}
+atsopt -o foo_dats.c -d foo.dats
+\end{verbatim}
+The flag \verb`-o` may also be replaced with `--output`.
+It should be emphasized that the part
+\verb`-o foo_dats.c` must be put in front of \verb`-d foo.dats`.
+
+Similarly, the following command line compiles a static file {\it foo.sats}
+into C code:
+\begin{verbatim}
+atsopt -s foo.sats
+\end{verbatim}
+and the output is directed to {\it stdout}.  The flag \verb`-s` may be
+replaced with `--static`. If the following command line is issued (and
+executed successfully), then the C code emitted from compiling {\it
+foo.sats} and {\it foo.dats} is to be stored in files {\it foo\_sats.c} and
+{\it foo\_dats.c}, respectively.
+
+\begin{verbatim}
+atsopt -o foo_sats.c -s foo.sats -o foo_dats.c -d foo.dats
+\end{verbatim}
+
+\subsection{Typechecking Only}
+If the following command line is issued, then the file {\it foo.dats} is
+only typechecked:
+\begin{verbatim}
+atsopt -tc -d foo.dats
+\end{verbatim}
+The flag \verb`-tc` may be replaced with `--typecheck`.  Even if the file
+{\it foo.dats} passes typechecking, no efffort is to be made to emit C code
+from compiling {\it foo.dats}. If both {\it foo.dats} and {\it foo.sats}
+need to be typechecked, it can be done as follows:
+\begin{verbatim}
+atsopt -tc -d foo.dats -s foo.sats
+\end{verbatim}
+
+\subsection{Generating HTML Files}
+The flag \verb`--posmark_html` can be used to turn ATS programs into HTML
+files for the purpose of viewing (through a browser). For instance, if the
+following command line is issued, a file {\it foo\_dats.html} is generated:
+\begin{verbatim}
+atsopt --posmark_html -d foo.dats > foo_dats.html
+\end{verbatim}
+
+\subsection{Generating HTML Files for cross-referencing}
+The flag \verb`--posmark_xref` can be used to turn ATS programs into HTML
+files for the purpose of viewing and cross-referencing (through a
+browser). For instance, if the following command line is issued, a file
+{\it foo\_dats.html} is generated while various other files are created
+in the directory {\it XREF/} for the purpose of cross-referencing:
+\begin{verbatim}
+atsopt --posmark_xref=XREF -d foo.dats > foo_dats.html
+\end{verbatim}
+
+\subsection{Generating Usage Information}
+The following command line can be issued to generate some brief information
+on the usage of {\it atsopt}:
+\begin{verbatim}
+atsopt -h
+\end{verbatim}
+The flag \verb`-h` may be replaced with `--help`.
+
+\subsection{Generating Version Information}
+The following command line can be issued to generate version information
+on {\it atsopt}:
+\begin{verbatim}
+atsopt -v
+\end{verbatim}
+The flag \verb`-v` may be replaced with `--version`.
+
+%%% end of \section{The command {\it atsopt}} %%%
+
+\section{The Command {\it atscc}}
+
+The command {\it atscc} combines {\it atsopt} and {\it gcc}, and it is
+designed to be used in both command lines and scripting files.  Explanation
+on special flags for {\it atscc} is given as follows. If a flag is not
+special to {\it atscc}, it is passed to {\it gcc} directly by {\it atscc}.
+
+\subsection{Generating Executables}
+The following command line, if executed successfully, generates an
+executable file {\it a.out}:
+\begin{verbatim}
+atscc foo.dats foo.sats
+\end{verbatim}
+Essentially, this command line is equivalent to the following one:
+\begin{verbatim}
+atsopt -o foo_dats.c -d foo.dats -o foo_sats.c -s foo.sats ; \
+gcc -I $ATSHOME -I $ATSHOME/ccomp/runtime -L $ATSHOME/ccomp/lib foo_dats.c -lats
+\end{verbatim}
+
+If the generated executable needs to be given the name {\it foo}, then
+the following command line can be issued:
+\begin{verbatim}
+atscc -o foo foo.dats foo.sats
+\end{verbatim}
+Of course, flags for {\it gcc} such as \verb`-O2`, \verb`-Wall`
+and \verb`-fomit-frame-pointer` can be added freely as is done in
+the following command line:
+\begin{verbatim}
+atscc -O2 -o foo -Wall -fomit-frame-pointer foo.dats foo.sats
+\end{verbatim}
+
+\subsection{Typechecking Only}
+The flag \verb`-tc` or \verb`--typecheck` is used to indicate typechecking
+only. For instance, the following command line:
+\begin{verbatim}
+atscc -tc foo.sats foo.dats
+\end{verbatim}
+is equivalent to the one below:
+\begin{verbatim}
+atsopt -tc --static foo.sats --dynamic foo.dats
+\end{verbatim}
+
+\subsection{Compilation Only}
+The flag \verb`-cc` or \verb`--compile` is used to indicate compilation only.
+For instance, the following command line:
+\begin{verbatim}
+atscc -cc foo.sats foo.dats
+\end{verbatim}
+is equivalent to the one below:
+\begin{verbatim}
+atsopt -o foo_sats.c --static foo.sats -o foo_dats.c --dynamic foo.dats
+\end{verbatim}
+
+\subsection{Binary Types}
+The flags \verb`-m32` and \verb`-m64` can be passed to indicate the need
+for generating binaries running on 32-bit and 64-bit machines, respectively.
+
+\subsection{Garbage Collection}
+By default, executables generated by {\it atscc} run without garbage
+collection (GC). If executables need to be generated that run with GC being
+turned on, the flag \verb`-D_ATS_GCATS` should be present.  For instance,
+the follow command line generates such an executable named {\it foo}:
+\begin{verbatim}
+atscc -D_ATS_GCATS -o foo foo.dats foo.sats
+\end{verbatim}
+Note that the flag \verb`-D_ATS_GCATS` should only be used when {\it atscc}
+is called to generate executables.
+
+\subsection{Directories for File Search}
+The use of \verb`-IATS` by {\it atscc} is analogous to \verb`-I` by {\it gcc}.
+By default, {\it atscc} searches for files only in the directory {\ATSHOME}
+and the current directory. If more directories need to be searched, it can
+be added as follows:
+\begin{verbatim}
+atscc -IATS barpath1 -IATS barpath2 foo.sats foo.dats
+\end{verbatim}
+where {\it barpath1} and {\it barpath2} represent paths to some existing
+directories.  The space following \verb`-IATS` is optional and it can be
+erased if desired. Note that this command-line feature also applies to the
+command {\it atsopt}.
+
+\subsection{Setting Command-Line Flags}
+The use of \verb`-DATS` by {\it atscc} is analogous to \verb`-D` by {\it gcc}.
+For instance, the following command-line:
+\begin{verbatim}
+atscc -DATS FOO=123 -DATS BAR=xyz foo.sats foo.dats
+\end{verbatim}
+first sets {\it FOO} and {\it BAR} to strings "123" (instead of the integer
+{\it 123}) and "xyz", respectively, and then compiles the files foo.sats
+and foo.dats.  The space following \verb`-DATS` is optional and it can be
+erased if desired.  Note that this command-line feature also applies to the
+command {\it atsopt}.
+
+%%% end of \chapter{BATCH COMPILATION} %%%

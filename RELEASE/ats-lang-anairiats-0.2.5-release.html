@@ -1,0 +1,38 @@
+<pre>
+ats-lang-anairiats-0.2.5:
+
+As usual, this release contains many fixes. A particular important fix
+makes it possible to compile ATS with the latest gcc (gcc-4.6).  A
+(partial) list of the changes since the last release is given as follows:
+
+1. Fixing a bug in handling call-by-reference. I was really surprised that
+   the bug had not shown up earlier.
+2. input_line_vt is added in prelude/filebas for returning a linear string
+3. Fixing a bug in [valprim_is_mutable]: casting was incorrectly handled.
+4. atslib_feof and atslib_ferror are changed to inlined functions (instead
+   of macros). This is done to fix Cgwin's defining feof as a macro.
+5. Some changes are made to support ATS on FreeBSD.
+6. Fixing a bug involving linear closures (of the form <lin,cloptr>).
+7. Adding support for if!: if! (e_cond, e_then, e_else) is for the
+   following expression: (if e_cond then e_then else e_else).
+8. Adding libats/funset_avltree to support (functional) sets.
+9. The original *_clo and *_cloptr functions are renamed as *_vclo and
+   *_vcloptr respectively, and the new *_clo and *_cloptr functions no
+   longer require a (linear) proof argument.
+10. [gc_stack_get_dir] is re-written to fix a bug triggered due to a form
+    of over-optimization by gcc-4.6: a volatile function may get inlined.
+    Kudos to Matthew for helping me on this one!
+11. Fixing a bug that wrongly affected the exn-effect tracking.
+12. Adding contrib/GLES2 to support OpenGL/ES2 binding. Thanks to Artyom!
+13. Renaming: list_vt_*_clo -> list_vt_*_vclo. Also adding various functions:
+    list_vt_*_cloptr and list_vt_*_vcloptr
+14. Makefile_macosx is added for building ATS on MAC OS X. Thanks to Georg!
+15. Renaming (in various packages): *_clo -> *_vclo and *_cloptr -> *_vcloptr
+16. Adding libatsdoc for helping document ATS.
+17. Adding the [atsdoc] utility for writing documents.
+18. Adding atsdoc/DOCUMENT/TUTORIALATS.
+19. Finishing part 3 of the book on Introduction to Programming in ATS.
+20. Adding contrib/atswebpage for helping build web pages.
+21. Adding util/atsdoc/DOCUMENT/atslangweb for creating webpages for ATS.
+
+</pre>

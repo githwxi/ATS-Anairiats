@@ -1,0 +1,55 @@
+Team:
+
+1. Zhiqiang Ren (aren AT cs DOT bu DOT edu)
+2. Hongwei Xi   (hwxi AT cs DOT bu DOT edu)
+
+######
+
+Programming language: ATS version 0.2.6 or later
+
+######
+
+Problem1:
+
+VT1: Done. You may try to change array indices and see what happens.
+VT2: Done. By using termination metrics.
+VT3: Done. By taking advantage of boolean arrays being sorted
+
+The code can run.
+
+######
+
+Problem2:
+
+IMP: Done // 10 points
+VT1: Done // 40 points
+VT2: Done // 25 points
+VT3: Done // 25 points
+
+The code can run.
+
+######
+
+Problem3:
+
+VT1: Done. You may try to change array indices and see what happens.
+VT2: Behavior: Done (Some basic proof functions are left out)
+VT3: Harness: Done
+
+The code can run.
+
+######
+
+Problem4:
+
+VT1: Done.
+VT2: Done.
+VT3: Done.
+VT4-1: Done.
+VT4-2: Done.
+
+######
+
+Problem5:
+
+###### end of [README] ######

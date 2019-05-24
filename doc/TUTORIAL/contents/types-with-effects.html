@@ -1,0 +1,33 @@
+<!-- beg of [types-with-effects.html] -->
+
+<H2><A id="types-with-effects" name="types-with-effects">Types with
+Effects</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The type system of ATS can currently track the following list of effects
+that a program may incur during its execution:
+
+<UL>
+
+<LI>
+The <i>exn</i> (exception) effect is incurred if a program raises an
+exception during its execution. This covers the case where the execution of
+a program is terminated abnormally, for instance, by calling <i>exit</i>.
+
+<LI>
+The <i>ntm</i> (nontermination) effect refers to potential nonterminating
+excecution of a program.
+
+<LI>
+The <i>ref</i> (reference) effect essentially means that a program may
+potentially update the content of some shared memory.
+
+</UL>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="types-with-effects.dats">here</a>.
+
+<!-- end of [types-with-effects.html] -->
+

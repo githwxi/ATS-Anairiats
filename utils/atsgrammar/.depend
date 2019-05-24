@@ -1,0 +1,10 @@
+atsgrammar_sats.o :
+atsgrammar_tyname_dats.o : atsgrammar.sats
+atsgrammar_symbol_dats.o : atsgrammar.sats
+atsgrammar_grmrule_dats.o : atsgrammar.sats
+atsgrammar_global_dats.o : atsgrammar.sats
+atsgrammar_emit_yats_dats.o : atsgrammar.sats
+atsgrammar_emit_yats_html_dats.o : atsgrammar.sats
+atsgrammar_emit_desc_dats.o : atsgrammar.sats
+atsgrammar_emit_desc_html_dats.o : atsgrammar.sats
+atsgrammar_main_dats.o : atsgrammar.sats

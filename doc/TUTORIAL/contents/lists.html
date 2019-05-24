@@ -1,0 +1,71 @@
+<!-- beg of [lists.html] -->
+
+<H2><A id="lists" name="lists">Persistent Lists</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Lists are by far the most commonly used data structure in functional
+programming. We say that a data structure is <EM>persistent</EM> if it is
+heap-allocated and can only be freed by the GC. In contrast, a data
+structure is said to be linear if it is either stack-allocated or
+heap-allocated and can be freed by the user as well as by the GC.
+<P>
+
+The datatype for persistent lists in ATS is declared as follows:
+
+<PRE><span class="dynexp"><span class="keyword">datatype</span> <span class="staexp">list <span class="keyword">(</span>a<span class="keyword">:</span>t@ype+<span class="keyword">,</span> int<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="comment">// t@ype+: covariant
+</span>  <span class="keyword">|</span> list_nil <span class="staexp"><span class="keyword">(</span>a<span class="keyword">,</span> 0<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>int</span> <span class="keyword">|</span> <span class="staexp">n &gt;= 0</span><span class="keyword">}</span> list_cons <span class="staexp"><span class="keyword">(</span>a<span class="keyword">,</span> n+1<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>a<span class="keyword">,</span> list <span class="keyword">(</span>a<span class="keyword">,</span> n<span class="keyword">)</span><span class="keyword">)</span></span></span></PRE>
+
+Given a type <i>T</i> and an integer <i>I</i>, the type <i>list(T, I)</i>
+is for lists of length <i>I</i> in which each element is of type <i>T</i>.
+<P>
+
+Let us first introduce some abbreviations for the list constructors:
+<PRE><FONT COLOR="#000000">#define</FONT> <FONT COLOR="#800080">nil list_nil</FONT>
+<FONT COLOR="#000000">#define</FONT> <FONT COLOR="#800080">cons list_cons</FONT>
+<FONT COLOR="#000000">#define</FONT> <FONT COLOR="#800080">:: list_cons</FONT></PRE>
+
+The following syntax creates a list consisting of 1, 2 and 3:
+
+<pre>
+cons (1, cons (2, cons (3, nil ()))) // [nil ()] can be replaced with [nil]
+</pre>
+
+This kind of syntax is a bit unwieldy if longer lists need to be handled,
+and some alternatives are given as follows:
+
+<pre>
+'[1, 2, 3] // the first character is quote (')
+$lst (1, 2, 3) // this is equivalent to '[1, 2, 3]
+$lst {Nat} (1, 2, 3) // [Nat] is given as the type for the list elements
+</pre>
+
+The interfaces for various functions on lists can be found in the file <A
+HREF="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/prelude/SATS/list.sats">prelude/SATS/list.sats</A>.
+<P>
+
+We now present some simple programs involving lists.  The following code
+implements a function template that computes the length of a given list:
+
+<PRE><span class="dynexp"><span class="comment">// This implementation is not tail-recursive
+</span><span class="keyword">fun</span><span class="keyword">{</span><span class="staexp">a<span class="keyword">:</span>t@ype</span><span class="keyword">}</span> length <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>xs<span class="keyword">:</span> <span class="staexp">list <span class="keyword">(</span>a<span class="keyword">,</span> n<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int n</span> <span class="keyword">=</span>
+  <span class="keyword">case+</span> xs <span class="keyword">of</span> _ :: xs <span class="keyword">=&gt;</span> 1 + length xs <span class="keyword">|</span> nil <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> 0</span></PRE>
+
+This is a rather poor implementation as it is not tail-recursive.
+A better one, which is tail-recursive, is given as follows:
+
+<PRE><span class="dynexp"><span class="comment">// This implementation is tail-recursive
+</span><span class="keyword">fn</span><span class="keyword">{</span><span class="staexp">a<span class="keyword">:</span>t@ype</span><span class="keyword">}</span> length <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>xs<span class="keyword">:</span> <span class="staexp">list <span class="keyword">(</span>a<span class="keyword">,</span> n<span class="keyword">)</span></span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int n</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fun</span> loop <span class="staexp"><span class="keyword">{</span>i<span class="keyword">,</span>j<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="keyword">(</span>xs<span class="keyword">:</span> <span class="staexp">list <span class="keyword">(</span>a<span class="keyword">,</span> i<span class="keyword">)</span></span><span class="keyword">,</span> j<span class="keyword">:</span> <span class="staexp">int j</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int <span class="keyword">(</span>i+j<span class="keyword">)</span></span> <span class="keyword">=</span>
+    <span class="keyword">case+</span> xs <span class="keyword">of</span> _ :: xs <span class="keyword">=&gt;</span> loop <span class="keyword">(</span>xs<span class="keyword">,</span> j+1<span class="keyword">)</span> <span class="keyword">|</span> nil <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=&gt;</span> j
+<span class="keyword">in</span>
+  loop <span class="keyword">(</span>xs<span class="keyword">,</span> 0<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [length]
+</span></span></PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="lists.dats">here</a>.
+
+<!-- end of [lists.html] -->

@@ -1,0 +1,19 @@
+/*
+** implementing MacCarthy's 91-function
+*/
+
+let
+  val
+  rec f91: int -> int =
+    lam (n: int) => if n >= 101 then n - 10 else f91 (f91 (n + 11))
+  // end of [val rec]
+  val _ = print "f91 (57) = "
+  val _ = print_int (f91 57)
+  val _ = print "\n"
+in
+  ()
+end // end of [let]
+
+/* ****** ****** */
+
+/* end of [f91.stfpl] */

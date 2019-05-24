@@ -1,0 +1,4 @@
+Type `make' in the current directory to create the ATS language
+definition for the `listings' package of the current version of ATS.
+The generated artifact is lstatslang.sty which can be distributed
+stand-alone.

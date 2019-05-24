@@ -1,0 +1,17 @@
+let
+
+function f91 (x: int): int =
+  if x >= 101 then x - 10 else f91 (f91 (x + 11))
+
+in
+
+print ("f91 (0) = "); print_int (f91 (0)); print ("\n");
+print ("f91 (1) = "); print_int (f91 (1)); print ("\n");
+print ("f91 (2) = "); print_int (f91 (2)); print ("\n");
+print ("f91 (3) = "); print_int (f91 (3)); print ("\n");
+print ("f91 (23) = "); print_int (f91 (23)); print ("\n");
+print ("f91 (57) = "); print_int (f91 (57)); print ("\n");
+print ("f91 (91) = "); print_int (f91 (91)); print ("\n");
+()
+
+end /* end of [let] */

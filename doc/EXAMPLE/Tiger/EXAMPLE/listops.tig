@@ -1,0 +1,63 @@
+/*
+**
+** Some list operations implemented in Tiger
+**
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: May, 2009
+**
+*/
+
+let
+  type list = {head: int, tail: list}
+
+  function listprint (l: list) = let
+    var i: int := 0
+  in
+    while (1) do (
+      if l = nil then break;
+      if i > 0 then print (", "); print_int (l.head);
+      i := i + 1; l := l.tail;
+      ()
+    ) /* end of [while] */
+  end /* end of [listprint] */
+
+  function listgen (m: int, n: int): list =
+    if m < n then
+      list {head= m, tail= listgen (m+1, n)}
+    else nil
+  /* end of [function] */
+
+  /* list append */
+  function listapp (xs: list, ys: list): list = let
+    var xs0 := xs
+  in
+    if xs = nil then ys else (
+      while (xs.tail <> nil) do (xs := xs.tail) ; xs.tail := ys ; xs0
+    ) /* end of [if] */
+  end /* end of [listapp] */
+
+  /* list reverse */    
+  function listrev (xs: list): list = let
+    var xs1: list := nil
+    var res: list := nil
+  in
+    while (1) do (
+      if (xs = nil) then break;
+      xs1 := xs.tail; xs.tail := res; res := xs; xs := xs1
+    ) ;
+    res
+  end /* listrev */
+
+  var list_0_9: list := nil
+  var list_9_0: list := nil
+  var list_0_9_9_0: list := nil
+in
+  list_0_9 := listgen (0, 10);
+  print ("list_0_9 = "); listprint (list_0_9); print ("\n");
+  list_9_0 := listrev (list_0_9);
+  print ("list_9_0 = "); listprint (list_9_0); print ("\n");
+  list_0_9 := listgen (0, 10);
+  list_0_9_9_0 := listapp (list_0_9, list_9_0);
+  print ("list_0_9_9_0 = "); listprint (list_0_9_9_0); print ("\n");  
+  ()
+end /* end of [let] */

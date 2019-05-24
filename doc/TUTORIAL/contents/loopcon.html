@@ -1,0 +1,180 @@
+<!-- beg of [loopcon.html] -->
+
+<H2><A id="loopcon" name="loopcon">Loop Constructs</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+In ATS, there are also constructs for forming for-loops and while-loops
+directly. While it is tempting for someone familiar with imperative
+programming to implement loops with these constructs (instead of using
+tail-recursion), it should be emphasized that the amount of effort involved
+in constructing loop invariants (if needed) often makes this style of
+programming difficult for beginners and, sometimes, for experts as well.
+
+<H4>Simple Loops</H4>
+
+The following code gives an implementation of the factorial function,
+where a <EM>while-loop</EM> is constructed:
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> fact <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> x<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> n
+  <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">while</span> <span class="keyword">(</span>x <span class="keyword">&gt;</span> 0<span class="keyword">)</span> <span class="keyword">(</span>res := res * x<span class="keyword">;</span> x := x - 1<span class="keyword">)</span>
+<span class="keyword">in</span>
+  res <span class="comment">// res = n!
+</span><span class="keyword">end</span> <span class="comment">// end of [fact]
+</span></span></PRE>
+
+The syntax for a while-expression is given as follows:
+
+<PRE><u>while</u> $test $body</PRE>
+
+where <i>$test</i> is an expression of the type <i>bool</i> and
+<i>$body</i> is an expression of the type <i>void</i>. Usually,
+<i>$body</i> consists of a sequence of expressions of the type <i>void</i>.
+<P>
+
+In the following, another implementation of the factorial function is given,
+where a <EM>for-loop</EM> is constructed:
+
+<PRE><span class="dynexp"><span class="comment">// a simple for-loop 
+</span><span class="keyword">fn</span> fact <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> x<span class="keyword">:</span> <span class="staexp">int</span>
+  <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">for</span> <span class="keyword">(</span>x := 1 <span class="keyword">;</span> x &lt;= n <span class="keyword">;</span> x := x+1<span class="keyword">)</span> res := res * x
+<span class="keyword">in</span>
+  res <span class="comment">// res = n!
+</span><span class="keyword">end</span> <span class="comment">// end of [fact]
+</span></span></PRE>
+
+The syntax for a for-expression is given as follows:
+
+<PRE><u>for</u> ($init ; $test ; $post) $body</PRE>
+where
+<i>$init</i> is an expression of the type <i>void</i>,
+<i>$test</i> is an expression of the type <i>bool</i>,
+<i>$post</i> is an expression of the type <i>void</i>, and
+<i>$body</i> is an expression of the type <i>void</i>. Usually,
+<i>$body</i> consists of a sequence of expressions of the type <i>void</i>.
+
+Note that each of <i>$init</i>, <i>$test</i>, and <i>$post</i> can be
+omitted. The meaning of each omission should be evident. The following code
+gives yet another implemenation of the factorial function:
+
+<PRE><span class="dynexp"><span class="comment">// a simple for-loop with omissions involving [break]
+</span><span class="keyword">fn</span> fact <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> x<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">for</span> <span class="keyword">(</span> <span class="keyword">;</span> <span class="keyword">;</span> <span class="keyword">)</span> <span class="comment">// infinite loop
+</span>    <span class="keyword">if</span> x &lt;= n <span class="keyword">then</span> <span class="keyword">(</span>res := res * x<span class="keyword">;</span> x := x+1<span class="keyword">)</span> <span class="keyword">else</span> <span class="keyword">break</span>
+  <span class="comment">// end of [val]
+</span><span class="keyword">in</span>
+  res <span class="comment">// res = n!
+</span><span class="keyword">end</span> <span class="comment">// end of [fact]
+</span></span></PRE>
+
+Note that <i>break</i> in ATS is equivalent to its counterpart in C. Also,
+<i>continue</i> is supported in ATS as shown in the following
+implementation of the factorial function:
+
+<PRE><span class="dynexp"><span class="comment">// a simple for-loop with omissions involving [break] and [continue]
+</span><span class="keyword">fn</span> fact <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> x<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1 <span class="comment">// initialized
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">for</span> <span class="keyword">(</span> <span class="keyword">;</span> <span class="keyword">;</span> x := x+1<span class="keyword">)</span> <span class="comment">// no loop test
+</span><span class="comment">(*
+** note that [continue] means to loop again *after* post increment!
+*)</span>
+    <span class="keyword">if</span> x &lt;= n <span class="keyword">then</span> <span class="keyword">(</span>res := res * x<span class="keyword">;</span> <span class="keyword">continue</span><span class="keyword">)</span> <span class="keyword">else</span> <span class="keyword">break</span>
+  <span class="comment">// end of [val]
+</span><span class="keyword">in</span>
+  res <span class="comment">// res = n!
+</span><span class="keyword">end</span> <span class="comment">// end of [fact]
+</span></span></PRE>
+
+<H4>Loops with Annotated Invariants</H4>
+
+It is also possible to annotate loops with invariants expressed in
+terms of state types. For such loops, the keywords <u>while*</u>
+and <u>for*</u> are used in place of <u>while</u> and <u>for</u>,
+respectively.
+
+As an example, the following code implements the standard binary search on
+an array of doubles:
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> bsearch <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>
+    A<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span><span class="keyword">(</span><span class="keyword">@[</span>double<span class="keyword">]</span><span class="keyword">[</span>n<span class="keyword">]</span><span class="keyword">)</span></span><span class="keyword">,</span> n<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">,</span> key<span class="keyword">:</span> <span class="staexp">double</span>
+  <span class="keyword">)</span> <span class="keyword">:&lt;&gt;</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> l<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 0 <span class="keyword">and</span> u<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> n-1<span class="keyword">;</span> <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> ~1
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">while*</span>
+    <span class="keyword">{</span><span class="staexp">i<span class="keyword">,</span>j<span class="keyword">:</span>int</span> <span class="keyword">|</span> <span class="staexp">0 &lt;= i</span><span class="keyword">;</span> <span class="staexp">i &lt;= j+1</span><span class="keyword">;</span> <span class="staexp">j <span class="keyword">&lt;</span> n</span><span class="keyword">}</span> <span class="keyword">.&lt;</span><span class="staexp">j+1-i</span><span class="keyword">&gt;.</span> <span class="keyword">(</span>l<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">,</span> u<span class="keyword">:</span> <span class="staexp">int j</span><span class="keyword">)</span> <span class="keyword">=&gt;</span>
+    <span class="keyword">(</span>l &lt;= u<span class="keyword">)</span> <span class="keyword">let</span>
+      <span class="keyword">val</span> m <span class="keyword">=</span> l + <span class="keyword">(</span>u-l<span class="keyword">)</span> / 2
+      <span class="keyword">val</span> sgn <span class="keyword">=</span> compare <span class="keyword">(</span>key<span class="keyword">,</span> A<span class="keyword">.</span><span class="keyword">[</span><span class="prfexp">m</span><span class="keyword">]</span><span class="keyword">)</span>
+    <span class="keyword">in</span>
+      <span class="keyword">case+</span> 0 <span class="keyword">of</span>
+      <span class="keyword">|</span> _ <span class="keyword">when</span> sgn <span class="keyword">&lt;</span> 0 <span class="keyword">=&gt;</span> <span class="keyword">(</span>u := m-1<span class="keyword">;</span> <span class="keyword">continue</span><span class="keyword">)</span>
+      <span class="keyword">|</span> _ <span class="keyword">when</span> sgn <span class="keyword">&gt;</span> 0 <span class="keyword">=&gt;</span> <span class="keyword">(</span>l := m+1<span class="keyword">;</span> <span class="keyword">continue</span><span class="keyword">)</span>
+      <span class="keyword">|</span> _ <span class="keyword">=&gt;</span> <span class="keyword">(</span>res := m<span class="keyword">;</span> <span class="keyword">break</span><span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [val]
+</span><span class="keyword">in</span>
+  res <span class="comment">// 0 &lt;= res &lt; n if [key] is found; or res = ~1 if not
+</span><span class="keyword">end</span> <span class="comment">// end of [bsearch]
+</span></span></PRE>
+
+The annotated invariant for the loop follows the keyword <u>while*</u>, and
+it is separated from the rest of the loop by the symbol <i>=&gt;</i>. The
+invariant states that there are integers <i>i</i> and <i>j</i> satisfying
+<i>0 &lt;= i</i>,
+<i>i &lt;= j+1</i> and
+<i>j &lt n</i>
+such that the variables <i>l</i> and <i>u</i> are of
+the types <i>int(i)</i> and <i>int(j)</i>, respectively, at the entry
+point of the loop, that is, the point immediately before the loop test.
+A termination metric <i>.&lt;j+1-i&gt;.</i> is provided to verify that
+the loop terminates: the metric must decrease whenever the loop goes back
+to its entry point.
+<P>
+
+As another example, an implementation of the factorial function is
+presented as follows that involves the use of an annotated for-loop:
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> fact <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">var</span> x<span class="keyword">:</span> <span class="staexp">int</span>
+  <span class="keyword">var</span> res<span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> 1
+<span class="comment">(*
+  // the loop invariant indicates that
+  // the value of [x] is [n+1] at the point where the loop exits
+*)</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">for*</span> <span class="keyword">{</span><span class="staexp">i<span class="keyword">:</span>nat</span> <span class="keyword">|</span> <span class="staexp">i &lt;= n+1</span><span class="keyword">}</span> <span class="keyword">.&lt;</span><span class="staexp">n+1-i</span><span class="keyword">&gt;.</span>
+    <span class="keyword">(</span>x<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="keyword">(</span>x<span class="keyword">:</span> <span class="staexp">int <span class="keyword">(</span>n+1<span class="keyword">)</span></span><span class="keyword">)</span> <span class="keyword">=&gt;</span> <span class="keyword">(</span>x := 0<span class="keyword">;</span> x &lt;= n <span class="keyword">;</span> x := x+1<span class="keyword">)</span> res := res * x
+  <span class="comment">// end of [val]
+</span><span class="keyword">in</span>
+  res
+<span class="keyword">end</span> <span class="comment">// end of [fact]
+</span></span></PRE>
+
+The annotated invariant for the for-loop follows the keyword <u>for*</u>,
+and it is separated from the rest of the loop by the symbol <i>=&gt;</i>.
+This invariant consists of two parts, separated by the colon symbol
+(<i>:</i>).  The part before the colon symbol essentially means that there is a
+natural number <i>i</i> satisfying <i>i &lt;= n+1</i> such that the variable
+<i>x</i> is of the type <i>int(i)</i> at the entry point of the for-loop,
+that is, at the point immediately after the loop initialization and before
+the loop test.  There is also a termination metric in this part whose
+meaning should be evident.  The part after the colon symbol essentially
+means that the variable <i>x</i> is of the type <i>int(n+1)</i> at the exit
+point of the loop.
+<P>
+
+Annotating loops with invariants correctly can be difficult, sometimes. If
+complex loop invariants are needed, we recommend that the programmer avoid
+constructing loops directly. Instead, the programmer can implement
+tail-recursive functions in place of loops. Note that each tail-recursive
+function in ATS is guaranteed to be compiled into a loop.
+<P>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="loopcon.dats">here</a>.
+
+<!-- end of [loopcon.html] -->

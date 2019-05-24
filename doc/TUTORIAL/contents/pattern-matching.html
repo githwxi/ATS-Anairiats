@@ -1,0 +1,121 @@
+<!-- beg of [pattern-matching.html] -->
+
+<H2><A id="pattern-matching" name="pattern-matching">Pattern
+Matching</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The feature of pattern matching in ATS is adopted from ML. However, this
+feature becomes much more elaborated in the presence of dependent types as
+well as linear types. We present as follows several examples to illustrate
+some typical uses of pattern matching in ATS.
+<P>
+Let us first declare a polymorphic datatype <i>list0</i> as follows
+for representing lists:
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">datatype</FONT> <FONT COLOR="#0000FF">list0 <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>t@ype<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT> nil0 <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">|</FONT> cons0 <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> list0 a<FONT COLOR="#000000">)</FONT></FONT>
+</FONT></PRE>
+
+Notice that this is not a dependent datatype. Suppose we need to implement
+a function <i>zip0</i> that should only zip together two lists of <em>the
+same length</em>. This may be done as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a1<FONT COLOR="#000000">,</FONT>a2<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// [zip0] is a template
+</FONT>zip0 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 a1</FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 a2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 <FONT COLOR="#000000">'(</FONT>a1<FONT COLOR="#000000">,</FONT> a2<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#787878">// [case+] indicates the exhaustiveness of pattern matching
+</FONT>  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>cons0 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> cons0 <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> cons0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> zip0 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+
+The problem with this implementation is that a pattern matching failure
+occurs if the function <i>zip0</i> is mistakenly applied to two lists of
+unequal length, resulting in a run-time exception. In practice, a special
+exception is often declared as follows to handle the case of pattern
+matching failure, enabling more accurate run-time information to be
+reported.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">exception</FONT> ZipException
+
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a1<FONT COLOR="#000000">,</FONT>a2<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// [zip0] is a template
+</FONT>zip0 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 a1</FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 a2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list0 <FONT COLOR="#000000">'(</FONT>a1<FONT COLOR="#000000">,</FONT> a2<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#787878">// [case+] indicates the exhaustiveness of pattern matching
+</FONT>  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>cons0 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> cons0 <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> cons0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> zip0 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> nil0 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> _<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">$raise</FONT> ZipException
+</FONT></PRE>
+
+We can also declare a polymorphic dependent datatype <i>list1</i> as
+follows for representing lists:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">datatype</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>t@ype<FONT COLOR="#000000">,</FONT> int<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">|</FONT> nil1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">n<FONT COLOR="#000000">:</FONT>nat</FONT><FONT COLOR="#000000">}</FONT> cons1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n+1<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> list1 <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT>
+</FONT></PRE>
+
+Given a type <i>T</i> and an integer <i>I</i>, the type
+<i>list1(T, I)</i> is for lists of length <i>I</i> in which each element is
+of type <i>T</i>. The function for zipping two lists of the same length can
+now be implemented as follows:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a1<FONT COLOR="#000000">,</FONT>a2<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// [zip1] is a template
+</FONT>zip1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a1<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a2<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>a1<FONT COLOR="#000000">,</FONT> a2<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#787878">// [case+] indicates the exhaustiveness of pattern matching
+</FONT>  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>cons1 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> cons1 <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> cons1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> zip1 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+</FONT></PRE>
+
+Note that the typechecker can verify that pattern matching in this
+implementation is exhaustive.
+<P>
+
+Given that pattern matching in ATS is done sequentially, that is, from left
+to right in a given row and from top to bottom for all the clauses in a
+given case-expression, it is natural to expect that the following code
+gives an equivalent implementation of <i>zip1</i>:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a1<FONT COLOR="#000000">,</FONT>a2<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT>
+zip1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a1<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a2<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>a1<FONT COLOR="#000000">,</FONT> a2<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#787878">// [case+] indicates the exhaustiveness of pattern matching
+</FONT>  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>cons1 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> cons1 <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> cons1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> zip1 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> _<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT></PRE>
+
+This, however, is not the case as typechecking in ATS does not assume the
+sequentiality of pattern matching. In this example, the second pattern
+matching clause is typechecked indepenent of the first one, resulting in a
+type error. In order to demand that the second clause be typechecked under
+the assumption that the first clause is not chosen at run-time, the
+following special syntax is needed:
+
+<PRE><FONT COLOR="#E80000">    <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> _<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;&gt;</FONT> nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT></FONT></PRE>
+
+The special arrow <i>=&gt;&gt;</i> indicates that a clause formed with this
+arrow needs to be typechecked under the assumption that all of the previous
+clauses (in the same case-expression) are not chosen at run-time.
+<P>
+
+In the C code generated from compiling the function <i>zip1</i>, there are
+two tag checkes: they check whether the first and the second arguments of
+<i>zip1</i> are empty. Clearly, only one tag check is necessary as both
+arguments are of the same length. We can modify the implementation of
+<i>zip1</i> as follows so as to use only one check:
+
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a1<FONT COLOR="#000000">,</FONT>a2<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> <FONT COLOR="#787878">// only one tag check
+</FONT>zip1 <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a1<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT>a2<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>a1<FONT COLOR="#000000">,</FONT> a2<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">begin</FONT> <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+  <FONT COLOR="#000000">|</FONT> cons1 <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">begin</FONT>
+      <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val+</FONT> cons1 <FONT COLOR="#000000">(</FONT>y<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> ys <FONT COLOR="#000000">in</FONT> cons1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">'(</FONT>x<FONT COLOR="#000000">,</FONT> y<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> zip1 <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">|</FONT> _ <FONT COLOR="#000000">=&gt;&gt;</FONT> nil1 <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [zip1]
+</FONT>
+</FONT></PRE>
+
+Note that the keyword <i>val+</i> indicates that the patthern matching
+following it is exhaustive and thus needs no tag check.  This simple
+example demonstrates in concrete terms that safety can enhance efficiency.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The code used for illustration is available <a href="pattern-matching.dats">here</a>.
+
+<!-- end of [pattern-matching.html] -->

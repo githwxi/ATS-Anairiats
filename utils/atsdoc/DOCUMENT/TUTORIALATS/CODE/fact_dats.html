@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <style type="text/css">
+    .atsyntax {color:#E80000;background-color:#E0E0E0}
+    .atsyntax span.comment {color:#787878;font-style:italic}
+    .atsyntax span.extern  {color:#A52A2A}
+    .atsyntax span.keyword {color:#000000;font-weight:bold}
+    .atsyntax span.neuexp  {color:#800080}
+    .atsyntax span.staexp  {color:#0000FF}
+    .atsyntax span.dynexp  {color:#E80000}
+    .atsyntax span.prfexp  {color:#009000}
+    .atsyntax span.stacstdec  {text-decoration:none}
+    .atsyntax span.stacstuse  {color:#0000CF;text-decoration:underline}
+    .atsyntax span.dyncstdec  {text-decoration:none}
+    .atsyntax span.dyncstimp  {color:#B80000;text-decoration:underline}
+    .atsyntax span.dyncstuse  {color:#B80000;text-decoration:underline}
+    body {color:#E80000;background-color:#E0E0E0}
+  </style>
+</head>
+<body>
+<pre class="atsyntax">
+<span class="comment">(*
+** A simple program to compute factorials
+*)</span>
+
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">dataprop</span> <span class="prfexp"><span class="staexp"><a name="79"><span class="stacstdec">FACT <span class="keyword">(</span>int<span class="keyword">,</span> int<span class="keyword">)</span></span></a></span> <span class="keyword">=</span>
+  <span class="keyword">|</span> FACTbas <span class="staexp"><span class="keyword">(</span>0<span class="keyword">,</span> 1<span class="keyword">)</span></span>
+  <span class="keyword">|</span> <span class="keyword">{</span><span class="staexp">n<span class="keyword">:</span>nat</span><span class="keyword">}</span> <span class="keyword">{</span><span class="staexp">r1<span class="keyword">,</span>r<span class="keyword">:</span>int</span><span class="keyword">}</span> FACTind <span class="staexp"><span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span></span> <span class="keyword">of</span> <span class="staexp"><span class="keyword">(</span>FACT <span class="keyword">(</span>n-1<span class="keyword">,</span> r1<span class="keyword">)</span><span class="keyword">,</span> MUL <span class="keyword">(</span>n<span class="keyword">,</span> r1<span class="keyword">,</span> r<span class="keyword">)</span><span class="keyword">)</span></span></span>
+<span class="comment">// end of [FACT]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+<span class="comment">//
+</span><span class="comment">// HX:
+</span><span class="comment">// this is a verified implementation of factorial
+</span><span class="comment">// that is also tail-recursive.
+</span><span class="comment">//
+</span><span class="keyword">fun</span> ifact2 <span class="staexp"><span class="keyword">{</span>n<span class="keyword">:</span>nat<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;&gt;.</span></span>
+  <span class="keyword">(</span>n<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>int<span class="keyword">]</span> <span class="keyword">(</span>FACT <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span> <span class="keyword">|</span> int r<span class="keyword">)</span></span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fun</span> loop
+    <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i &lt;= n<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">{</span>r<span class="keyword">:</span>int<span class="keyword">}</span></span> <span class="staexp"><span class="keyword">.&lt;</span>n-i<span class="keyword">&gt;.</span></span> <span class="keyword">(</span>
+    <span class="prfexp">pf<span class="keyword">:</span> <span class="staexp">FACT <span class="keyword">(</span>i<span class="keyword">,</span> r<span class="keyword">)</span></span></span> <span class="keyword">|</span> n<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">,</span> i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">,</span> r<span class="keyword">:</span> <span class="staexp">int r</span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp"><span class="keyword">[</span>r<span class="keyword">:</span>int<span class="keyword">]</span> <span class="keyword">(</span>FACT <span class="keyword">(</span>n<span class="keyword">,</span> r<span class="keyword">)</span> <span class="keyword">|</span> int r<span class="keyword">)</span></span> <span class="keyword">=</span>
+    <span class="keyword">if</span> n - i <span class="keyword">&gt;</span> 0 <span class="keyword">then</span> <span class="keyword">let</span>
+      <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pfmul</span> <span class="keyword">|</span> r1<span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">(</span>i+1<span class="keyword">)</span> imul2 r <span class="keyword">in</span> loop <span class="keyword">(</span><span class="prfexp">FACTind <span class="keyword">(</span>pf<span class="keyword">,</span> pfmul<span class="keyword">)</span></span> <span class="keyword">|</span> n<span class="keyword">,</span> i+1<span class="keyword">,</span> r1<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">(</span><span class="prfexp">pf</span> <span class="keyword">|</span> r<span class="keyword">)</span> <span class="comment">// end of [if]
+</span><span class="keyword">in</span>
+  loop <span class="keyword">(</span><span class="prfexp">FACTbas <span class="keyword">(</span><span class="keyword">)</span></span> <span class="keyword">|</span> n<span class="keyword">,</span> 0<span class="keyword">,</span> 1<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [ifact2]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="extern">%{^
+
+/*
+** There is not external code in this example
+*/
+
+%}</span> <span class="comment">// end of [%{^]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="keyword">implement</span>
+main <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pf</span> <span class="keyword">|</span> res<span class="keyword">)</span> <span class="keyword">=</span> ifact2 <span class="keyword">(</span>10<span class="keyword">)</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> assertloc <span class="keyword">(</span>res <span class="keyword">=</span> 10 * 9 * 8 * 7 * 6 * 5 * 4 * 3 * 2 * 1 * 1<span class="keyword">)</span>
+<span class="keyword">}</span> <span class="comment">// end of [main]
+</span>
+<span class="comment">(* ****** ****** *)</span>
+
+<span class="comment">(* end of [fact.dats] *)</span></pre>
+</body>
+</html>

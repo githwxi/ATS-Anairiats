@@ -1,0 +1,183 @@
+<!-- beg of [dataviewtypes.html] -->
+
+<H2><A id="dataviewtypes" name="dataviewtypes">Dataviewtypes</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The feature of dataviewtype in ATS is an advanced one.
+<P>
+A viewtype is just a linear type. The name <i>viewtype</i> is chosen as a
+viewtype often consists of a view and a type. A dataviewtype is similar to
+a datatype, but it is linear.  With a dataviewtype, the programmer is
+allowed to explicitly free (or deallocate) in a safe manner the memory used
+for storing constructors associated with the dataviewtype. This is
+particularly important in a situation where garbage collection needs to be
+significantly reduced or even completely avoided.
+<P>
+
+An an example, the following dataviewtype
+<i>list_vt</i> is declared to model singly-linked lists in ATS:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// [list_vt] is declared to model singly-linked lists
+</FONT><FONT COLOR="#000000">dataviewtype</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype+<FONT COLOR="#000000">,</FONT> int<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">|</FONT> list_vt_nil <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">)</FONT></FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">n<FONT COLOR="#000000">:</FONT>nat</FONT><FONT COLOR="#000000">}</FONT> list_vt_cons <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n+1<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">of</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT></FONT></FONT></PRE>
+
+Given a viewtype <i>VT</i> and an integer <i>I</i>, the viewtype
+<i>list_vt(VT, I)</i> is for singly-linked lists of length <i>I</i> in
+which each element is of viewtype <i>VT</i>. Let us define
+<i>List_vt</i> as follows:
+
+<PRE>
+<FONT COLOR="#000000">viewtypedef</FONT> <FONT COLOR="#0000FF">List_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">:</FONT>viewt@ype<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">[</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">]</FONT> list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT>
+</PRE>
+
+Then roughly speaking, the viewtype <i>List_vt(VT)</i> corresponds to the
+following struct type in C:
+
+<pre>
+typedef struct sllist_struct {
+  VT head ;
+  sllist_struct *tail ;
+} *sllist ;
+</pre>
+where <i>VT</i> refers to some type in C.
+<P>
+We now assume that <i>nil</i> and <i>cons</i> have been introduced as
+shorthands for <i>list_vt_nil</i> and <i>list_vt_cons</i>, respectively.
+
+<H4>Computing the length of a singly-linked list</H4>
+The following code implements a function that computes the length
+of a given linked-list in ATS:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// An implementation of the length function on singly-linked lists
+</FONT><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT>
+  list_vt_length <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>xs0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int n</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>i<FONT COLOR="#000000">,</FONT>j<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> i <FONT COLOR="#000000">&gt;.</FONT></FONT>
+    <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> i<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> j<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int j</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int <FONT COLOR="#000000">(</FONT>i+j<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+    <FONT COLOR="#000000">|</FONT> cons <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">begin</FONT>
+        <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> n <FONT COLOR="#000000">=</FONT> loop <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">,</FONT> j+1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">in</FONT> fold@ xs<FONT COLOR="#000000">;</FONT> n <FONT COLOR="#000000">end</FONT>
+      <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">|</FONT> nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">(</FONT>fold@ xs<FONT COLOR="#000000">;</FONT> j<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">in</FONT>
+  loop <FONT COLOR="#000000">(</FONT>xs0<FONT COLOR="#000000">,</FONT> 0<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [list_vt_length]
+</FONT></FONT></PRE>
+
+The function <i>list_vt_length</i> approximately corresponds to the
+following function <i>sllist_length</i> implemented in C:
+
+<pre>
+int sllist_length (sllist xs) {
+  int i = 0 ;
+  while (xs != NULL) { i += 1 ; xs = xs->tail ; }
+  return i ;
+}
+</pre>
+
+<H4>Appending two singly-linked lists</H4>
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// An implementation of the append function on singly-linked lists
+</FONT><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT> list_vt_append <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>m<FONT COLOR="#000000">,</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>xs0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT>list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> m<FONT COLOR="#000000">)</FONT> &gt;&gt; list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> m+n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> <FONT COLOR="#000000">:</FONT> <FONT COLOR="#000000">(</FONT>xs0<FONT COLOR="#000000">:</FONT> list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> m+n<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> xs0 <FONT COLOR="#000000">of</FONT>
+  <FONT COLOR="#000000">|</FONT> cons <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_xs<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">(</FONT>list_vt_append <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_xs<FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> fold@ xs0<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">~</FONT>nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">(</FONT>xs0 := ys<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#787878">// end of [list_vt_append]
+</FONT></FONT></PRE>
+
+The function <i>list_vt_append</i> approximately corresponds to the
+following function <i>sllist_append</i> implemented in C:
+
+<PRE>
+void sllist_append (sllist *p_xs, sllist ys) {
+  sllist xs ;
+  xs = *p_xs ;
+  while (xs != NULL) { p_xs = &xs->tail ; xs = *p_xs ; }
+  *p_xs = ys ;
+  return ;
+} /* end of [sllist_append] */
+</PRE>
+
+<H4>Reversing a singly-linked lists</H4>
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// An implementation of the reverse function on singly-linked lists
+</FONT><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT> list_vt_reverse <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT>list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fun</FONT> revapp <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>m<FONT COLOR="#000000">,</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> m <FONT COLOR="#000000">&gt;.</FONT></FONT>
+    <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> m<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> ys<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> m+n<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+    <FONT COLOR="#000000">|</FONT> cons <FONT COLOR="#000000">(</FONT>_<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">begin</FONT>
+        <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> xs1 <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>p_xs1 <FONT COLOR="#000000">in</FONT> <FONT COLOR="#000000">!</FONT>p_xs1 := ys<FONT COLOR="#000000">;</FONT> fold@ xs<FONT COLOR="#000000">;</FONT> revapp <FONT COLOR="#000000">(</FONT>xs1<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">end</FONT>
+      <FONT COLOR="#000000">end</FONT>
+    <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">~</FONT>nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> ys
+<FONT COLOR="#000000">in</FONT>
+  xs := revapp <FONT COLOR="#000000">(</FONT>xs<FONT COLOR="#000000">,</FONT> nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT>    
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [list_vt_reverse]
+</FONT></FONT></PRE>
+
+The function <i>list_vt_reverse</i> approximately corresponds to the
+following function <i>sllist_reverse</i> implemented in C:
+
+<PRE>
+void sllist_reverse (sllist *p_xs) {
+  sllist xs, ys, *p_xs1, xs1 ;
+  xs = !p_xs ; ys = NULL ;
+  while (xs != NULL) {
+    p_xs1 = &xs->tail ; xs1 = *p_xs1 ; *p_xs1 = ys ; ys = xs ; xs = xs1
+  }
+  *p_xs = xs ;
+  return ;
+} /* end of [sllist_reverse] */
+</PRE>
+
+<H4>Sorting a singly-linked list</H4>
+
+The following code implements quicksort on a singly-linked list in
+ATS. Note that there is no memory allocation/deallocation, either implicit
+or explict, involved in this code.
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#787878">// An implementation of quicksort on singly-linked lists
+</FONT><FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT>
+  list_vt_qsort <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>n<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> n<FONT COLOR="#000000">,</FONT> 0 <FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT>lte<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>a<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>a<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> bool</FONT><FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> n<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+  <FONT COLOR="#000000">|</FONT> cons <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_x1<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT>
+    <FONT COLOR="#000000">let</FONT> <FONT COLOR="#000000">val</FONT> xs1 <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>p_xs1 <FONT COLOR="#000000">in</FONT>
+      list_vt_par&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>
+        <FONT COLOR="#009000">view@ <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_x1<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">view@ <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">|</FONT> lte<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">,</FONT> p_xs1<FONT COLOR="#000000">,</FONT> p_x1<FONT COLOR="#000000">,</FONT> xs1<FONT COLOR="#000000">,</FONT> nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">,</FONT> nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">end</FONT>
+  <FONT COLOR="#000000">|</FONT> nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">(</FONT>fold@ xs<FONT COLOR="#000000">;</FONT> xs<FONT COLOR="#000000">)</FONT>
+<FONT COLOR="#787878">// end of [list_vt_qsort]
+</FONT>
+<FONT COLOR="#000000">and</FONT> <FONT COLOR="#787878">// [list_vt_par] for partition
+</FONT>  list_vt_par <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l0<FONT COLOR="#000000">,</FONT>l1<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>p<FONT COLOR="#000000">,</FONT>q<FONT COLOR="#000000">,</FONT>r<FONT COLOR="#000000">:</FONT>nat<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">.&lt;</FONT> p+q+r<FONT COLOR="#000000">,</FONT> p+1 <FONT COLOR="#000000">&gt;.</FONT></FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">a @ l0</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">List_vt a? @ l1</FONT></FONT> <FONT COLOR="#000000">|</FONT>
+   lte<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>a<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>a<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&gt;</FONT> bool</FONT><FONT COLOR="#000000">,</FONT>
+   node<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt_cons_unfold <FONT COLOR="#000000">(</FONT>l0<FONT COLOR="#000000">,</FONT> l1<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> node1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l1</FONT><FONT COLOR="#000000">,</FONT>
+   p_x0<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l0</FONT><FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> p<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> q<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT></FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">list_vt <FONT COLOR="#000000">(</FONT>a<FONT COLOR="#000000">,</FONT> p+q+r+1<FONT COLOR="#000000">)</FONT></FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">case+</FONT> xs <FONT COLOR="#000000">of</FONT>
+  <FONT COLOR="#000000">|</FONT> cons <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_x1<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_xs1<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">let</FONT>
+      <FONT COLOR="#000000">val</FONT> xs1 <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>p_xs1
+    <FONT COLOR="#000000">in</FONT>
+      <FONT COLOR="#000000">if</FONT> lte <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">!</FONT>p_x1<FONT COLOR="#000000">,</FONT> <FONT COLOR="#000000">!</FONT>p_x0<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">begin</FONT>
+        <FONT COLOR="#000000">!</FONT>p_xs1 := l<FONT COLOR="#000000">;</FONT> fold@ xs<FONT COLOR="#000000">;</FONT>
+        list_vt_par&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf0</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf1</FONT> <FONT COLOR="#000000">|</FONT> lte<FONT COLOR="#000000">,</FONT> node<FONT COLOR="#000000">,</FONT> node1<FONT COLOR="#000000">,</FONT> p_x0<FONT COLOR="#000000">,</FONT> xs1<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">begin</FONT>
+        <FONT COLOR="#000000">!</FONT>p_xs1 := r<FONT COLOR="#000000">;</FONT> fold@ xs<FONT COLOR="#000000">;</FONT>
+        list_vt_par&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf0</FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf1</FONT> <FONT COLOR="#000000">|</FONT> lte<FONT COLOR="#000000">,</FONT> node<FONT COLOR="#000000">,</FONT> node1<FONT COLOR="#000000">,</FONT> p_x0<FONT COLOR="#000000">,</FONT> xs1<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">,</FONT> xs<FONT COLOR="#000000">)</FONT>
+      <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [if]
+</FONT>    <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [cons]
+</FONT>  <FONT COLOR="#000000">|</FONT> <FONT COLOR="#000000">~</FONT>nil <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">=&gt;</FONT> <FONT COLOR="#000000">let</FONT>
+      <FONT COLOR="#000000">var</FONT> l <FONT COLOR="#000000">=</FONT> list_vt_qsort&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>lte<FONT COLOR="#000000">,</FONT> l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">and</FONT> r <FONT COLOR="#000000">=</FONT> list_vt_qsort&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>lte<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT>
+    <FONT COLOR="#000000">in</FONT>
+      <FONT COLOR="#000000">!</FONT>node1 := r<FONT COLOR="#000000">;</FONT> fold@ node<FONT COLOR="#000000">;</FONT> r := node<FONT COLOR="#000000">;</FONT> list_vt_append&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT>l<FONT COLOR="#000000">,</FONT> r<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> l
+    <FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [nil]
+</FONT><FONT COLOR="#787878">// end of [list_vt_par]
+</FONT></FONT></PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="dataviewtypes.dats">here</a>.
+
+<!-- end of [dataviewtypes.html] -->

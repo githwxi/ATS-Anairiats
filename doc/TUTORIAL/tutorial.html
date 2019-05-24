@@ -1,0 +1,225 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-tutorial</TITLE>
+<META name="description" content="Home Page for ATS-tutorial">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><B CLASS="here">Tutorial</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../EXAMPLE/example.html">Examples</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../IMPLEMENT/implement.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../LIBRARY/library.html">Libraries</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../CHANGELOG/changelog.html">ChangeLog</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>Tutorial on ATS/Anairiats</H1>
+</CENTER>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+This website contains a set of tutorials for people interested in
+learning <I>ATS/Anairiats</I>. ATS is a functional language that supports a
+variety of advanced types such as dependent types and linear types, and
+Anairiats is the current implementation of ATS.  ATS/Anairiats can run with
+or without (systematic) garbage collection (GC), and its performance is
+comparable to imperative languages like C and C++.
+<P>
+We encourage ATS programmers to write tutorials on ATS features, which are
+rich and often complex, and make them available to the ATS community.
+<P>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+<H2>Tutorial Topics
+<FONT size="+0">(<A HREF="contents/tutorial_all.html">all-topics-in-one-file</A>)</FONT>
+</H2>
+
+This tutorial is written mostly in the style of learn-by-examples.  As ATS
+is first and foremost a functional programming language, knowledge of
+functional programming should be of great help for learning ATS.  In
+particular, knowledge of Standard ML (SML) or Objective Caml (OCaml) can be
+a big plus as a considerably large part of the syntax of ATS is adopted
+from SML.  In addition, some solid understanding of C (especially, memory
+allocation/deallocation in C) can be highly valuable for learning features
+involving linear types in ATS.
+<P>
+
+The name of the ATS home directory is stored in the environment variable
+<i>ATSHOME</i>, and we often use <i>$ATSHOME</i> to refer to this name.  In
+the tutorial, if a file <i>FILE</i> is mentioned, then the absolute full
+name for this file is <i>$ATSHOME/FILE</i> unless specified otherwise.
+<P>
+
+<H4>Primary Tutorial Topics</H4>
+
+<MENU>
+
+<LI>
+
+<A HREF="contents/syntax-coloring.html"><B>Convention for Coloring ATS Syntax</B></A>
+
+<LI><A HREF="contents/basics.html"><B>Basics</B></A>
+
+<LI>
+
+<A HREF="contents/filename-extensions.html"><B>Filename Extensions</B></A>
+
+<LI>
+
+<A HREF="contents/file-inclusion.html"><B>File Inclusion</B></A>
+
+<LI><A HREF="contents/compilation.html"><B>Compilation</B></A>
+
+<LI>
+
+<A HREF="contents/ats-main.html"><B>The Main Function in ATS</B></A>
+
+<LI><A HREF="contents/fixity.html"><B>Fixity Declaration</B></A>
+
+<LI><A HREF="contents/overloading.html"><B>Overloading</B></A>
+
+<LI><A HREF="contents/macros.html"><B>Macros</B></A>
+
+<LI>
+
+<A HREF="contents/function-or-closure.html"><B>Function or Closure?</B></A>
+
+<LI><A HREF="contents/variadicity.html"><B>Variadic Functions</B></A>
+
+<LI>
+
+<A HREF="contents/tail-recursive-functions.html"><B>Tail-Recursive Functions</B></A>
+
+<LI>
+
+<A HREF="contents/termination-metrics.html"><B>Termination Metrics</B></A>
+
+<LI>
+
+<A HREF="contents/types-with-effects.html"><B>Types with Effects</B></A>
+
+<LI>
+
+<A HREF="contents/templates.html"><B>Parametric Polymorphism and
+Templates</B></A>
+
+<LI><A HREF="contents/lists.html"><B>(Persistent) Lists</B></A>
+
+<LI>
+
+<A HREF="contents/val-and-var.html"><B>Val(ue) and Var(iable)
+Declarations</B></A>
+
+<LI>
+
+<A HREF="contents/call-by-reference.html"><B>Call-By-Reference</B></A>
+
+<LI><A HREF="contents/pointers.html"><B>Pointers</B></A>
+
+<LI><A HREF="contents/references.html"><B>References</B></A>
+
+<LI>
+
+<A HREF="contents/arrays-and-matrices.html"><B>(Persistent) Arrays and
+Matrices</B></A>
+
+<LI><A HREF="contents/linear-arrays.html"><B>Linear Arrays</B></A>
+
+<LI><A HREF="contents/strings.html"><B>Strings and String Buffers</B></A>
+
+<LI><A HREF="contents/datatypes.html"><B>Datatypes</B></A>
+
+<LI><A HREF="contents/dataprops.html"><B>Dataprops</B></A>
+<LI><A HREF="contents/dataviews.html"><B>Dataviews</B></A>
+
+<LI><A HREF="contents/dataviewtypes.html"><B>Dataviewtypes</B></A>
+
+<LI><A HREF="contents/pattern-matching.html"><B>Pattern Matching</B></A>
+
+<LI><A HREF="contents/exceptions.html"><B>Exceptions</B></A>
+
+<LI>
+
+<A HREF="contents/higher-order-functions.html"><B>Higher-Order
+Functions</B></A>
+
+<LI>
+
+<A HREF="contents/lazy-evaluation.html"><B>Lazy Evaluation</B></A>
+
+<LI>
+
+<A HREF="contents/llazy-evaluation.html"><B>Linear Lazy Evaluation</B></A>
+
+<LI>
+
+<A HREF="contents/input-and-output.html"><B>Input and Output</B></A>
+
+<LI>
+
+<A HREF="contents/ATS-and-C.html"><B>Combining ATS and C programs</B></A>
+
+<LI>
+
+<A HREF="contents/programming-with-theorem-proving.html"><B>Programming
+with Theorem Proving</B></A>
+
+</MENU>
+
+<H4>Secondary Tutorial Topics</H4>
+
+<MENU>
+
+<LI><A HREF="contents/casting-functions.html"><B>Casting Functions</B></A>
+
+<LI><A HREF="contents/stack-allocation.html"><B>Allocation in Stack Frames</B></A>
+
+<LI><A HREF="contents/statetypes.html"><B>State Types</B></A>
+
+<LI><A HREF="contents/loopcon.html"><B>Loop Constructs</B></A>
+
+<!--
+
+<LI><A HREF="contents/directives.html"><B>Directives</B></A>
+
+<LI>
+
+<A HREF="contents/memory-allocation-deallocation.html"><B>Memory
+Allocation/Deallocation</B></A>
+
+-->
+
+</MENU>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi/">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

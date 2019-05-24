@@ -1,0 +1,34 @@
+#
+# Some examples in ATS that make use of the ATS/SDL API
+#
+# Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+# Start Time: January, 2010
+#
+######
+
+LazyFoo:
+
+The code in each LazyFoo-lesson?? directory is, more or less, a translation
+into ATS the corresponding tutorial code (in C++) that is available at the
+following site:
+
+http://lazyfoo.net/SDL_tutorials
+
+I did the translation in January, 2010. If changes are to be made to the
+original C++ code in the future, I may not update the translation.
+
+######
+
+SDL_cairo_clock.dats:
+
+An example of demonstrating how cairo can be combined with SDL
+
+######
+
+SDL_GL_cairo_clock.dats:
+
+An example of demonstrating how cairo can be combined with SDL and OpenGL
+
+######
+
+###### end of [README] ######

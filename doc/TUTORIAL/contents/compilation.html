@@ -1,0 +1,73 @@
+<!-- beg of [compilation.html] -->
+
+<H2><A id="compilation" name="compilation">Compilation</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The command for compiling ATS programs is
+<i>atscc</i>, which is stored in the directory "$ATSHOME/bin/" after
+ATS/Anairiats is installed. The ATS compiler translates ATS programs into C
+code, which is then compiled by the GNU C compiler <i>gcc</i>. 
+<P>
+<i>atscc</i> accepts all the flags <i>gcc</i> recognizes and passes them to
+<i>gcc</i> directly. The following is a list of flags that are special
+to <i>atscc</i>:
+<UL>
+<LI> The flag <i>--atstc</i> or <i>-tc</i> indicates typechecking only.
+<LI> The flag <i>--atscc</i> or <i>-cc</i> indicates compiling to C code only.
+<LI> The flag <i>-D_ATS_GCATS</i> indicates the need for garbage collection.
+</UL>
+If a C compiler other than <i>gcc</i> is to be used, please
+set the environment variable <i>ATSCCOMP</i> to the command name of
+this C compiler.
+<P>
+As an example, the following command only typechecks the ATS code in
+"foo.dats" and "bar.sats":
+
+<pre>
+atscc -tc foo.dats bar.sats
+</pre>
+
+while the following command compiles "foo.dats" and "bar.sats"
+into "foo_dats.c" and "bar_sats.c", respectively, if typechecking
+"foo.dats" and bar.sats" succeeds:
+
+<pre>
+atscc -cc foo.dats bar.sats
+</pre>
+
+Typically, <i>atscc</i> is used as follows:
+
+<pre>
+atscc -o foobar -O3 foo.dats bar.sats
+</pre>
+
+When this command is issued, <i>atscc</i> first generates "foo_dats.c" and
+"bar_sats.c", and then invokes <i>gcc</i> to compile
+"foo_dats.c" and "bar_sats.c" to generate an executable file named
+"foobar". The flag "-O3" requires that <i>gcc</i> perform all optimizations
+classified at level 3 or below.
+
+We may also issue the following command to produce some debugging information
+for tools like gdb and <a href="http://valgrind.org">valgrind</a>:
+
+<pre>
+atscc -o foobar -g foo.dats bar.sats
+</pre>
+
+ATS programs can run with or without (systematic) garbage collection.  If
+garbage collection is needed, then the following command can be issued to
+generate the executable "foobar":
+
+<pre>
+atscc -o foobar -O3 foo.dats bar.sats -D_ATS_GCATS 
+</pre>
+
+<P>
+For your information, the command <i>atscc</i> is not implemented in a
+scripting language. It is one of the very first programs implemented in
+ATS/Geizella (and then ported to ATS/Anairiats). The code for <i>atscc</i>
+(and several other commands) can be found at <A
+HREF="https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk/utils/scripts/">utils/scripts/</A>.
+
+<!-- end of [compilation.html] -->

@@ -1,0 +1,49 @@
+<!-- beg of [call-by-reference.html] -->
+
+<H2><A id="call-by-reference"
+name="call-by-reference">Call-By-Reference</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The feature of call-by-reference in ATS is similar to the corresponding one
+in C++. What is special in ATS is the way in which this feature is handled
+by the type system.  In general, if <i>f</i> is given a type of the following
+form for some viewtypes <i>VT1</i> and <i>VT2</i>:
+<pre>
+(..., &VT1 >> VT2, ...) -> ...
+</pre>
+then a function call
+<i>f(..., x, ...)</i> on some variable <i>x</i> of the viewtype <i>VT1</i>
+is to change the viewtype of <i>x</i> into <i>VT2</i> upon its return.  In
+the case where <i>VT1</i> and <i>VT2</i> are the same, <i>&VT1 >> VT2</i>
+can simply be written as <i>&VT1</i>. Note that the variable <i>x</i> may
+be replaced with other forms of left-values.
+<P>
+
+As an example, an implementation of the factorial function is given as
+follows that makes use of call-by-reference:
+
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#000000">fun</FONT> fact <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">let</FONT>
+  <FONT COLOR="#000000">fun</FONT> loop <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT></FONT> <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT><FONT COLOR="#000000">,</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">&amp;</FONT>int</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+    <FONT COLOR="#000000">if</FONT> x <FONT COLOR="#000000">&gt;</FONT> 0 <FONT COLOR="#000000">then</FONT> <FONT COLOR="#000000">(</FONT>res := res * x<FONT COLOR="#000000">;</FONT> loop <FONT COLOR="#000000">(</FONT>x-1<FONT COLOR="#000000">,</FONT> res<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">else</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">var</FONT> res<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">int</FONT> <FONT COLOR="#000000">=</FONT> 1
+<FONT COLOR="#000000">in</FONT>
+  loop <FONT COLOR="#000000">(</FONT>x<FONT COLOR="#000000">,</FONT> res<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT> res
+<FONT COLOR="#000000">end</FONT> <FONT COLOR="#787878">// end of [fact]
+</FONT>
+</FONT></PRE>
+
+Note that if the line for introducing the variable
+<i>res</i> in the implementation is replaced with the following one:
+<pre>
+  val res: int = 1 // [res] is now a value, not a variable!
+</pre>
+then a type error should occur as <i>res</i> is no longer a left-value
+when it is passed as an argument to <i>loop</i>.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="call-by-reference.dats">here</a>.
+
+<!-- end of [call-by-reference.html] -->

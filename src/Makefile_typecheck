@@ -1,0 +1,164 @@
+#########################################################################
+##                                                                     ##
+##                         Applied Type System                         ##
+##                                                                     ##
+##                              Hongwei Xi                             ##
+##                                                                     ##
+#########################################################################
+
+##
+## ATS/Anairiats - Unleashing the Potential of Types!
+##
+## Copyright (C) 2002-2008 Hongwei Xi, Boston University
+##
+## All rights reserved
+##
+## ATS is  free software;  you can redistribute it and/or modify it under
+## the  terms of the  GNU General Public License as published by the Free
+## Software Foundation; either version 2.1, or (at your option) any later
+## version.
+## 
+## ATS is distributed in the hope that it will be useful, but WITHOUT ANY
+## WARRANTY; without  even  the  implied  warranty  of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License
+## for more details.
+## 
+## You  should  have  received  a  copy of the GNU General Public License
+## along  with  ATS;  see the  file COPYING.  If not, please write to the
+## Free Software Foundation,  51 Franklin Street, Fifth Floor, Boston, MA
+## 02110-1301, USA.
+##
+
+## ###### ###### ##
+
+## Time: April 2008
+## Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+
+## ###### ###### ##
+
+CC=gcc
+CCFLAG=-I$(ATSHOME) -I"$(ATSHOME)/CCOMP/runtime" -g
+ATSOPT=$(ATSHOME)/bin/atsopt
+#ATSOPT=$(ATSHOME)/bootstrap0-geizella/atsopt
+OPTFLAG= --typecheck
+#OPTFLAG=
+
+######
+
+typecheck: \
+  ats_lexer_lats.dats ats_printf_c_lats.dats
+	$(ATSOPT) $(OPTFLAG) -d prelude_dats_array.dats
+	$(ATSOPT) $(OPTFLAG) -d prelude_dats_basics.dats
+	$(ATSOPT) $(OPTFLAG) -d prelude_dats_printf.dats
+	$(ATSOPT) $(OPTFLAG) -d prelude_dats_string.dats
+	$(ATSOPT) $(OPTFLAG) -d libc_dats_unistd.dats
+	$(ATSOPT) $(OPTFLAG) -d libats_lex_lexing.dats
+	$(ATSOPT) $(OPTFLAG) -d libats_lex_tables.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_array.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_charlst.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_comarg.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_constraint.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_constraint_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_counter.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_debug.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp1.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp1_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2_dcst.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2_dmac.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2_dvar.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp2_util.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp3.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_dynexp3_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_e1xp_eval.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_effect.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_error.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_filename.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_fixity.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_hashtbl.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_hiexp.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_hiexp_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_hiexp_util.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_intinf.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_keyword.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_label.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_lexer_lats.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_list.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_location.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_macro2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_main.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_map_lin.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_namespace.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_parser.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_patcst2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_posmark.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_printf_c_lats.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_reference.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_set_fun.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_solver_fm.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_stadyncst2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp1.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp1_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_dcon.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_scst.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_solve.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_svVar.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_util1.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_staexp2_util2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_stamp.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_string_parse.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_symbol.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_symenv.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_symtbl.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_syntax.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_syntax_posmark.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans1_sta.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans1_dyn.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans1_env.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans2_dyn1.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans2_dyn2.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans2_env.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans2_sta.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_assgn.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_dec.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_deref.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_eff.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_loop.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_met.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_scst.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_env_state.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_exp_dn.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_exp_up.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_loop.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_pat.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans3_view.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_trans4.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_print.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_util.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_env.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_emit.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_trans.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_trans_clau.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_trans_tailcal.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_trans_temp.dats
+	$(ATSOPT) $(OPTFLAG) -d ats_ccomp_main.dats
+
+######
+
+ats_lexer_lats.dats: ats_lexer.lats
+	atslex < ats_lexer.lats > ats_lexer_lats.dats
+
+ats_printf_c_lats.dats: ats_printf_c.lats
+	atslex < ats_printf_c.lats > ats_printf_c_lats.dats
+
+######
+
+## end of [Makefile_typecheck] ##
+
+######

@@ -1,0 +1,7 @@
+let
+  function fib (x: int): int =
+    if x > 1 then fib (x-2) + fib (x-1) else x
+in
+  print ("fib (40) = "); print_int (fib(40)); print ("\n")
+end /* end of [let] */
+

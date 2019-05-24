@@ -1,0 +1,245 @@
+
+//
+//
+// bug reports as well as suggestions for fixes (that may not yet be done)
+//
+//
+
+------------------ begin of [BUGS.txt] ------------------
+
+Wednesday, June 25, 2008 (HX)
+
+STATUS: Fixed on September 28, 2008 (HX)
+
+Note that the handling of [continue] in a for-loop was incorrectly
+conceived. After [continue], [post] section needs to be evaluated first
+before jumping to the beginning of the loop. This means that some functions
+in [ats_trans3_loop.dats] need to be modified appropriately.
+
+Please find some typical uses of [for] loops in the following file:
+
+EXAMPLE/SHOOTOUT/SUBMIT/spectral-norm2.dats
+
+######
+
+Thursay, September 25, 2008 (HX)
+
+STATUS: Fixed on September 26, 2008 (HX)
+
+\begin{code}
+val x = darray (); val y = darray (); val z = darray ()
+macdef xyz (i, _1, _2, _3) = (
+  x[,(i)] := ,(_1); y[,(i)] := ,(_2); z[,(i)] := ,(_3)
+)
+val () = xyz (0, 0.0, 0.0, 0.0)
+\end{code}
+
+\begin{errmsg}
+error(macro): the variable [i] is unbound.
+\end{errmsg}
+
+The error was caused by the function [eval1_dexp] in [ats_macro2.dats]
+not handling the case [D2Earrsub].
+
+######
+
+Monday, September 29, 2008 (HX)
+
+STATUS: Fixed on October 16, 2008 (HX)
+
+The interaction between vbox and the effect [ref] is incorrect.
+
+The case [P2Tvbox] in the function [p2at_tr_dn] is modified to take
+into account the ref effect.
+
+######
+
+Tuesday, October 7, 2008 (HX)
+
+STATUS: Fixed on October 7, 2008 (HX)
+
+A template tail call does not translate into a jump. This is a serious
+bug!
+
+\begin{code}
+val A = loop<String> (argc, 0, A) where {
+  fun{a:t@ype} loop {n,i:nat | i <= n}
+    (n: int n, i: int i, A: farr (a, n-i)): farr (a, 0) = begin
+    if i < n then begin
+      loop (n, i+1, funarray_lorem A)
+    end else A
+  end // end of [loop]
+} // end of [val]
+\end{code}
+
+The function [ccomp_tmpdef] in [ats_ccomp_trans_temp] did not push the
+function lable into [the_tailcallst]. It is fixed now.
+
+######
+
+Tuesday, October 14, 2008 (HX)
+
+STATUS: Fixed on October 15, 2008 (HX)
+
+A type variable of sort [type] may be instantiated with a type of sort
+[t@ype]. This is a serious bug!!!
+
+The function [s2exp_tyleq_solve_Var_r_err] in [ats_staexp2_solve.dats]
+now does the needed subsort checking that should have been there.
+
+######
+
+Monday, November 3, 2008 (HX)
+
+STATUS: Fixed on November 3, 2008 (HX)
+
+[withtype] annotations are not handled correctly. This was caused by
+a glitch in the implementation of [d2exp_tr_dn]: the handling of the
+case [D2Elam_dyn] was buggy.
+
+fn f (i) = i + 1
+withtype {i:nat} int i -> int (i+1)
+
+val x = f {1} (1)
+
+------
+
+f2undec_tr: var = f
+f2undec_tr: def = D2Elam_dyn(0; 0; P2Tvar(i); D2Eann_seff(D2Eapps(D2Esym(+); D2Evar(i), D2Eint(1)); <all>))
+f2undec_tr: s2e_ann = S2Euni(i; S2Eapp(S2Ecst(>=); S2Evar(i), S2Eint(0)); S2Efun(fun; 0; 0; S2Eapp(S2Ecst(int); S2Evar(i)); S2Eapp(S2Ecst(int); S2Eapp(S2Ecst(+); S2Evar(i), S2Eint(1)))))
+f2undec_tr: d2e_def = D2Elam_dyn(0; 0; P2Tvar(i); D2Eann_seff(D2Eapps(D2Esym(+); D2Evar(i), D2Eint(1)); <all>))
+f2undec_tr: s2e_fun = S2Efun(fun; 0; 0; S2Eapp(S2Ecst(int); S2Evar(i)); S2Eapp(S2Ecst(int); S2Eapp(S2Ecst(+); S2Evar(i), S2Eint(1))))
+/home/fac2/hwxi/research/ATS/IMPLEMENT/Geizella/Anairiats/svn/ats-lang/src/bug.dats: 63(line=4, offs=9) -- 68(line=4, offs=14): error(3): the type [S2Efun(fun; 0; 0; S2Eapp(S2Ecst(int); S2Evar(i)); S2Eapp(S2Ecst(int); S2Eapp(S2Ecst(+); S2Evar(i), S2Eint(1))))] is expected to be universally quantified.
+Uncaught exception: _2fusr_2fshare_2fatshome_2fsrc_2fats_error_2esats__FatalErrorException(1003)
+
+------
+
+######
+
+Monday, November 10, 2008 (HX)
+
+STATUS: Fixed on November 14, 2008 (HX)
+
+This bug is an interesting one. The cause is that a binding for static
+variable may be added even if the variable is already bound. The main
+part of the fixing is done in the function [trans3_env_hypo_add_bind],
+which now avoids the "double binding" issue by testing at run-time; if
+a binding for a static variable is already added, then the function
+[trans3_env_hypo_add_eqeq] is called to add a equality proposition
+that is derived from the new binding.
+
+------
+
+typedef P (a:t@ype) (b: t@ype) = '(a, b)
+
+datatype ralist (a:t@ype+, int) =
+  | RAnil (a, 0)
+  | {n:nat} RAodd (a, 2*n+1) of (a, ralist (P a a, n))
+  | {n:pos} RAevn (a, 2*n) of ralist (P a a, n)
+
+fun length {a:type} {n:nat}
+  (xs: ralist (a, n)): int 0 = case+ xs of
+  | RAnil () => 0 | _ =>> begin case+ xs0 of
+    | RAodd {..} {n21} _ => 0 | RAevn {..} {n22} _ => 0 | RAnil () => 1
+    end // end of [_]
+// end of [length]
+
+/home/fac2/hwxi/research/ATS/IMPLEMENT/Geizella/Anairiats/svn/ats-lang/src/bug.dats: 446(line=17, offs=21) -- 447(line=17, offs=22): Internal Error: s2var_index_find: the static constant [n21] is not associated with any index.
+Uncaught exception: _2fusr_2fshare_2fatshome_2fsrc_2fats_error_2esats__FatalErrorException(1003)
+
+------
+
+######
+
+Sunday, November 30, 2008 (HX)
+
+STATUS: Done.
+
+It becomes apparent that support for stack-allocated arrays is urgently
+needed for systems programming!
+
+It has been made avaiable since [ats-lang-anairiats-0.1.2].
+
+######
+
+Saturday, January 24, 2009
+
+As of now, there is not yet checking for the validity of a casting function
+implementation. This should be remedied so as to prevent misuse.
+
+######
+
+Sunday, March 1, 2009 (HX)
+
+STATUS: not yet fixed
+
+The following bug could be serious:
+
+extern fun f
+  (x1: &int? >> int 1, x2: &int >> int 2): void
+
+implement main () = let
+  var x: int = 0 in f (x, x) // what is the type of [x] after the call?
+end // end of [main]
+
+######
+
+Saturday, March 14, 2009 (HX)
+
+STATUS: Fixed on March 14, 2009 (HX)
+
+[atsopt] may run into an error when handling multiple files at once:
+
+./atsopt -tc -d ats_array.dats ats_ccomp.dats
+The file [ats_array.dats] is successfully typechecked!
+/home/fac2/hwxi/research/ATS/IMPLEMENT/Geizella/Anairiats/svn/ats-lang/src/ats_ccomp.dats: 3186(line=127, offs=3) -- 3251(line=127, offs=68): Internal Error: s2var_index_find: the static constant [n$31] is not associated with any index.
+Uncaught exception: _2fusr_2fshare_2fatshome_2fsrc_2fats_error_2esats__FatalErrorException(1003)
+
+######
+
+Tuesday: March 24, 2009 (HX)
+
+STATUS: no solution yet
+
+How to make sure that each global variables declared in C
+is properly marked as a GC root (if needed)?
+
+######
+
+Saturday: July 11, 2009 (HX)
+
+STATUS: FIXED on July 16, 2009 (HX)
+
+Now [ats_struct_type] is added in $ATSHOME/ccomp/runtime/types.h; it is
+defined to be an incomplete struct type; both ats_abs_type and ats_var_type
+are now defined to be [struct ats_struct_type]. This fixes the reported bug.
+
+How to make sure the sizeof<a> does not get used in the following
+situation:
+
+fun f {a}
+  (...) = let
+  val tsz = sizeof<a> // currently this always equals sizeof<void>
+in
+  ...
+end // end of [fun]
+
+######
+
+Saturday: April 2, 2010 (HX)
+
+STATUS: FIXED on May 27, 2010 (HX)
+
+Using linear proofs/values in a while/for loop is not done correctly during
+typechecking. Here is an example:
+
+fun f () = () where {
+  prval pf = unit_v ()
+  val () = while (true) let
+    prval unit_v () = pf in continue
+  end // end of [val]
+} // end of [where]
+
+######
+
+------------------ end of [BUGS.txt] -------------------

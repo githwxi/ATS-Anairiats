@@ -1,0 +1,108 @@
+<!-- beg of [templates.html] -->
+
+<H2><A id="templates" name="templates">Parametric Polymorphism and
+Templates</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+Parametric polymorphism (or polymorphism for short) offers a flexible and
+effective approach to supporting code reuse. For instance, given a pair
+<i>(v1, v2)</i> where <i>v1</i> is a a boolean and <i>v2</i> a character,
+the function
+<i>swap_bool_char</i> defined below returns a pair <i>(v2, v1)</i>:
+
+<pre>
+fun swap_bool_char (xy: @(bool, char)): @(char, bool) = (xy.1, xy.0)
+</pre>
+
+Now suppose that a pair of integers need to be swapped, and this results in
+the implementation of the following function <i>swap_int_int</i>:
+
+<pre>
+fun swap_int_int (xy: @(int, int)): @(int, int) = (xy.1, xy.0)
+</pre>
+
+The code duplication between <i>swap_bool_char</i> and
+<i>swap_int_int</i> is obvious, and it can be easily avoided by implementing a
+function template as follows:
+
+<pre>
+fun{a,b:t@ype} swap (xy: @(a, b)): @(b, a) = (xy.1, xy.0)
+</pre>
+
+Now the functions <i>swap_bool_char</i> and <i>swap_int_int</i> can
+simply be replaced with <i>swap&lt;bool,char&gt;</i> and
+<i>swap&lt;int,int&gt;</i>, respectively. The function template
+<i>swap</i> cannot be compiled into executable binary code directly as the sizes
+of type variables <i>a</i> and <i>b</i> are unknown: The special sort
+<i>t@ype</i> is for classifying types whose sizes are unspecified. If
+<i>swap&lt;T1,T2&gt;</i> is used for some types <i>T1</i> and <i>T2</i> of known
+sizes, then an instantiation of <i>swap</i> is created where type variables
+<i>a</i> and <i>b</i> are replaced with <i>T1</i> and <i>T2</i>,
+respectively, and then compiled into executable binary code. For those who
+know the feature of templates in C++, this should sound rather familiar.
+
+In contrast to <i>swap</i>, <i>swap_type_type</i> is defined below as a
+polymorphic function (rather than a function template):
+
+<pre>
+fun swap_type_type {a,b:type} (xy: @(a, b)): @(b, a) = (xy.1, xy.0)
+</pre>
+
+This function can be compiled into executable binary code as the sizes of
+type variables <i>a</i> and <i>b</i> are known: The special sort <i>type</i> is for
+classifying types whose sizes equal exactly one word, that is, the size of
+a pointer. For example, the size of a string is one word, and the size of
+any declared datatype is also one word.  Given strings <i>s1</i> and <i>s2</i>, an
+application of <i>swap_type_type</i> to <i>@(s1, s2)</i> can be written as
+follows:
+
+<pre>
+swap_type_type {string,string} @(s1, s2)
+</pre>
+
+where the expression <i>{string,string}</i> is often referred to as a static
+argument. As in this case, most static arguments do not have to be provided
+explicitly since they can be automatically inferred.  However, such static
+arguments, if provided, can often enhance the quality and precision of the
+error messages reported in case of typechecking failure. This is a topic to
+be explored elsewhere in great depth.
+
+<H4>Template Declaration and Implementation</H4>
+
+Often, the interface for a template may need to be declared alone.  For
+instance, the interface for the above <i>swap</i> function template can be
+declared as follows:
+
+<pre>
+extern fun{a,b:t@ype} swap (xy: @(a, b)): @(b, a)
+</pre>
+
+Just like a declared function interface, a declared template interface can
+be implemented.  For instance, the following code implements the interface
+declared for the <i>swap</i> function template:
+
+<pre>
+implement{a,b} swap (xy) = (xy.1, xy.0)
+</pre>
+
+This form of template implementation is often referred to as generic
+template implementation in contrast to specialized template implementation
+presented as follows.
+
+It is also allowed to implement specialized templates in ATS. For instance,
+the following code implements the above <i>swap</i> function template that
+is specialized with the type variables <i>a</i> and <i>b</i> being set to
+<i>int</i> and <i>int</i>, respectively:
+
+<pre>
+implement swap&lt;int,int&gt; (xy) = let
+  val x = xy.0 and y = xy.1; val s = x + y in (s - x, s - y)
+end // end of [swap&lt;int,int&gt;]
+</pre>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a
+href="templates.dats">here</a>.
+
+<!-- end of [templates.html] -->

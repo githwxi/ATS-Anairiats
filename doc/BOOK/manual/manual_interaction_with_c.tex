@@ -1,0 +1,159 @@
+\chapter{Interaction with C}\label{chapter:interaction_with_c} As ATS and C
+share precisely the same data representation, interaction between ATS and C
+is mostly done in a straightforward manner.  However, it should be
+emphasized that type safety can be compromised due to such interaction,
+and thus it is suggested that this be done with great caution.
+
+\begin{figure}[thp]
+\begin{verbatim}
+extern fun fact (x: int): int = "fact_extern"
+
+%{^
+
+/* external C code to be put at the top */
+
+ats_int_type fact_extern (ats_int_type x) {
+  int i, res ;
+  res = 1 ; for (i = 1; i <= x; i += 1) res *= i ;  
+  return res ;
+} /* end of [fact_extern] */
+
+%}
+
+implement main () = begin
+  print "fact (10) = "; print (fact 10); print_newline ()
+end
+\end{verbatim}
+\caption{A simple example involving external C code}
+\label{figure:fact_extern_function_1}
+\end{figure}
+
+\begin{figure}[thp]
+\begin{verbatim}
+extern fun fact (x: int): int = "fact_extern"
+
+implement fact (x) = if x > 0 then x * fact (x - 1) else 1
+
+%{$
+
+/* external C code to be put at the bottom */
+
+ats_void_type mainats () {
+  printf ("fact (10) = %i\n", fact_extern (10)) ; return ;
+}
+
+%}
+
+implement main_dummy () = () // [mainats] is implemented in C
+\end{verbatim}
+\caption{Another simple example involving external C code}
+\label{figure:fact_extern_function_2}
+\end{figure}
+\section{External C Code}
+A function declaration may attach an external name to the declared
+function, allowing it to be referred to outside ATS. In
+Figure~\ref{figure:fact_extern_function_1}, ${\it fact}$ is declared to
+be a function from integers to integers.  This function is given an
+external name ${\it fact\_extern}$.  In ATS, extern C code is allowed to
+appear inside the following special pairs of parentheses:
+\begin{itemize}
+\item \verb`%{` and \verb`}%`: The C code enclosed by this pair is to be
+relocated to somewhere (unspecified) in the code generated from compiling
+the file containing the C code.
+\item \verb`%{^` and \verb`}%`:
+The C code enclosed by this pair is to be relocated to the top of the
+code generated from compiling the file containing the C code.
+\item \verb`%{$` and \verb`}%`:
+The C code enclosed by this pair is to be relocated to the bottom of the
+code generated from compiling the file containing the C code.
+\end{itemize}
+In Figure~\ref{figure:fact_extern_function_1}, a function of the name {\it
+fact\_extern} is implemented in C. Note that the type ${\it
+ats\_int\_type}$ in C is the counterpart of the type $\tint$ in ATS.  When
+the code in Figure~\ref{figure:fact_extern_function_1} is compiled, the
+call to ${\it fact}$ (on the integer 10) in ATS is translated to a call to
+${\it fact\_extern}$. It may be helpful if the reader compiles this example
+and then takes a look at the emitted C code.
+
+In Figure~\ref{figure:fact_extern_function_2}, the function {\it fact} is
+implemented in ATS. When compiled, this implementation is translated into
+an implementation of ${\it fact\_extern}$ in C.  The function {\it main} in
+ATS is given the external name {\it mainats}.  In
+Figure~\ref{figure:fact_extern_function_2}, a function of this name is
+implemented in C, where a call to {\it fact\_extern} is made. Note that the
+type ${\it ats\_void\_type}$ in C is the counterpart of the type ${\it
+void}$ in ATS.  Also, a function ${\it main\_dummy}$ is implemented in
+Figure~\ref{figure:fact_extern_function_2}.  The sole purpose for this
+implementation is to indicate to the ATS compiler (atsopt) that ${\it
+mainats}$ is implemented externally.
+
+\begin{figure}
+\input{DATS/external_list0_length_function.dats}
+\caption{An implementation of the list length function in C}
+\label{figure:external_list0_length_function}
+\end{figure}
+The code in Figure~\ref{figure:external_list0_length_function} gives
+another typical use of external C code. In this example, the functions
+${\it list0\_is\_nil}$ and ${\it list0\_tail}$ are both implemented in
+ATS, but the function ${\it list0\_length}$ is implemented in C.
+
+\section{External Types}
+Suppose that the name {\it someType} refers to some type declared in C.  Then
+this type can be referred to as {\it \$extype "someType"} in ATS. On the
+other hand, one can introduce external names for types in ATS and then use
+such names outside ATS. For instance, an external name {\it
+int\_int\_pair} is introduced in the following code to refer to the type
+{\it @(int, int)}:
+\begin{verbatim}
+extern typedef "int_int_pair" = @(int, int)
+\end{verbatim}
+In this case, ${\it int\_int\_pair}$ is essentially bound to a struct type
+in C as follows:
+\begin{verbatim}
+typedef struct {
+  ats_int_type atslab_0 ; ats_int_type atslab_1 ;
+} int_int_pair ;
+\end{verbatim}
+Note that \verb`atslab_` is the prefix used by the ATS compiler to form
+labels for field selection.
+
+\begin{figure}
+\input{DATS/external_list0_append_function.dats}
+\caption{An implementation of the list append function in C}
+\label{figure:external_list0_append_function}
+\end{figure}
+Suppose that $v$ is a value of the form $C(v_1,\ldots, v_n)$, where $C$ is
+a constructor associated with some datatype and $v_1,\ldots,v_n$ are values
+of types $T_1,\ldots, T_n$, respectively. The value $v$ is represented by a
+pointer to some struct when compiled into C, and the type of this pointer
+can be referred to as $C\_{\it pstruct}(T_1,\ldots, T_n)$ in ATS. As an
+example, the funtion for appending two lists together is implemented
+externally in Figure~\ref{figure:external_list0_append_function}. The
+reader may want to compile this example and then carefully inspect the
+emitted C code.
+
+\section{External Values}
+Suppose that the name {\it someValue} refers to some value in C. Then this
+value can be referred to as {\it \$extval ($T$, "someValue")}, where $T$ is
+the perceived type of this value in ATS. For instance, {\it stdin\_ref} is
+defined as a macro in ATS:
+\begin{verbatim}
+macdef stdin_ref = $extval (FILEref, "stdin")
+\end{verbatim}
+where ${\it FILEref}$ is a type in ATS that approximately corresponds to
+the type ${\it FILE*}$ in C. Given that ATS does not support {\it enum}
+types directly, this approach to accessing within ATS values defined in C
+also makes it straightforward to define {\it enum} types in C and then use
+them in ATS.
+
+On the other hand, one can introduce external
+names for values in ATS and then use such names outside ATS. For instance,
+an external name {\it one\_one\_pair} is introduced in the following code
+to refer to the value {\it @(1, 1)}:
+\begin{verbatim}
+extern val "one_one_pair" = @(1, 1)
+\end{verbatim}
+Note that each external value is registered as a global root for the
+garbage collector in case garbagage collection is performed at run-time.
+
+%%% end of [manual_interaction_with_c.tex] %%%

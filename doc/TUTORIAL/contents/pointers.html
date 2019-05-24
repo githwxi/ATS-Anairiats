@@ -1,0 +1,87 @@
+<!-- beg of [pointers.html] -->
+
+<H2><A id="pointers" name="pointers">Pointers</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+A significant achievement of ATS lies in its support for
+<i>safe and flexible</i> use of pointers. This is done in a programming
+paradigm that is often referred to as <EM>programming with theorem
+proving</EM>.
+<P>
+
+Generally speaking, stateful views are <EM>linear</EM> propositions for
+describing memory layouts. For instance, given a type <i>T</i> and a memory
+location <i>L</i>, <i>T@L</i> is a primitive (stateful) view stating that a
+value of type <i>T</i> is stored at <i>L</i>.  We can also form compound
+views in terms of primitive views. For instance, given types <i>T_1</i> and
+<i>T_2</i> and an address <i>L</i>, we can form a view
+<i>(T_1@L, T_2@L+sizeof(T_1))</i> to mean that a value of type <i>T_1</i> and
+another value of type <i>T_2</i> are stored at addresses <i>L</i> and
+<i>L+sizeof(T_1)</i>, respectively, where <i>sizeof(T_1)</i> is the
+size of a value of type <i>T</i>.  Given a term of some view <i>V</i>, we
+often say that the term proves the view <i>V</i> and thus refer to the term
+as a <EM>proof</EM> (of <i>V</i>).
+<P>
+
+There are two built-in functions
+<i>ptr_get_t</i> and <i>ptr_set_t</i>
+that are given the following types:
+<PRE><FONT COLOR="#E80000">
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> ptr_get_t <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>a @ l &gt;&gt; a @ l <FONT COLOR="#000000">|</FONT> ptr l<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;&gt;</FONT> a</FONT>
+<FONT COLOR="#000000">fun</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>t@ype</FONT><FONT COLOR="#000000">}</FONT> ptr_set_t <FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">{</FONT>l<FONT COLOR="#000000">:</FONT>addr<FONT COLOR="#000000">}</FONT> <FONT COLOR="#000000">(</FONT>a? @ l &gt;&gt; a @ l <FONT COLOR="#000000">|</FONT> ptr l<FONT COLOR="#000000">,</FONT> a<FONT COLOR="#000000">)</FONT> <FONT COLOR="#000000">-&lt;&gt;</FONT> void</FONT>
+</FONT></PRE>
+
+These two functions are used to read from and write to a given pointer.
+Clearly, the type of
+<i>ptr_get_t</i> indicates that <i>ptr_get_t</i> requires a proof of view
+<i>T@L</i> for some type <i>T</i> when reading from a pointer
+<i>L</i>. This requirement disallows reading from a dangling pointer as
+such a proof cannot be found for any dangling pointers. Similarly, the type
+of <i>ptr_set_t</i> means that writing to a dangling pointer is also
+disallowed.  When reading from a pointer <i>L</i> with a proof of view
+<i>T@L</i>, <i>ptr_get_t</i> consumes the proof and then generates a proof
+of the same view (and stores it in the same variable where the orginal
+proof was stored).  On the other hand, when writing a value of type
+<i>T</i> to a pointer with a proof of view <i>T?@L</i>, where the type
+<i>T?</i> is for possibly uninitialized values of type <i>T</i>,
+<i>ptr_set_t</i> consumes the proof and then generates a proof of the view
+<i>T@L</i>, which simply attests to the fact that a value of type <i>T</i>
+is stored at <i>L</i> after the writing is done.
+<P>
+
+As an example, we implement a (template) function <i>swap1</i> as follows
+that swaps the contents stored at two memory locations:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT> swap1 <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">l1<FONT COLOR="#000000">,</FONT>l2<FONT COLOR="#000000">:</FONT>addr</FONT><FONT COLOR="#000000">}</FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>a @ l1</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>a @ l2</FONT></FONT> <FONT COLOR="#000000">|</FONT> p1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l1</FONT><FONT COLOR="#000000">,</FONT> p2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> tmp <FONT COLOR="#000000">=</FONT> ptr_get_vt&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf1</FONT> <FONT COLOR="#000000">|</FONT> p1<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">in</FONT>
+    ptr_set_vt&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf1</FONT> <FONT COLOR="#000000">|</FONT> p1<FONT COLOR="#000000">,</FONT> ptr_get_vt <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf2</FONT> <FONT COLOR="#000000">|</FONT> p2<FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">;</FONT>
+    ptr_set_vt&lt;<FONT COLOR="#0000FF">a</FONT><FONT COLOR="#000000">&gt;</FONT> <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf2</FONT> <FONT COLOR="#000000">|</FONT> p2<FONT COLOR="#000000">,</FONT> tmp<FONT COLOR="#000000">)</FONT>
+  <FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+Note that the (linear) proofs are manipulated explicitly in the
+implementation of <i>swap1</i>.  This can be burdensome in practice. In
+ATS/Anairiats, (certain) proof manipulation can also be done implicitly by
+the typechecker. For instance, the following code implements a (template)
+function <i>swap2</i> that is equivalent to <i>swap1</i>:
+
+<PRE><FONT COLOR="#E80000"><FONT COLOR="#000000">fn</FONT><FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">a<FONT COLOR="#000000">:</FONT>viewt@ype</FONT><FONT COLOR="#000000">}</FONT> swap2 <FONT COLOR="#000000">{</FONT><FONT COLOR="#0000FF">l1<FONT COLOR="#000000">,</FONT>l2<FONT COLOR="#000000">:</FONT>addr</FONT><FONT COLOR="#000000">}</FONT>
+  <FONT COLOR="#000000">(</FONT><FONT COLOR="#009000">pf1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>a @ l1</FONT></FONT><FONT COLOR="#000000">,</FONT> <FONT COLOR="#009000">pf2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF"><FONT COLOR="#000000">!</FONT>a @ l2</FONT></FONT> <FONT COLOR="#000000">|</FONT> p1<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l1</FONT><FONT COLOR="#000000">,</FONT> p2<FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">ptr l2</FONT><FONT COLOR="#000000">)</FONT><FONT COLOR="#000000">:</FONT> <FONT COLOR="#0000FF">void</FONT> <FONT COLOR="#000000">=</FONT>
+  <FONT COLOR="#000000">let</FONT>
+    <FONT COLOR="#000000">val</FONT> tmp <FONT COLOR="#000000">=</FONT> <FONT COLOR="#000000">!</FONT>p1
+  <FONT COLOR="#000000">in</FONT>
+    <FONT COLOR="#000000">!</FONT>p1 := <FONT COLOR="#000000">!</FONT>p2<FONT COLOR="#000000">;</FONT> <FONT COLOR="#000000">!</FONT>p2 := tmp
+  <FONT COLOR="#000000">end</FONT>
+</FONT></PRE>
+
+There is no explicit manipulation of (linear) proofs in the implementation
+of <i>swap2</i>.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="pointers.dats">here</a>.
+
+<!-- end of [pointers.html] -->

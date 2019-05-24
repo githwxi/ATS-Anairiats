@@ -1,0 +1,152 @@
+<!-- beg of [ATS-and-C.html] -->
+
+<H2><A id="ats-and-c" name="ats-and-c">Combining ATS and C</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+When programming in ATS, a programmer may need to write C code
+occassionally. This is particularly common when the programmer does systems
+programming.  Given that both ATS and C use the same data representation,
+it is largely straightforward for ATS and C to interact with each other.
+In particular, there is no need to write "wrappers" that are used in
+languages like
+<a href="http://www.ocaml.org">Objective Caml</a> or
+<a href="http://www.haskell.org">Haskell</a>.
+
+In ATS, the syntax for enclosing C code is
+
+<pre>
+%{ (some C code) %}
+</pre>
+
+The symbol <i>%{</i> can be replaced with either <i>%{^</i> or
+<i>%{$</i>. The former and the latter mean that the enclosed C code needs
+to be put at the top and the bottom of the generated C code, respectively.
+<P>
+For a function to be called in C, we need to assign a global name to this
+function. For instance, the following syntax declares a function <i>foo</i>
+that takes a pair of integers and returns a boolean. This function is
+given a global name "ats_foo", which can be used in C code to refer to
+<i>foo</i>.
+
+<pre>
+fun foo : (int, int) -> bool = "ats_foo"
+</pre>
+We may implement <i>foo</i> either in ATS as follows:
+<pre>
+implement foo (x, y) = ...
+</pre>
+or in C as follows:
+<pre>
+%{
+
+ats_bool_type ats_foo (ats_int_type x, ats_int_type y) { ... }
+
+%}
+</pre>
+
+Note that the C types <i>ats_int_type</i> and <i>ats_bool_type</i> are
+defined in the file
+<a href="../../IMPLEMENTATION/Anairiats/ATS/ccomp/runtime/ats_types.h">ccomp/runtime/ats_types.h</a>
+<P>
+The following example involves a call in ATS to a function that is
+implemented in C:
+
+<pre>
+// This function computes Fibonacci numbers
+extern fun fibonacci (n: Nat): Nat = "fibonacci"
+
+%{
+
+ats_int_type fibonacci (ats_int_type n) {
+  int res1, res2, tmp ;
+
+  if (n < 1) return 0 ;
+ 
+  res1 = 0 ; res2 = 1 ;
+  while (n > 1) {
+    --n ; tmp = res2 ; res2 += res1 ; res1 = tmp ;
+  }
+
+  return res2 ;
+}
+
+%}
+
+fn fibonacci_usage (cmd: string): void =
+  prerrf ("Usage: %s [integer]\n", @(cmd)) // print an error message
+
+implement main (argc, argv) =
+  if argc >= 2 then let
+    val n = int1_of argv.[1] // turning string into integer
+    val () = assert_errmsg
+      (n >= 0, "The integer argument needs to be nonnegative.\n")
+    val res = fibonacci n
+  in
+    printf ("fibonacci (%i) = %i\n", @(n, res))
+  end else begin
+    fibonacci_usage argv.[0]; exit {void} (1)
+  end
+
+</pre>
+
+It is also possible to assign names to types and values in ATS, and such
+names can be used in extenal C code.  As an example, the type <i>Tree</i>
+in the following code is given a name <i>exTree</i>, which can be used in C
+code to refer to the type <i>Tree</i>.
+
+<pre>
+
+dataviewtype tree (int) =
+  Nil(0) | {n1,n2:two} Node(1) of (tree n1, int, tree n2)
+
+viewtypedef Tree = [n:two] tree n
+
+// assigning an external name to [Tree]
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+extern typedef "exTree" = Tree
+extern fun ref_tree : Tree -> ref Tree = "ref_tree"
+
+%{
+
+ats_ref_type ref_tree (ats_ptr_type t) {
+  exTree* r ;
+  r = ats_malloc_gc (sizeof(exTree)) ;
+  *r = (exTree)t ;
+  return r ;
+}
+
+%}
+
+</pre>
+
+The syntax for assigning a name to a value in ATS is given as follow:
+
+<pre>
+<u>extern</u> <u>val</u> $name <u>=</u> $exp
+</pre>
+
+where <i>$name</i> is a string literal (representing a valid identifier in
+C) and <i>$exp</i> ranges over dynamic expressions in ATS. When used in
+external C code, the string
+<i>$name</i> refers to the value of the expression <i>$exp</i>.
+<P>
+
+In the other direction, we can use
+<i><u>$extype</u> "SomeType"</i> in ATS to refer to a type of the name
+<i>SomeType</i> in C.  Similarly, we can use <i><u>$extval</u> ($typ,
+"SomeValue")</i> for a value of the name <i>SomeValue</i> in C, where
+<i>$typ</i> is the supposed type of this value in ATS.
+For instance, <i>stdout</i> in ATS is defined as
+follows: 
+
+<pre>
+<u>#define</u> stdout <u>$exval</u> (<u>$extype</u> "ats_ptr_type", "stdout")
+</pre>
+
+where <i>ats_ptr_type</i> is an alias for the type <i>void*</i> in C.
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available <a href="ATS-and-C.dats">here</a>.
+
+<!-- end of [ATS-and-C.html] -->

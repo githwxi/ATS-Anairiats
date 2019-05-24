@@ -1,0 +1,66 @@
+/* Hanoi Tower Problem */
+
+/*
+** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
+** Time: Spring 2004
+*/ 
+
+/* ****** ****** */
+
+let
+    function print_newline () = (print ("\n"); flush ())
+
+    function print_space (n: int) =
+      for i := 1 to n do print (" ")
+
+    function print_disk (size: int, n: int) =
+      (for i := 1 to n do print ("O");
+       print_space (size - n))
+
+    type intArray = array of int
+    type intArray2 = array of intArray
+
+    function print_posts (size: int, posts: intArray2) =
+      for i := 0 to size -1 do
+        (print_disk (size, posts[0][i]); print ("\t");
+         print_disk (size, posts[1][i]); print ("\t");
+         print_disk (size, posts[2][i]); print ("\n"))
+
+    function move (
+      size: int, posts: intArray2, n:int,
+      sp: int, s: int, dp1: int, d1: int, dp2: int, d2: int) =
+      if (n = 1) then (
+        posts[dp1][d1-1] := posts[sp][s];
+        posts[sp][s] := 0;
+        print_posts (size, posts);
+        print_newline ()
+      ) else (
+        move (size, posts, n-1, sp, s, dp2, d2, dp1, d1);
+        posts[dp1][d1-1] := posts[sp][s+n-1];
+        posts[sp][s+n-1] := 0;
+        print_posts (size, posts);
+        print_newline ();
+        move (size, posts, n-1, dp2, d2-n+1, dp1, d1-1, sp, s+n)
+      ) /* end of [if] */
+
+    function play (size: int) = let
+      var post0 := intArray [size] of 0
+      var post1 := intArray [size] of 0
+      var post2 := intArray [size] of 0
+      var posts := intArray2 [3] of post0
+    in
+      posts[1] := post1;
+      posts[2] := post2;
+
+      for i := 0 to size - 1 do posts[0][i] := i + 1;
+
+      print_posts (size, posts); print_newline ();
+      move (size, posts, size, 0, 0, 1, size, 2, size)
+    end /* end of [function] */
+in
+    play (6)
+end /* end of [let] */
+
+/* ****** ****** */
+
+/* end of [hanoi.tig] */

@@ -1,0 +1,25 @@
+let
+
+/* for testing mutual recursive */
+
+type result = int
+
+function isEvn (x: int): result =
+  if x > 0 then isOdd (x - 1) else 1
+function isOdd (x: int): result =
+  if x > 0 then isEvn (x - 1) else 0
+
+type result = string
+
+function isEvn (x: int): result =
+  if x > 0 then isOdd (x - 1) else "true"
+function isOdd (x: int): result =
+  if x > 0 then isEvn (x - 1) else "false"
+
+in
+
+print ("isEvn (100) = "); print (isEvn (100)); print ("\n");
+print ("isOdd (100) = "); print (isOdd (100)); print ("\n");
+()
+
+end /* end of [let] */

@@ -1,0 +1,233 @@
+<HTML>
+<HEAD>
+<TITLE>Home Page for ATS-library</TITLE>
+<META name="description" content="Home Page for ATS-library">
+<META name="keywords" content="">
+<LINK REL="stylesheet" HREF="../ATS.css" TYPE="text/css">
+</HEAD>
+<BODY BGCOLOR="#E7CF9E" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
+<TABLE WIDTH="100%" BORDER=0 CELLSPACING=0 CELLPADDING=10>
+<TR>
+<TD CLASS="sidebar">&nbsp;</TD>
+<TD CLASS="main">&nbsp;</TD>
+</TR>
+
+<TD CLASS="sidebar" VALIGN="top">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2>
+  <TR><TD CLASS="menu"><A HREF="../">Home</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../TUTORIAL/tutorial.html">Tutorial</TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../EXAMPLE/example.html">Examples</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../IMPLEMENT/implement.html">Implementation</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../RESOURCE/resource.html">Resources</A></TD></TR>
+  <TR><TD CLASS="menu"><B CLASS="here">Libraries</B></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../PAPER/paper.html">Papers</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../CHANGELOG/changelog.html">ChangeLog</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="../FAQ.txt">FAQ</A></TD></TR>
+  <TR><TD CLASS="menu"><A HREF="https://lists.sourceforge.net/lists/listinfo/ats-lang-users">Mailing List</A></TD></TR>
+</TABLE>
+</TD>
+
+<TD CLASS="main" VALIGN="top">
+<TABLE BORDER=0 CELLPADDING=16>
+<CENTER>
+<H1>Libraries for ATS/Anairiats</H1>
+</CENTER>
+
+<HR SIZE=6 ALIGN=LEFT><P>
+
+The library code for ATS is contained in the following directories:
+<MENU>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/prelude/"><B>$ATSHOME/prelude</B></A>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/libc/"><B>$ATSHOME/libc</B></A>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/libats/"><B>$ATSHOME/libats</B></A>
+</MENU>
+Additionally, there are API's for interfacing ATS with a variety of
+external packages, which can be found in the following directory:
+<MENU>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/contrib/"><B>$ATSHOME/contrib</B></A>
+</MENU>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+The code stored in the following directory:
+<P>
+<A HREF="IMPLEMEN/../IMPLEMENT/Anairiats/prelude/"><B>$ATSHOME/prelude</B></A>
+(<A HREF="../IMPLEMENT/Anairiats/prelude/SATS/">SATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/prelude/DATS/">DATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/prelude/CATS/">CATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/prelude/HATS/">HATS</A>)
+<P>
+is assumed to be commonly used.  Note that the interfaces of functions in
+this directory are statically loaded whenever the ATS typechecker
+starts. So please do not statically load from within a program the files
+in <A HREF="../IMPLEMENT/Anairiats/prelude/"><B>$ATSHOME/prelude/SATS</B></A>.
+<P>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+The code stored in the following directory:
+<P>
+<A HREF="../IMPLEMENT/Anairiats/libc/"><B>$ATSHOME/libc</B></A>
+(<A HREF="../IMPLEMENT/Anairiats/libc/SATS/">SATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libc/DATS/">DATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libc/CATS/">CATS</A>)
+<P>
+mostly acts as an interface for some corresponding code in <u>libc</u>.
+<P>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+The code stored in the following directory:
+<P>
+<A HREF="../IMPLEMENT/Anairiats/libats/"><B>$ATSHOME/libats</B></A>
+(<A HREF="../IMPLEMENT/Anairiats/libats/SATS/">SATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/">DATS</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/CATS/">CATS</A>)
+<P>
+is mostly implemented in ATS.
+<P>
+
+<MENU>
+<LI>
+<B>fmatrix</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/fmatrix.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/fmatrix.dats">dats</A>)<BR>
+This package contains various operations on column-major matrices.
+<P>
+
+<LI>
+<B>funarray_braun</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/funarray_braun.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/funarray_braun.dats">dats</A>)<BR>
+This package contains a functional array implementation based on the Braun tree
+data structure.
+<P>
+
+<LI>
+<B>funheap_braun</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/funheap_braun.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/funheap_braun.dats">dats</A>)<BR>
+This package contains a functional heap implementation based on the Braun tree
+data structure.
+<P>
+
+<LI>
+<B>funmap_avltree</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/funmap_avltree.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/funmap_avltree.dats">dats</A>)<BR>
+This package contains a functional map implementation based on the AVL tree
+data structure.
+<P>
+
+<LI>
+<B>freelst</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/freelst.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/freelst.dats">dats</A>)<BR>
+This package contains various operations for constructing and manipulating
+a free-list (of memory blocks)
+<P>
+
+<LI>
+<B>genarrays</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/genarrays.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/genarrays.dats">dats</A>)<BR>
+This package contains various operations on generic arrays.
+<P>
+
+<LI>
+<B>hashtable_chain</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/hashtable_chain.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/hashtable_chain.dats">dats</A>)<BR>
+This package contains a hashtable implementation based on separate chaining.
+<P>
+
+<LI>
+<B>hashtable_linprb</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/hashtable_linprb.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/hashtable_linprb.dats">dats</A>)<BR>
+This package contains a hashtable implementation based on linear probing.
+<P>
+
+<LI>
+<B>intinf</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/intinf.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/intinf.dats">dats</A>)<BR>
+This package, which is based on <A HREF="http://www.GMPLIB.org">GMP</A>,
+contains various operations on integers of infinite precision.
+<P>
+
+<LI>
+<B>iterint</B>
+(<A HREF="../IMPLEMENT/Anairiats/libats/SATS/iterint.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/iterint.dats">dats</A>)<BR>
+This package contains various iterators over natural numbers.
+The primary purpose of this package is to demonstrate a style in which
+iterators should be written in ATS.
+<P>
+
+<LI>
+<B>linmap_avltree</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/linmap_avltree.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/linmap_avltree.dats">dats</A>)<BR>
+This package contains a linear map implementation based on the AVL tree
+data structure.
+<P>
+
+<LI>
+<B>linqueue_arr</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/linqueue_arr.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/linqueue_arr.dats">dats</A>)<BR>
+This package contains an array-based linear (bounded) queue implementation.
+<P>
+
+<LI>
+<B>linqueue_lst</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/linqueue_lst.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/linqueue_lst.dats">dats</A>)<BR>
+This package contains a list-based linear (unbounded) queue implementation.
+<P>
+
+<LI>
+<B>linstack_arr</B> (<A HREF="../IMPLEMENT/Anairiats/libats/SATS/linstack_arr.sats">sats</A>)
+(<A HREF="../IMPLEMENT/Anairiats/libats/DATS/linstack_arr.dats">dats</A>)<BR>
+This package contains an array-based linear stack implementation.
+<P>
+
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/libats/smlbas"><B>smlbas</B></A>
+This package contains various modules that are loosely based on the
+<A href="http://www.standardml.org/Basis/">Standard ML Basis Library</A>.
+It is made available primarily for someone who can already do functional
+programming in a language like SML but is yet to become familiar with
+advanced features in ATS such as dependent types and linear types.
+<P>
+</MENU>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+The code stored in <A
+HREF="../IMPLEMENT/Anairiats/contrib/"><B>$ATSHOME/contrib</B></A>
+is mostly API's for various external packages.
+<MENU>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/contrib/X11"><B>X11</B></A>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/contrib/cairo"><B>cairo</B></A>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/contrib/GL"><B>OpenGL</B></A>
+<LI>
+<A HREF="../IMPLEMENT/Anairiats/contrib/SDL"><B>SDL</B></A>
+<LI>
+<A HREF="https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk/contrib/cblas"><B>cblas</B></A>
+<LI>
+<A HREF="https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk/contrib/clapack"><B>clapack</B></A>
+<LI>
+<A HREF="https://ats-lang.svn.sourceforge.net/svnroot/ats-lang/trunk/contrib/parcomb"><B>parcomb</B></A>
+</MENU>
+
+<HR SIZE=2 ALIGN=LEFT COLOR="000000"><P>
+
+This page is maintained by
+<a href="http://www.cs.bu.edu/~hwxi/">Hongwei Xi</a>.
+As always,
+<a href="mailto:hwxi@cs.bu.edu">your comments are welcome</a>.
+
+<HR SIZE=6 ALIGN=LEFT>
+<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=205722&amp;type=2" align=right width="125" height="37" border="0" alt="SourceForge.net Logo"/></a>
+
+</TABLE>
+</TD>
+
+</BODY>
+</HTML>

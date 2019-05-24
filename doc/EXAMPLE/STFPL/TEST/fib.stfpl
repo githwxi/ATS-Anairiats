@@ -1,0 +1,19 @@
+/*
+** computing the Fibonacci numbers
+*/
+
+let 
+  val rec fib: int -> int = lam (n: int) =>
+    if n >= 2 then fib (n-1) + fib (n-2) else n
+  // end of [val rec]
+  val fib20 = fib (20)
+  val _ = print "fib (20) = "
+  val _ = print_int (fib20)
+  val _ = print "\n"
+in
+  ()
+end // end of [let]
+
+/* ****** ****** */
+
+/* end of [fib.stfpl] */

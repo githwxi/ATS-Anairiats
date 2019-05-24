@@ -1,0 +1,36 @@
+Title:
+
+ATS as a functional programming front-end
+to generating high-quality embedded C code
+
+Author: Hongwei Xi, Boston University
+
+Abstract:
+
+Typical system design is marked by tradeoffs between factors such as
+efficiency and reliability, features and security, etc. As of now, most
+embedded systems are written in unsafe programming languages that are
+either untyped (e.g., assembly) or weakly typed (e.g., C).  Evidently, a
+question of great interest is why people (in general) do not implement
+these systems in existing safe languages such as Java (object-oriented) and
+ML (functional). Among a variety of reasons, a particularly important one
+is that low-level features such as explicit use of pointers and pointer
+arithmetic are disallowed in such safe languages (in order to guarantee
+safety). However, the very need to achieve optimal hardware usage often
+demands the availability of such features. In addition, the requirement for
+run-time garbage collection (GC) by safe languages can often become a great
+or even insurmountable obstacle to handling real-time events (that have
+hard deadlines).
+
+ATS is a full-fledged functional programming language with a type system
+rooted in the framework Applied Type System. ATS can run without GC and it
+supports low-level features such as pointers and pointer arithmetic. When
+such features are used, the programmer is required to construct proofs
+within ATS to justify the safety of their use. This is a programming
+paradigm we refer to as programming with theorem-proving. In this talk, I
+will primarily argue that ATS as a functional programming front-end to C
+can be readily employed in the construction of safe and reliable embedded
+systems. In particular, I will demonstrate some highly effective uses of
+dependent types and linear types in tracking the allocation/deallocation
+and manipulation of computing resources and thus preventing their potential
+misuses.

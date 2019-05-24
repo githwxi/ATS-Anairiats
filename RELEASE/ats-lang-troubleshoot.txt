@@ -1,0 +1,12 @@
+######
+
+If the path of the directory in which ATS is stored contains the space
+charactor (' '), then please do the following to fix a related bug in
+autoconf:
+
+in $ATSHOME/configure.ac, please replace a similar line with the following
+one:
+
+test x"${MISSING+set}" = xset || MISSING="\${SHELL} \"$am_aux_dir\"/missing"
+
+######

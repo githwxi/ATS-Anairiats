@@ -1,0 +1,55 @@
+#include "config.h"
+
+/* ****** ******* */
+
+#define __ID(x) x
+
+/* ****** ******* */
+
+ATSHOMEQ="$(ATSHOME)"
+ATSCC=$(ATSHOMEQ)/bin/atscc
+ATSCCFLAGS=
+ATSRUNTIME=$(ATSHOMEQ)/ccomp/runtime
+IATS=-IATS $(ATSHOMEQ)/src
+
+CCFLAGS=-fPIC -O2
+INCLUDES=-I$(ATSHOMEQ)
+
+__ID(######)
+
+SOURCES = \
+  atsyntax_util.sats \
+  atsyntax_util.dats \
+
+OBJECTS := $(patsubst %.sats, %_sats.o, $(SOURCES))
+OBJECTS := $(patsubst %.dats, %_dats.o, $(OBJECTS))
+
+__ID(######)
+
+#if (SIZEOF_VOIDP==4)
+ATSLIB=$(ATSHOMEQ)/ccomp/lib
+#endif
+#if (SIZEOF_VOIDP==8)
+ATSLIB=$(ATSHOMEQ)/ccomp/lib64
+#endif
+
+__ID(######)
+
+all:: libatsyntax
+
+__ID(######)
+
+libatsyntax: $(OBJECTS) ; $(ATSCC) -fPIC -shared -o $(ATSLIB)/libatsyntax.so -Wl,-soname,libatsyntax.so `ar t libatsyntax.a`
+
+__ID(######)
+
+AR=ar
+
+__ID(######)
+
+atsyntax_util_sats.o: atsyntax_util.sats ; $(ATSCC) $(IATS) $(CCFLAGS) -c $< ; $(AR) -r libatsyntax.a $@
+atsyntax_util_dats.o: atsyntax_util.dats ; $(ATSCC) $(IATS) $(CCFLAGS) -c $< ; $(AR) -r libatsyntax.a $@
+
+__ID(######)
+
+__ID(###### end of [Makefile] ######)

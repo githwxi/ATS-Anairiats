@@ -1,0 +1,278 @@
+<!-- beg of [input-and-output.html] -->
+
+<H2><A id="input-and-output" name="input-and-output">Input and
+Output</A></H2>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+
+The I/O is done in ATS/Anairiats by providing interfaces for various I/O
+functions in C. In particular, most functions declared in &lt;stdio.h&gt;
+have their counterparts declared in <a
+href="http://www.ats-lang.org/IMPLEMENTATION/Anairiats/ATS/libc/SATS/stdio.sats">libc/SATS/stdio.sats</a>.
+<P>
+
+There is a datasort <i>file_mode</i> and an abstract type constructor
+<i>FILE</i> in ATS that are declared as follows:
+
+<pre>
+datasort file_mode =
+  | file_mode_r | file_mode_w | file_mode_rw
+
+absviewt@ype FILE (file_mode) = $extype "ats_FILE_type"
+</pre>
+
+where the external type <i>ats_FILE_type</i> is an alias of the type
+<i>FILE</i> in C. We now use <i>r</i>, <i>w</i> and <i>rw</i> for
+<i>file_mode_r</i>, <i>file_mode_w</i> and <i>file_mode_rw</i> in the
+following presentation.
+
+If a file is assigned the type <i>FILE(r)</i>, then it is read-only; if it
+is assigned the type <i>FILE(w)</i>, then it is write-only; it is assigned
+the type <i>FILE(rw)</i>, then it can be read from and also written to.
+<P>
+
+There is also an abstract type constructor<i>file_mode</i> declared as
+follows:
+
+<pre>
+abst@ype file_mode (file_mode)
+</pre>
+
+Note that <i>file_mode</i> is overloaded: it refers to a type constructor
+as well as a datasort. The following values are available that represent
+various file modes:
+
+<pre>
+val file_mode_r : file_mode (r) // = "r"
+val file_mode_rr : file_mode (rw) // = "r+"
+val file_mode_w : file_mode (w) // = "w"
+val file_mode_ww : file_mode (rw) // = "w+"
+val file_mode_a : file_mode (w) // = "a"
+val file_mode_aa : file_mode (rw) // = "a+"
+</pre>
+<P>
+
+<H4>Opening a File</H4>
+The function <i>fopen</i> in C is for opening a file of a given name. In
+ATS, there is a function <i>fopen_exn</i> that is assigned the following type:
+<pre>
+fun fopen_exn {m:file_mode}
+  (path: string, m: file_mode m): [l:addr] (FILE m @ l | ptr l)
+</pre>
+Note that we use
+<i>_exn</i> in the name of <i>fopen_exn</i> as a convention to indicate
+that an exception is raised if a call to this function results in an error.
+There is another function
+<i>fopen_err</i> in ATS that is assigned the following type:
+
+<pre>
+fun fopen_err {m:file_mode}
+  (path: string, m: file_mode m): [l:addr] (FILE_opt_v (m, l) | ptr l)
+</pre>
+
+where <i>FILE_opt_v (m, l)</i> is defined as follows:
+
+<pre>
+viewdef FILE_opt_v (m:file_mode, l:addr) = option_v (FILE m @ l, l <> null)
+</pre>
+
+The function <i>fopen_err</i> exactly corresponds to <i>fopen</i> in C: It
+returns a null pointer in case of error.
+<P>
+
+<H4>Closing a File</H4>
+The function <i>fclose</i> in C is for closing an opened file. In ATS,
+there is a function <i>fclose_exn</i> that is assigned the following type:
+
+<pre>
+fun fclose_exn {m:file_mode} {l:addr} (pf: FILE m @ l | p: ptr l): void
+</pre>
+
+The function <i>fclose_exn</i> raises an exception if a call to it results
+in an error. There is another function
+<i>fclose_err</i> that is assigned the following type:
+
+<pre>
+fun fclose_exn {m:file_mode} {l:addr} (pf: FILE m @ l | p: ptr l): int
+</pre>
+
+The function <i>fclose_err</i> exactly corresponds to <i>fclose</i> in C: It
+returns 0 in case of success and EOF in case of error.
+
+<H4>Reading from a File</H4>
+The function <i>fgetc</i> in C is for reading a character from an opened file. In
+ATS, there is a function <i>fget_err</i> that is assigned the following type:
+
+<pre>
+fun fgetc_err {m:file_mode}
+  (pf: file_mode_lte (m, r) | f: &FILE m): [i:int | i <= UCHAR_MAX] int i
+</pre>
+
+where <i>UCHAR_MAX</i> is defined to be 255.
+This function exactly corresponds to
+<i>fgetc</i> in C: It returns the obtained character (cast into <i>unsigned
+char</i>) if successful, or it returns EOF in case of failure.  The file
+argument of the function <i>fgets_err</i>, i.e., its first non-proof argument,
+is passed as a reference (call-by-reference).
+<P>
+
+Note that <i>file_mode_lte</i> is a prop constructor. Given two file modes
+<i>m1</i> and <i>m2</i>, if a proof of the prop
+<i>file_mode_lte (m1, m2)</i> can be formed, then <i>m1</i> is less than or
+equal to <i>m2</i>. The following proofs are available:
+
+<pre>
+prval file_mode_lte_r_r : file_mode_lte (r, r)
+prval file_mode_lte_rw_r : file_mode_lte (rw, r)
+prval file_mode_lte_w_w : file_mode_lte (w, w)
+prval file_mode_lte_rw_w : file_mode_lte (rw, w)
+prval file_mode_lte_rw_rw : file_mode_lte (rw, rw)
+</pre>
+
+In order to read from a file of the type <i>FILE (m)</i>, it is necessary
+to prove that <i>m</i> is less than or equal to <i>r</i>.
+<P>
+
+There is currently no function <i>fget_exn</i>, which would be given the
+following type if defined:
+
+<pre>
+fun fgetc_exn {m:file_mode}
+  (pf: file_mode_lte (m, r) | f: &FILE m): [i:nat | i <= UCHAR_MAX] int i
+</pre>
+
+The problem with <i>fgetc_exn</i> is that it is not a function of much
+use. If implemented, this function should probably be called on a file
+after it is made certain (e.g., by calling <i>feof</i>) that the file has
+not reached its end.
+
+<H4>Writing to a File</H4>
+
+The function <i>fputc</i> in C is for writing a character into a file. In
+ATS, there is a function <i>fputc_err</i> that is assigned the following type:
+
+<pre>
+fun fputc_err {m:file_mode}
+  (pf: file_mode_lte (m, w) | c: char, f: &FILE m): [i:int | i <= UCHAR_MAX] int i
+</pre>
+
+This function exactly corresponds to <i>fputc</i> in C: It returns the
+charater being written in case of success, or EOF in case of failure. There
+is another function <i>fputc_exn</i> that is assigned the following type:
+
+<pre>
+fun fputc_exn {m:file_mode} (pf: file_mode_lte (m, w) | c: char, f: &FILE m): void
+</pre>
+
+In case of failure, <i>fputs_exn</i> raises an exception.
+
+<H4>An Example: Concatenating Files</H4>
+
+The following function <i>filecopy_exn</i> copies a file into another one:
+
+<PRE><span class="dynexp"><span class="keyword">#define</span> <span class="neuexp">i2c char_of_int1</span>
+
+<span class="keyword">fn</span> filecopy_exn <span class="staexp"><span class="keyword">{</span>m1<span class="keyword">,</span>m2<span class="keyword">:</span>file_mode<span class="keyword">}</span></span> <span class="keyword">(</span>
+    <span class="prfexp">pf1<span class="keyword">:</span> <span class="staexp">file_mode_lte <span class="keyword">(</span>m1<span class="keyword">,</span> r<span class="keyword">)</span></span></span>
+  <span class="keyword">,</span> <span class="prfexp">pf2<span class="keyword">:</span> <span class="staexp">file_mode_lte <span class="keyword">(</span>m2<span class="keyword">,</span> w<span class="keyword">)</span></span></span>
+  <span class="keyword">|</span> fil_s<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m1</span><span class="keyword">,</span> fil_d<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m2</span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fun</span> loop
+    <span class="keyword">(</span>fil_s<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m1</span><span class="keyword">,</span> fil_d<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m2</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span> <span class="keyword">let</span>
+    <span class="keyword">val</span> c <span class="keyword">=</span> fgetc_err <span class="keyword">(</span><span class="prfexp">pf1</span> <span class="keyword">|</span> fil_s<span class="keyword">)</span>
+  <span class="keyword">in</span>
+    <span class="keyword">if</span> c &gt;= 0 <span class="keyword">then</span> <span class="keyword">begin</span>
+      fputc_exn <span class="keyword">(</span><span class="prfexp">pf2</span> <span class="keyword">|</span> i2c c<span class="keyword">,</span> fil_d<span class="keyword">)</span><span class="keyword">;</span> loop <span class="keyword">(</span>fil_s<span class="keyword">,</span> fil_d<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>  <span class="keyword">end</span> <span class="comment">// end of [loop]
+</span><span class="keyword">in</span>
+  loop <span class="keyword">(</span>fil_s<span class="keyword">,</span> fil_d<span class="keyword">)</span>
+<span class="keyword">end</span> <span class="comment">// end of [filecopy_exn]
+</span></span></PRE>
+
+In case of error, <i>filecopy_exn</i> raises an exception.
+
+
+The following function <i>filecopy_err</i> is a variant of
+<i>filecopy_exn</i>. Instead of raising an exception in case of error,
+<i>filecopy_err</i> returns EOF.
+
+<PRE><span class="dynexp"><span class="keyword">fn</span> filecopy_err <span class="staexp"><span class="keyword">{</span>m1<span class="keyword">,</span>m2<span class="keyword">:</span>file_mode<span class="keyword">}</span></span> <span class="keyword">(</span>
+    <span class="prfexp">pf1<span class="keyword">:</span> <span class="staexp">file_mode_lte <span class="keyword">(</span>m1<span class="keyword">,</span> r<span class="keyword">)</span></span></span>
+  <span class="keyword">,</span> <span class="prfexp">pf2<span class="keyword">:</span> <span class="staexp">file_mode_lte <span class="keyword">(</span>m2<span class="keyword">,</span> w<span class="keyword">)</span></span></span>
+  <span class="keyword">|</span> fil_s<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m1</span><span class="keyword">,</span> fil_d<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m2</span>
+  <span class="keyword">)</span> <span class="keyword">:</span> <span class="staexp">int</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">fun</span> loop
+    <span class="keyword">(</span>fil_s<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m1</span><span class="keyword">,</span> fil_d<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span>FILE m2</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span> <span class="keyword">let</span>
+    <span class="keyword">val</span> c <span class="keyword">=</span> fgetc_err <span class="keyword">(</span><span class="prfexp">pf1</span> <span class="keyword">|</span> fil_s<span class="keyword">)</span>
+  <span class="keyword">in</span>
+    <span class="keyword">if</span> c &gt;= 0 <span class="keyword">then</span> <span class="keyword">let</span>
+      <span class="keyword">val</span> err <span class="keyword">=</span> fputc_err <span class="keyword">(</span><span class="prfexp">pf2</span> <span class="keyword">|</span> i2c c<span class="keyword">,</span> fil_d<span class="keyword">)</span>
+    <span class="keyword">in</span>
+      loop <span class="keyword">(</span>fil_s<span class="keyword">,</span> fil_d<span class="keyword">)</span>
+    <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>  <span class="keyword">end</span> <span class="comment">// end of [loop]
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> loop <span class="keyword">(</span>fil_s<span class="keyword">,</span> fil_d<span class="keyword">)</span>
+<span class="keyword">in</span>
+  <span class="keyword">if</span> ferror <span class="keyword">(</span>fil_d<span class="keyword">)</span> <span class="keyword">=</span> 0 <span class="keyword">then</span> ~1 <span class="keyword">else</span> 0
+<span class="keyword">end</span> <span class="comment">// end of [filecopy_err]
+</span></span></PRE>
+
+We now use <i>filecopy_err</i> to implement as follows the functionality of
+concatenating a list of files into a single one:
+
+<PRE><span class="dynexp"><span class="comment">// concatenation of a list of files
+</span><span class="keyword">implement</span> main <span class="staexp"><span class="keyword">{</span>n<span class="keyword">}</span></span> <span class="keyword">(</span>argc<span class="keyword">,</span> argv<span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">let</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> <span class="keyword">case+</span> argc <span class="keyword">of</span>
+  <span class="keyword">|</span> 1 <span class="keyword">=&gt;</span> <span class="keyword">let</span>
+      <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pf_stdin</span> <span class="keyword">|</span> p_stdin<span class="keyword">)</span> <span class="keyword">=</span> stdin_get <span class="keyword">(</span><span class="keyword">)</span>
+      <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> p_stdout<span class="keyword">)</span> <span class="keyword">=</span> stdout_get <span class="keyword">(</span><span class="keyword">)</span>
+      <span class="keyword">val</span> _<span class="comment">(*err*)</span> <span class="keyword">=</span> filecopy_err
+        <span class="keyword">(</span><span class="prfexp">file_mode_lte_r_r</span><span class="keyword">,</span> <span class="prfexp">file_mode_lte_w_w</span> <span class="keyword">|</span> <span class="keyword">!</span>p_stdin<span class="keyword">,</span> <span class="keyword">!</span>p_stdout<span class="keyword">)</span>
+      <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> stdout_view_set <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> <span class="comment">(*none*)</span><span class="keyword">)</span>
+      <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> stdin_view_set <span class="keyword">(</span><span class="prfexp">pf_stdin</span> <span class="keyword">|</span> <span class="comment">(*none*)</span><span class="keyword">)</span>
+    <span class="keyword">in</span>
+      <span class="comment">// empty
+</span>    <span class="keyword">end</span> <span class="comment">// end of [1]
+</span>  <span class="keyword">|</span> _ <span class="comment">(*argc &gt;= 2*)</span> <span class="keyword">=&gt;</span> loop <span class="keyword">(</span>argc<span class="keyword">,</span> argv<span class="keyword">,</span> 1<span class="keyword">)</span> <span class="keyword">where</span> <span class="keyword">{</span>
+      <span class="keyword">fun</span> loop <span class="staexp"><span class="keyword">{</span>i<span class="keyword">:</span>nat <span class="keyword">|</span> i &lt;= n<span class="keyword">}</span></span>
+        <span class="keyword">(</span>argc<span class="keyword">:</span> <span class="staexp">int n</span><span class="keyword">,</span> argv<span class="keyword">:</span> <span class="staexp"><span class="keyword">&amp;</span><span class="keyword">(</span><span class="keyword">@[</span>string<span class="keyword">]</span><span class="keyword">[</span>n<span class="keyword">]</span><span class="keyword">)</span></span><span class="keyword">,</span> i<span class="keyword">:</span> <span class="staexp">int i</span><span class="keyword">)</span><span class="keyword">:</span> <span class="staexp">void</span> <span class="keyword">=</span>
+        <span class="keyword">if</span> i <span class="keyword">&lt;</span> argc <span class="keyword">then</span> <span class="keyword">let</span>
+          <span class="keyword">val</span> name <span class="keyword">=</span> argv<span class="keyword">.</span><span class="keyword">[</span><span class="prfexp">i</span><span class="keyword">]</span>
+          <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pfopt</span> <span class="keyword">|</span> p_ifp<span class="keyword">)</span> <span class="keyword">=</span> fopen_err <span class="keyword">(</span>name<span class="keyword">,</span> file_mode_r<span class="keyword">)</span>
+        <span class="keyword">in</span>
+          <span class="keyword">if</span> p_ifp &lt;&gt; null <span class="keyword">then</span> <span class="keyword">let</span>
+            <span class="keyword">prval</span> <span class="prfexp">Some_v <span class="keyword">(</span>pf<span class="keyword">)</span> <span class="keyword">=</span> pfopt</span>
+            <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> p_stdout<span class="keyword">)</span> <span class="keyword">=</span> stdout_get <span class="keyword">(</span><span class="keyword">)</span>
+            <span class="keyword">val</span> _<span class="comment">(*err*)</span> <span class="keyword">=</span> filecopy_err
+              <span class="keyword">(</span><span class="prfexp">file_mode_lte_r_r</span><span class="keyword">,</span> <span class="prfexp">file_mode_lte_w_w</span> <span class="keyword">|</span> <span class="keyword">!</span>p_ifp<span class="keyword">,</span> <span class="keyword">!</span>p_stdout<span class="keyword">)</span>
+            <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> stdout_view_set <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> <span class="comment">(*none*)</span><span class="keyword">)</span>
+            <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> fclose_exn <span class="keyword">(</span><span class="prfexp">pf</span> <span class="keyword">|</span> p_ifp<span class="keyword">)</span>
+          <span class="keyword">in</span>
+            loop <span class="keyword">(</span>argc<span class="keyword">,</span> argv<span class="keyword">,</span> i+1<span class="keyword">)</span>
+          <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">let</span>
+            <span class="keyword">prval</span> <span class="prfexp">None_v <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> pfopt</span>
+            <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> prerrf <span class="keyword">(</span>"%s: can't open [%s]\n"<span class="keyword">,</span> <span class="keyword">@(</span>argv<span class="keyword">.</span><span class="keyword">[</span><span class="prfexp">0</span><span class="keyword">]</span><span class="keyword">,</span> name<span class="keyword">)</span><span class="keyword">)</span>
+          <span class="keyword">in</span>
+            exit <span class="staexp"><span class="keyword">{</span>void<span class="keyword">}</span></span> <span class="keyword">(</span>1<span class="keyword">)</span>
+          <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>        <span class="keyword">end</span> <span class="comment">// end of [if]
+</span>    <span class="keyword">}</span> <span class="comment">// end of [_]
+</span>  <span class="comment">// end of [val]
+</span>  <span class="keyword">val</span> <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> p_stdout<span class="keyword">)</span> <span class="keyword">=</span> stdout_get <span class="keyword">(</span><span class="keyword">)</span>
+  <span class="keyword">val</span> err <span class="keyword">=</span> ferror <span class="keyword">(</span><span class="keyword">!</span>p_stdout<span class="keyword">)</span>
+  <span class="keyword">val</span> <span class="keyword">(</span><span class="keyword">)</span> <span class="keyword">=</span> stdout_view_set <span class="keyword">(</span><span class="prfexp">pf_stdout</span> <span class="keyword">|</span> <span class="comment">(*none*)</span><span class="keyword">)</span>
+<span class="keyword">in</span>
+  <span class="keyword">if</span> <span class="keyword">(</span>err &lt;&gt; 0<span class="keyword">)</span> <span class="keyword">then</span> <span class="keyword">begin</span>
+    prerrf <span class="keyword">(</span>"%s: error writing stdout\n"<span class="keyword">,</span> <span class="keyword">@(</span>argv<span class="keyword">.</span><span class="keyword">[</span><span class="prfexp">0</span><span class="keyword">]</span><span class="keyword">)</span><span class="keyword">)</span><span class="keyword">;</span> exit <span class="staexp"><span class="keyword">{</span>void<span class="keyword">}</span></span> <span class="keyword">(</span>2<span class="keyword">)</span>
+  <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span>
+    exit <span class="staexp"><span class="keyword">{</span>void<span class="keyword">}</span></span> <span class="keyword">(</span>0<span class="keyword">)</span> <span class="comment">// exit normally
+</span>  <span class="keyword">end</span> <span class="comment">// end of [if]
+</span><span class="keyword">end</span> <span class="comment">// end of [main]
+</span></span></PRE>
+
+<HR SIZE=1 ALIGN=LEFT><P>
+The code used for illustration is available
+<a href="input-and-output.dats">here</a>.
+
+<!-- end of [input-and-output.html] -->

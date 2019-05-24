@@ -1,0 +1,210 @@
+%{
+//
+dynload "libatsdoc/dynloadall.dats"
+//
+staload STDIO = "libc/SATS/stdio.sats"
+//
+(* ****** ****** *)
+//
+#define ISTEMP 0
+//
+#include "atslangwebatxt.dats"
+//
+val _ATSLANGWEBDOCUMENT: atext =
+  strcst"<strong>Documents</strong>"
+val () = theAtextMap_insert_str ("ATSLANGWEBDOCUMENT", _ATSLANGWEBDOCUMENT)
+//
+(* ****** ****** *)
+//
+#include "atslangweb_layout.dats"
+//
+(* ****** ****** *)
+//
+val
+theCSSfilr =
+$STDIO.fopen_ref_exn
+  ("styles/atslangweb_document.css", file_mode_w)
+//
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_temp.css);\n\n")
+val () =
+fprint (theCSSfilr, "@import url(./atslangweb_jsddm_menu.css);\n\n")
+//
+fun addcssrule
+  (rule: string): atext = let
+  val () = fprint_string (theCSSfilr, rule) in atext_nil ()
+end // end of [addcssrule]
+//
+(* ****** ****** *)
+//
+%}
+
+#strsub[theStyleSheetLink]("\
+./styles/atslangweb_document.css\
+")
+
+#ignoretxt(
+#strsub[thePageHeaderSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks2("DOCUMENT")
+</div>
+'))
+
+#addcssrule("\
+\#thePageBody-prop {
+padding-left: 10px ;
+padding-right: 10px ;
+}
+")
+#strsub[thePageBody]('\
+<div id="thePageBody-prop">
+
+<!-- ****** ****** -->
+
+<h1>Documentation</h1>
+
+#menu('\
+#litxt(#ulink("DOCUMENT\#ATSINTRObook", "Introduction to Programming in ATS"))
+#litxt(#ulink("DOCUMENT\#ATSTUTORbook", "A Tutorial on Programming Features in ATS"))
+#litxt(#ulink("DOCUMENT\#ATSAPUE3book", "ATS for Programming in the UNIX environment"))
+#lisub("ATS Utility Commands")
+#lisub("The Formal Grammar of ATS/Anairiats")
+#litxt(#ulink("DOCUMENT\#ATSGTKbook", "ATS/GTK Tutorial"))
+#litxt(#ulink("DOCUMENT\#ATSCAIRObook", "ATS/Cairo Tutorial"))
+')#comment("menu")
+
+#HR(2)
+
+<h2>#uid("ATSINTRObook", "Introduction to Programming in ATS")</h2>
+
+<table>
+<tr><td>
+This book starts from the core of ATS, a statically typed call-by-value
+functional programming language, and introduces the reader to dependent
+types, linear types and the paradigm of programming with theorem-proving.
+It assumes no familiarity of the reader with functional programming.
+</td></tr>
+<tr><td>
+Links:
+#ulink1("./DOCUMENT/INT2PROGINATS/HTML/book1.html", "html")
+#ulink1("./DOCUMENT/INT2PROGINATS/CODE/INT2PROGINATS-CODE.html", "code")
+</td></tr>
+</table>
+#para("")
+
+#HR(2)
+
+<h2>#uid("ATSTUTORbook", "A Tutorial on Programming Features in ATS")</h2>
+
+<table>
+<tr><td>
+The primary purpose of the tutorial is to bring deep insights into a rich
+set of programming features in ATS and also demonstrate through concrete
+examples that these features can be made of effective use in the
+construction of high-quality programs. For someone familiar with both ML
+and C, it is possible to learn programming in ATS by simply studying the
+tutorial. However, a coherent and systematic view of ATS is diffcult to be
+gained from the tutorial alone.
+</td></tr>
+<tr><td>
+Links:
+#ulink1("./DOCUMENT/ATS2TUTORIAL/HTML/book1.html", "html")
+#ulink1("./DOCUMENT/ATS2TUTORIAL/CODE/ATS2TUTORIAL-CODE.html", "code")
+</td></tr>
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("ATSAPUE3book", "ATS for Programming in the UNIX Environment")</h2>
+
+<table>
+<tr><td>\
+
+This tutorial primarily covers issues on or related to using ATS for
+programming in the UNIX environment.  It is an attempt to demonstrate
+concretely how ATS can be used to do systems programming as is presented in
+the famous book by Richard Stevens and Steve Rago on Advanced Programming
+in the UNIX Environment (APUE).
+
+</td></tr>
+<tr><td>
+Links:
+#ulink1("#ATSLANGWEBROOTget()/DOCUMENT/ATS-for-APUE3/HTML/book1.html", "html")
+</td></tr>
+</table>
+
+#HR(1)
+
+<h2>#uid("ATSGTKbook", "ATS/GTK Tutorial")</h2>
+
+<table>
+<tr><td>\
+
+This tutorial focuses on employing types in ATS to facilitate safe and
+reliable programming with #ulink("http://www.gtk.org", "GTK+"),
+a comprehensive package for creating graphical user interfaces.  While
+there are already many on-line tutorials on using GTK+, the current one
+focuses on employing types in ATS to facilitate safe and reliable
+programming with GTK+.  In particular, it is demonstrated concretely here
+that linear types can be used effectively to prevent resources (e.g.,
+various GTK objects) from being leaked due to programming errors. The
+reader of the tutorial is assumed to have already acquired certain level of
+familiarity with both ATS and GTK.
+
+</td></tr>
+<tr><td>
+Links:
+#ulink1("#ATSLANGWEBROOTget()/DOCUMENT/ATS2GTK/HTML/book1.html", "html")
+</td></tr>
+</table>
+#para("")
+
+#HR(1)
+
+<h2>#uid("ATSCAIRObook", "ATS/Cairo Tutorial")</h2>
+
+<table>
+<tr><td>\
+
+This tutorial focuses on employing types in ATS to facilitate safe and
+reliable programming with #ulink("http://www.cairographics.org", "cairo"),
+a comprehensive drawing package supporting 2D graphics, through the API for
+cairo in ATS. In particular, it is demonstrated concretely that linear
+types can be used highly effectively to prevent resources (such as contexts
+created for drawing) from being leaked due to inadvertent programming
+errors. The reader of the tutorial is assumed to have already acquired
+certain level of familiarity with ATS.\
+
+</td></tr>
+<tr><td>
+Links:
+#ulink1("#ATSLANGWEBROOTget()/DOCUMENT/ATS2CAIRO/HTML/book1.html", "html")
+</td></tr>
+</table>
+#para("")
+
+<!-- ****** ****** -->
+
+</div>#comment("div/id=thePageBody-prop")
+')#comment("strsub")
+
+<!-- ****** ****** -->
+
+#ignoretxt(
+#strsub[thePageFooterSeparator]('\
+<div class="Page-mysitelinks">
+#mysitelinks3("DOCUMENT")
+</div>
+'))
+
+%{
+implement
+main () = {
+//
+val () =  $STDIO.fclose_exn (theCSSfilr)
+//
+val () = fprint_filsub (stdout_ref, "atslangweb_temp.html")
+//
+} // end of [main]
+%}\
