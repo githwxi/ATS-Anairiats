@@ -238,14 +238,17 @@ bin_atscc bin_atslib:
 bin_atspack:
 	make -C utils/scripts atspack
 	$(CPF) utils/scripts/atspack $(ATSHOMEBIN)
+	make -C utils/scripts cleanall
 
 bin_atsdoc:
 	make -C utils/atsdoc atsdoc
 	$(CPF) utils/atsdoc/atsdoc $(ATSHOMEBIN)/atsdoc
+	make -C utils/atsdoc cleanall
 
 bin_atsdoc_ngc:
 	make -C utils/atsdoc atsdoc_ngc
 	$(CPF) utils/atsdoc/atsdoc_ngc $(ATSHOMEBIN)/atsdoc
+	make -C utils/atsdoc cleanall
 
 ###### library ######
 #
@@ -377,6 +380,7 @@ cleanall:: ; $(RMF) contrib/gtkglext/atsctrb_gtkglext.o
 cleanall:: ; $(RMF) contrib/SDL/atsctrb_SDL.o
 
 cleanall:: ; make -C utils/atslex -f ./Makefile cleanall
+cleanall:: ; make -C utils/atsdoc -f ./Makefile cleanall
 cleanall:: ; make -C utils/scripts -f ./Makefile cleanall
 cleanall:: ; make -C ccomp/runtime/GCATS -f ./Makefile cleanall
 
