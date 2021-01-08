@@ -9,7 +9,7 @@ https://sourceforge.net/projects/ats-lang/
 Note that ATS-Anairiats is needed to compile ATS-Positats.
   
 ATS-Anairiats is referred to as ATS1, which is written in ATS1
-itself. There is another implementation of ATS given the name
+itself. There is another implementation of ATS1 given the name
 ATS-Geizella, which is written in OCaml. ATS-Anairiats was first
 compiled by ATS-Geizella and then compiled by itself.
 
