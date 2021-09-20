@@ -1843,12 +1843,15 @@ in
 // -Wimplicit-function-declaration
 //
       val () =
+      fprint1_string (pf | out, "{\n")
+//
+      val () =
       fprint1_string (pf | out, "extern\nvoid\n")
       val () = emit_filename (pf | out, fil)
-      val () = fprint1_string (pf | out, "__dynload() ;")
+      val () = fprint1_string (pf | out, "__dynload() ;\n")
 //
       val () = emit_filename (pf | out, fil)
-      val () = fprint1_string (pf | out, "__dynload() ;")
+      val () = fprint1_string (pf | out, "__dynload() ;\n}")
 //
     in
       // empty
