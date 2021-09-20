@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/tmp/ATS-Anairiats'
+ac_pwd='/home/hwxi/Research/ATS-Anairiats.git'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -660,12 +660,12 @@ S["mkdir_p"]="$(MKDIR_P)"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
-S["install_sh"]="${SHELL} /tmp/ATS-Anairiats/install-sh"
-S["MAKEINFO"]="${SHELL} /tmp/ATS-Anairiats/missing makeinfo"
-S["AUTOHEADER"]="${SHELL} /tmp/ATS-Anairiats/missing autoheader"
-S["AUTOMAKE"]="${SHELL} /tmp/ATS-Anairiats/missing automake-1.14"
-S["AUTOCONF"]="${SHELL} /tmp/ATS-Anairiats/missing autoconf"
-S["ACLOCAL"]="${SHELL} /tmp/ATS-Anairiats/missing aclocal-1.14"
+S["install_sh"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/install-sh"
+S["MAKEINFO"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/missing makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/missing autoheader"
+S["AUTOMAKE"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/missing automake-1.14"
+S["AUTOCONF"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/missing autoconf"
+S["ACLOCAL"]="${SHELL} /home/hwxi/Research/ATS-Anairiats.git/missing aclocal-1.14"
 S["VERSION"]="0.2.12"
 S["PACKAGE"]="ats-anairiats"
 S["CYGPATH_W"]="echo"

@@ -1837,8 +1837,19 @@ in
       emit_funlab (pf | out, fl); fprint1_char (pf | out, ':')
     end // end of [INSTRfunlab]
   | INSTRdynload_file fil => let
+//
+// HX-2021-09-19:
+// Fixing the picky issue with
+// -Wimplicit-function-declaration
+//
+      val () =
+      fprint1_string (pf | out, "extern\nvoid\n")
       val () = emit_filename (pf | out, fil)
-      val () = fprint1_string (pf | out, "__dynload () ;")
+      val () = fprint1_string (pf | out, "__dynload() ;")
+//
+      val () = emit_filename (pf | out, fil)
+      val () = fprint1_string (pf | out, "__dynload() ;")
+//
     in
       // empty
     end // end of [INSTRdynload_file]
