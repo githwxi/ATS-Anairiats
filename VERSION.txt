@@ -1,3 +1,17 @@
+0.2.13
+<pre>
+ats-lang-anairiats-0.2.13:
+
+The primary purpose of this release is to push out a version of ATS
+that can be used to improve bootstrapping ATS2, the successor of ATS1.
+This package is essentially the same as ats-lang-anairiats-0.2.12 except
+for a few minor fixes.
+
+Happy programming!
+</pre>
+
+######
+
 0.2.12
 <pre>
 ats-lang-anairiats-0.2.12:

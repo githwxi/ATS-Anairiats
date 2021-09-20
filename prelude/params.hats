@@ -40,7 +40,10 @@
 
 #define ATS_MAJOR_VERSION 0
 #define ATS_MINOR_VERSION 2
+/*
 #define ATS_MICRO_VERSION 12 // HX-2015-01-19
+*/
+#define ATS_MICRO_VERSION 13 // HX-2021-09-19
 
 (* ****** ****** *)
 
