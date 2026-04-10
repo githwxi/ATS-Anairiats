@@ -2,7 +2,7 @@ INSTALL := /usr/bin/install -c
 PACKAGE_TARNAME := ats-anairiats
 PACKAGE_VERSION := 0.2.12
 
-abs_top_srcdir := /home/hwxi/Research/ATS-Anairiats.git
+abs_top_srcdir := /home/hwxi/Research/githwxi/ATS-Anairiats.git
 prefix := /usr/local
 exec_prefix := ${prefix}
 bindir := ${exec_prefix}/bin
@@ -11,7 +11,7 @@ CC := gcc
 AR := ar
 LN_S := ln -s
 INSTALL := /usr/bin/install -c
-MKDIR_P := /bin/mkdir -p
+MKDIR_P := /usr/bin/mkdir -p
 
 CFLAGS := -g -O2
 CPPFLAGS := 

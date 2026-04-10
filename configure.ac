@@ -35,7 +35,7 @@ dnl =
 dnl = beg of [configure.ac]
 
 dnl = Autoconf requirements
-dnl = AC_INIT(package, version, bug-report-address)
+dnl = AC_INIT([package],[version],[bug-report-address])
 dnl = information on the package
 dnl = checks for programs
 dnl = checks for libraries
@@ -47,24 +47,24 @@ dnl = checks for library functions
 dnl = checks for system services
 dnl = AC_CONFIG_FILES([file...])
 
-AC_INIT([ATS/Anairiats], [0.2.12], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.11], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.10], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.9], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.8], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.7], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.6], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.5], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.4], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.3], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.2], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.1], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.2.0], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.1.9], [hwxi@cs.bu.edu])
-dnl = AC_INIT([ATS/Anairiats], [0.1.8], [hwxi@cs.bu.edu])
+AC_INIT([ATS/Anairiats],[0.2.12],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.11],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.10],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.9],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.8],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.7],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.6],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.5],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.4],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.3],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.2],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.1],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.2.0],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.1.9],[hwxi@cs.bu.edu])
+dnl = AC_INIT([ATS/Anairiats],[0.1.8],[hwxi@cs.bu.edu])
 
 AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([config.mk])
 AC_CONFIG_FILES([ats_env.sh])
 AC_CONFIG_FILES([test.sh])

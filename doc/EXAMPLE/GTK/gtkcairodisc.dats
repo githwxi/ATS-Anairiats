@@ -1,9 +1,5 @@
 (*
 **
-** A simple GTK/CAIRO example: a clock @ home
-** The part of clock drawing is largely taken from
-** a cairo example I did in December 2009
-**
 ** Author: Hongwei Xi (hwxi AT cs DOT bu DOT edu)
 ** Time: April, 2010
 **
