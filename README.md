@@ -1,8 +1,15 @@
 # ATS-Anairiats
 Hosting ATS-Anairiats at Github
 
-Originally, ATS-Anairiats was hosted at
-sourceforge.net:
+## Build Status
+
+* [![Scheduled CI](https://github.com/githwxi/ATS-Anairiats/actions/workflows/ubuntu-ci.yml/badge.svg?branch=master)](https://github.com/githwxi/ATS-Anairiats/actions/workflows/ubuntu-ci.yml) Ubuntu
+
+The badge is provided by GitHub Actions and shows the latest status of the Ubuntu CI workflow on `master`.
+
+## A Little History
+
+Originally, ATS-Anairiats was hosted at sourceforge.net:
 
 https://sourceforge.net/projects/ats-lang/
 
