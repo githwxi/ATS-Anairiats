@@ -24,5 +24,6 @@ if [ ! -f ./compile ]; then
 fi
 
 ./configure --prefix="$MYREPO_ROOT/_install"
+mkdir -p bootstrap1
 make all
 make test
