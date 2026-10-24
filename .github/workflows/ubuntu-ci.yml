@@ -1,0 +1,23 @@
+name: Ubuntu CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 2 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: ./travis-ci/install-ubuntu.sh
+
+      - name: Build and run tests
+        run: ./travis-ci/test-ubuntu.sh

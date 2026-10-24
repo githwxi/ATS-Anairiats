@@ -1,0 +1,12 @@
+language: shell
+
+os:
+  - linux
+
+dist: jammy
+
+before_install:
+  - ./travis-ci/install-ubuntu.sh
+
+script:
+  - ./travis-ci/test-ubuntu.sh
