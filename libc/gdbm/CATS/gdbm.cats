@@ -42,7 +42,6 @@
 /* ****** ****** */
 
 ATSinline()
-ats_int_type
 gdbm_error
 atslib_gdbm_errno_get () { return gdbm_errno ; }
 
@@ -78,7 +77,9 @@ atslib_gdbm_errno_get () { return gdbm_errno ; }
 */
 #define atslib_gdbm_getopt gdbm_setopt
 
-#ifdef GDBM_GETDBNAME
+#ifdef \
+GDBM_GETDBNAME
+//
 ATSinline()
 ats_ptr_type
 gdbm_getdbname (
@@ -89,6 +90,7 @@ gdbm_getdbname (
   if (err < 0) return (char*)0 ;
   return dbname ;
 } // end of [gdbm_getdbname]
+//
 #endif // end of [GDBM_GETDBNAME]
 
 /* ****** ****** */
