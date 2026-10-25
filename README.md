@@ -5,7 +5,7 @@ Hosting ATS-Anairiats at Github
 
 * [![Scheduled CI](https://github.com/githwxi/ATS-Anairiats/actions/workflows/ubuntu-ci.yml/badge.svg?branch=master)](https://github.com/githwxi/ATS-Anairiats/actions/workflows/ubuntu-ci.yml) Ubuntu
 
-The badge is provided by GitHub Actions and shows the latest status of the Ubuntu CI workflow on `master`.
+The badge is provided by GitHub Actions and shows the latest status of the Ubuntu CI workflow on `master`. The job builds ATS/Anairiats and runs its example test suite.
 
 ## A Little History
 
