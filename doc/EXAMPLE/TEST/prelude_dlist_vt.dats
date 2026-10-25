@@ -8,6 +8,10 @@
 
 (* ****** ****** *)
 
+staload "prelude/SATS/dlist_vt.sats"
+
+(* ****** ****** *)
+
 staload RAND = "libc/SATS/random.sats"
 staload STDLIB = "libc/SATS/stdlib.sats"
 

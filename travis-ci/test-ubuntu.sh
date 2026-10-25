@@ -8,6 +8,10 @@ $(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 MYREPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 cd "$MYREPO_ROOT"
 
+# ATS-generated C can contain labels that GCC reports as unused.
+ATSCCOMP="$SCRIPT_DIR/gcc-no-unused-label.sh"
+export ATSCCOMP
+
 if [ ! -x ./configure ]; then
   echo "configure is missing or not executable; run ./autogen.sh first." >&2
   exit 1
