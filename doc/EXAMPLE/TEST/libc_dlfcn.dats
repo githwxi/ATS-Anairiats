@@ -36,7 +36,7 @@ end // end of [ftrig_get]
 #define PI 3.1415926535898
 
 implement main () = () where {
-  val (pf_lib | p_lib) = dlopen_exn ("libm.so", RTLD_LAZY)
+  val (pf_lib | p_lib) = dlopen_exn ("libm.so.6", RTLD_LAZY)
 //
   val fsin = ftrig_get (pf_lib | p_lib, "sin")
   val sin30 = fsin (PI / 6)

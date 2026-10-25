@@ -18,6 +18,7 @@ fi
 $SUDO apt-get update
 DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y \
   automake \
+  bison \
   byacc \
   build-essential \
   libgmp-dev

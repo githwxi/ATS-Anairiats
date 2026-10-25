@@ -10,6 +10,7 @@ cd "$MYREPO_ROOT"
 
 # ATS-generated C can contain labels that GCC reports as unused.
 ATSCCOMP="$SCRIPT_DIR/gcc-no-unused-label.sh"
+chmod +x "$ATSCCOMP"
 export ATSCCOMP
 
 if [ ! -x ./configure ]; then

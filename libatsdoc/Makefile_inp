@@ -84,6 +84,9 @@ ARR=ar -r
 
 __ID(######)
 
-libatsdoc: dynloadall.dats $(OBJECTS); $(ATSCC) $(ATSCCFLAGS) -c dynloadall.dats; $(ARR) $(ATSLIB)/libatsdoc.a dynloadall_dats.o $(OBJECTS)
+libatsdoc: \
+dynloadall.dats $(OBJECTS); \
+$(ATSCC) $(ATSCCFLAGS) -c dynloadall.dats && \
+$(ARR) $(ATSLIB)/libatsdoc.a dynloadall_dats.o $(OBJECTS)
 
 __ID(###### end of [Makefile] ######)
