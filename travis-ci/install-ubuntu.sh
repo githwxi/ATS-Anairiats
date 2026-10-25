@@ -22,4 +22,5 @@ DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y \
   byacc \
   build-essential \
   libgdbm-dev \
-  libgmp-dev
+  libgmp-dev \
+  libpcre3-dev
