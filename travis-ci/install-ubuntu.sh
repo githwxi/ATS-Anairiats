@@ -21,4 +21,5 @@ DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y \
   bison \
   byacc \
   build-essential \
+  libgdbm-dev \
   libgmp-dev
