@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    # The project depends on PCRE 1 (libpcre3-dev); newer Ubuntu images may
+    # only provide PCRE2, which is not API-compatible with this codebase.
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
